@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/quick_api" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
