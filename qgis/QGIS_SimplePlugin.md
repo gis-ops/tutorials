@@ -127,4 +127,4 @@ If you activate it, note how a toolbar icon is created. Also, you'll find the pl
 
 - if you don't see the plugin in the manager after a QGIS restart, check if you didn't set the `experimental` flag by allowing experimental plugins in `Plugin Manager > Settings`.
 
-- if you experience an error by Python, you likely did something wrong in the previous steps. Best bet: start from scratch before you dump an inconceivable amount of time in finding the bug.
+- if you experience a Python error, you likely did something wrong in the previous steps. Best bet: start from scratch before you dump an inconceivable amount of time in finding the bug.
