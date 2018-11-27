@@ -2,17 +2,35 @@
 
 This tutorial is not intended to be a deep dive into QGIS plugins, but rather a guideline for creating a plugin from available boiler plate code based on the very useful [Plugin Builder](http://g-sherman.github.io/Qgis-Plugin-Builder/).
 
-At the end of this tutorial, you will be able to:
+At the end of this tutorial, you will:
 
-- get a little familiar with `PyQGIS`
+- be more familiar with `PyQGIS` and `PyQt5` and the respective documentation
 - build a GUI with QGIS native Qt Designer
 - connect GUI elements to Python functions
-- test the plugin locally and upload to QGIS official plugin repository
+- deploy the plugin locally and upload to QGIS official plugin repository
 
 > **Disclaimer**
 >
 > Validity only confirmed for **Ubuntu 18.04** and **QGIS v3.x**
 > Occassionally, the author might choose to give hints on Windows-specific setups. `Ctrl+F` for WINDOWS flags
+
+<!-- TOC depthFrom:2 depthTo:4 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Prerequisites](#prerequisites)
+	- [Hard prerequisites](#hard-prerequisites)
+	- [Recommendations](#recommendations)
+- [First steps](#first-steps)
+	- [Plugin Builder](#plugin-builder)
+		- [About Plugin Builder](#about-plugin-builder)
+		- [Run Plugin Plugin Builder](#run-plugin-plugin-builder)
+		- [Generated files](#generated-files)
+	- [Test initial plugin](#test-initial-plugin)
+		- [Compile `resources.qrc`](#compile-resourcesqrc)
+		- [Copy code to plugin directory](#copy-code-to-plugin-directory)
+		- [Load plugin](#load-plugin)
+		- [Troubleshooting](#troubleshooting)
+
+<!-- /TOC -->
 
 ## Prerequisites
 
@@ -34,7 +52,7 @@ If you follow above recommendations, you should now be able to run the following
 
 ```bash
 /path/to/system-python/python3
-# in Python console
+ # in Python console
 import qgis
 import PyQt5
 ```
