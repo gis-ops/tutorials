@@ -472,13 +472,13 @@ First, you need to check whether Nominatim replied with a `200` HTTP status code
 ```python
 # if result:
 if response.status_code == 200:
-	if response_json.get('error'):
-		QMessageBox.critical(self.iface.mainWindow(),
-			"Quick API error",
-			"The request was not processed succesfully!\n\n"
-			"Message:\n"
-			"{}".format(response.json()))
-		return
+    if response_json.get('error'):
+        QMessageBox.critical(self.iface.mainWindow(),
+			                       "Quick API error",
+														 "The request was not processed succesfully!\n\n"
+														 "Message:\n"
+														 "{}".format(response.json()))
+        return
 ```
 
 **DEBUG**: add `print(response.text)` to see the raw text of the response.
@@ -550,10 +550,10 @@ bbox_geom = QgsGeometry.fromPolygonXY([[QgsPointXY(min_x, min_y),
 
 # Transform bbox if map canvas has a different CRS
 if self.project.crs().authid() != 'EPSG:4326':
-	xform = QgsCoordinateTransform(crs_out,
-	                               self.project.crs(),
-	                               self.project)
-	bbox_geom.transform(xform)
+		xform = QgsCoordinateTransform(crs_out,
+		                               self.project.crs(),
+                               		 self.project)
+		bbox_geom.transform(xform)
 self.iface.mapCanvas().zoomToFeatureExtent(QgsRectangle.fromWkt(bbox_geom.asWkt()))
 ```
 
