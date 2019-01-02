@@ -1,14 +1,14 @@
-# Create a quick QGIS 3 Plugin
+# QGIS 3 Plugin development
 
-This tutorial is not intended to be a deep dive into QGIS plugin development, but rather a guideline for creating a plugin from available boiler plate code based on the very useful [Plugin Builder](http://g-sherman.github.io/Qgis-Plugin-Builder/). It focuses a lot on the conceptual how's and why's of Python plugins. The actual development part is fairly quick.
+This tutorial is not intended to be a deep dive into QGIS Python API, but rather a guideline for creating a plugin from available boiler plate code based on the very useful [Plugin Builder](http://g-sherman.github.io/Qgis-Plugin-Builder/). It focuses a lot on the conceptual how's and why's of Python plugins. The actual development part is fairly quick.
 
 **Goals**:
 
 - get more familiar with `PyQGIS` and `PyQt5` and the respective documentation
 - build a GUI with QGIS native Qt Designer
-- understand QGIS interaction with plugins
+- understand how QGIS works with plugins
 - connect GUI elements to Python functions
-- deploy the plugin locally and upload to QGIS official plugin repository
+- deploy the plugin locally and take necessary steps for a successful publication
 
 **Plugin functionality**:
 
@@ -28,6 +28,7 @@ This tutorial is not intended to be a deep dive into QGIS plugin development, bu
 - Basic understanding of Python
 - QGIS v3.x
 - [Plugin Builder](https://plugins.qgis.org/plugins/pluginbuilder3/) QGIS plugin installed
+- [Plugin Reloader](https://plugins.qgis.org/plugins/plugin_reloader/) plugin installed
 - Python >= 3.6 (should be your system Python3)
 
 ### Recommendations
@@ -77,12 +78,12 @@ The Plugin Builder will have generated a lot of files now. Head over to your new
 ```bash
 ├──quickapi
    ├──icon.png
-   ├──__init__.py 									# mandatory for minimal plugin
+   ├──__init__.py
    ├──metadata.txt
-   ├──quick_api.py									# mandatory for minimal plugin
-   ├──quick_api_dialog.py							 # mandatory for minimal plugin
-   ├──quick_api_dialog_base.ui						# mandatory for minimal plugin
-   └──resources.qrc								   # mandatory for minimal plugin
+   ├──quick_api.py
+   ├──quick_api_dialog.py
+   ├──quick_api_dialog_base.ui
+   └──resources.qrc
 ```
 
 This is still a lot to take in. So let's look at them in little more detail:
@@ -131,11 +132,16 @@ Start QGIS and head over to `Plugins > Manage and Install Plugins` et voila:
 
 ![Successful installation](static/img/quick_api_img2.png)
 
-If you activate it, a new icon will be added to the Plugin toolbar. Also, you'll find the plugin in the 'Vector' menu in QGIS.
+If you activate it, a new icon will be added to the Plugin toolbar. Also, you'll find the plugin in the *Vector* menu in QGIS.
+
+#### Reload plugin
+
+Whenever you replace the plugin code with a newer version, make sure to use the **Plugin Reloader** plugin to reload the plugin, instead of restarting QGIS.
+Note, this only works for code alterations outside of the main `__init__.py`.
 
 #### Troubleshooting
 
-- if you don't see the plugin in the manager after a QGIS restart, check you didn't accidentally set the `experimental` flag by allowing experimental plugins in `Plugin Manager > Settings`.
+- if you don't see the plugin in the manager after a QGIS restart, check you didn't accidentally set the `experimental` flag by allowing experimental plugins in *Plugin Manager* ► *Settings*.
 
 - if you experience a Python error, you likely did something wrong in the previous steps. Best bet: start from scratch before you dump an inconceivable amount of time in finding the bug.
 
@@ -181,8 +187,8 @@ Do the following steps:
 2. Drag a `QgsFilterLineEdit` widget to the dialog and insert it above the buttons
 3. Alter the following properties of the new widget:
 	- `QObject.objectName`: lineedit_xy
-	- `QLineEdit.placeholderText`: Lat, Long
-4. Drag a `QgsProjectionSelectionWidget` below the other widget and name it 'crs_input'
+	- `QLineEdit.placeholderText`: Y, X (Lat, Lon)
+4. Drag a `QgsProjectionSelectionWidget` below the other widget and name it *crs_input*
 4. Resize the dialog to fit your needs
 
 Now, your GUI should look similar to this:
@@ -331,7 +337,7 @@ First thing it does here: check if this is the first time the plugin is called. 
 
 `dlg.exec_()` is a shortcut method to show the GUI (yes, this is actually duplicate functionality) and returns the option the user chose (0 for pressing Cancel button, 1 for pressing OK button). The internals are little elaborate and you can read more about it [here](http://doc.qt.io/qt-5/qdialog.html#modal-dialogs). I think the reason why `show()` is implemented on top of `exec_()` is that `exec_()` will return a modal dialog (i.e. user can't interact with parent window), while `show()` makes sure it's modeless. Nevertheless, a little dirty.
 
-*Fun fact*: `exec_()` is equivalent to `exec()` and was introduced by `PyQt`, since `exec` was a reserved keyword until Python 3. `exec_()` is still best practice.
+*BTW*: `exec_()` is equivalent to `exec()` and was introduced by `PyQt`, since `exec` was a reserved keyword until Python 3. `exec_()` is still best practice.
 
 So, if `result` is `True` (or 1, which is equivalent in Python), meaning the user clicked OK, we want the plugin to execute its costum code. This is finally where the boiler plate ends and the action starts.
 
@@ -366,7 +372,7 @@ from qgis.core import (QgsCoordinateReferenceSystem,
                        QgsFeature)
 ```
 
-Note, in other tutorials people often use star imports, i.e. `from qgis.core import *`. This is bad practice generally. While it makes your import statement a lot more compact, you have no idea where the method comes from when this is done to multiple modules (and neither does your IDE).
+Note, in other tutorials people often use star imports, i.e. `from qgis.core import *`. This is bad practice generally. While it makes your import statement a lot more compact, you have no idea where the method comes from, especially when done on multiple modules (and neither does your IDE).
 
 ### Set dialog attributes
 
@@ -374,7 +380,7 @@ We included a CRS picker in our plugin. However, there's no option to set a defa
 
 ```python
 if self.first_start == True:
-	dlg.crs_input.setCrs(QgsCoordinateReferenceSystem(4326))
+    dlg.crs_input.setCrs(QgsCoordinateReferenceSystem(4326))
 ```
 
 `crs_input` is the CRS picker GUI object, an instance of `QgsProjectionSelectionWidget`. In its [documentation](https://qgis.org/api/classQgsProjectionSelectionWidget.html#a2af9a2e3aaf29ddbe9a6a9121d9bf505), you'll find all info on its methods, like `setCrs()`. Which expects a `QgsCoordinateReferenceSystem`, which again can be built from a valid EPSG code as integer.
@@ -385,9 +391,9 @@ Once the GUI is correctly built, it's shown to the user and it'll be open until 
 
 ```python
 if result:
-		lineedit_text = dlg.lineedit_xy.value()
-		crs_input = dlg.crs_input.crs()
-		crs_out = QgsCoordinateReferenceSystem(4326)
+    lineedit_text = dlg.lineedit_xy.value()
+    crs_input = dlg.crs_input.crs()
+    crs_out = QgsCoordinateReferenceSystem(4326)
 ```
 
 `lineedit_text` is a string. We need it as coordinate decimal points though:

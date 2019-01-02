@@ -9,12 +9,12 @@
 [general]
 name=Quick API
 qgisMinimumVersion=3.0
-description=This plugin queries Open Elevation API
+description=This plugin queries Nominatim's Reverse Geocode API
 version=0.1
 author=GIS-OPS UG
 email=nils@gis-ops.org
 
-about=Returning a PointZ by querying open-elevation API with lat/long.
+about=Returning a geocoded point by querying Nominatim Reverse Geocode API.
 
 tracker=https://github.com/nilsnolde/tutorials/issues
 repository=https://github.com/nilsnolde/tutorials/tree/master/qgis/examples/quickapi
@@ -26,7 +26,7 @@ repository=https://github.com/nilsnolde/tutorials/tree/master/qgis/examples/quic
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=web
+tags=web, nominatim, reverse geocode, geocode
 
 homepage=http://gis-ops.com
 category=Vector
