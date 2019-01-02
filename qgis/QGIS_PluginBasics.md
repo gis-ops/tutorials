@@ -41,6 +41,14 @@ cp -arf myplugin/ ~/.local/share/QGIS/QGIS3/profiles/default/python/plugins
 
 Then, use the [Plugin Reloader](https://plugins.qgis.org/plugins/plugin_reloader/) plugin to reload your modified code on-the-fly, without restarting QGIS. **Note**, that this only works if you didn't modify any methods which are **only** loaded on QGIS startup, like the root's `__init__.py` or the main module's `__init__(self)` method.
 
+## `metadata.txt`
+
+This is the main source for the plugin repository, but also the QGIS Plugin Manager, which both extract information about author, version etc from here. Generally, you can use this file to store all kinds of meta information, like a help URL or collaborators. There's not exactly a standard for this file format, but it's similar to INI configuration files in structure with `[sections]` and `key=value` pairs. A useful resource is the [Python implementation](https://docs.python.org/3/library/configparser.html#supported-ini-file-structure).
+
+The metadata file can be parsed in Python with the native `configparser` library. It makes sense to keep `metadata.txt` as the only entry point for meta information and, when needed in the code base, import the configuration from it (like `version`).
+
+Multiline statements (like changelog) must be indented after the first line. Paths are set relatively, e.g. `gui/img/icon.png` if it lives in `<plugin_root>/gui/img`.
+
 ## Detailed module and method description
 
 QGIS Python plugins need a few mandatory modules and methods so they work smoothly with QGIS.
@@ -64,7 +72,7 @@ The minimum tree for a functioning output of Plugin Builder 3 would look like:
 
 - `__init__.py`: contains the function which will initialize the plugin on QGIS startup and register it with QGIS, so it knows about this plugin.
 
-- `metadata.txt`: contains information about the plugin, which will be used by the official QGIS plugin repository and the QGIS Plugin Manager to display information about your plugin, e.g. description, version, author, URL etc.
+- `metadata.txt`: contains information about the plugin, which will be used by the official QGIS plugin repository and the QGIS Plugin Manager to display information about your plugin, e.g. description, version, author, URL etc. See [metadata section](#metadatatxt)
 
 - `my_plugin.py`: contains the heart of the plugin: custom functionality will go into this file.
 

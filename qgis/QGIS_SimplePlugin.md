@@ -137,6 +137,8 @@ Now, your GUI should look similar to this:
 
 ## Code
 
+**You'll only work in `quick_api.py`.**
+
 In this tutorial we will throw a few fundamental programming principles over board and focus only on the most crucial parts of a QGIS plugin. To this end, we will **not**:
 
 - separate GUI logic from processing logic
@@ -148,7 +150,7 @@ Also, if you're not sure about the basics of QGIS Plugins, head over to our [QGI
 
 ### Logic
 
-In its current state, the plugin will show the correct GUI, but not do anything when OK is pressed. So, to implement our desired functionality, we have to do add a bit of code to the `run(self)` method.
+In its current state, the plugin will show the correct GUI, but not do anything when OK is pressed. So, to implement our desired functionality, we have to do add a bit of code to `quick_api.py'`'s `run(self)` method.
 
 The logic will be:
 
@@ -158,11 +160,11 @@ The logic will be:
 4. Process the response to add it as a layer to QGIS
 5. Add logic to zoom to a bounding box
 
-After each step, pause for a moment, add some `print()` statements to your code to see that everything works as expected (we'll provide some **DEBUG** hints), copy your code to the plugin directory and reload it in QGIS. Open a Python console and run the plugin logic. If you see unexpected results, revert to the code and investigate.
+After each step, pause for a moment, add some `print()` statements to your code to see that everything works as expected (we'll provide some **DEBUG** hints), copy your code to the plugin directory and reload it in QGIS. Open the QGIS Python console and run the plugin logic. If you see unexpected results, revert to the code and investigate.
 
 ### Imports
 
-We'll need a few imports from `qgis.core` and `QMessageBox` from `PyQt`, plus `requests` for this to work. Just paste this into your import statements at the top of the file, we'll explain later:
+We'll need a few imports from `qgis.core` and `QMessageBox` from `PyQt`, plus `requests` for this to work. Just paste this into your import statements at the top of `quick_api.py`, we'll explain later:
 
 ```python
 import requests
@@ -370,11 +372,7 @@ When you've gone through all the steps above and your plugin works as expected, 
 
 ### `metadata.txt`
 
-This is the main source for the plugin repository, but also the QGIS Plugin Manager, which both extract information about author, version etc from here. Generally, you can use this file to store all kinds of meta information, like a help URL or collaborators. The metadata.txt file can be parsed in Python with the native `configparser` library. Just remember, it has to follow [general config guidelines](https://docs.python.org/3/library/configparser.html#supported-ini-file-structure).
-
-Multiline statements (like changelog) must be indented after the first line. Paths are set relatively, e.g. `gui/img/icon.png` if it lives in `quickapi/gui/img`.
-
-Fill out all details accordingly. Find a suitable icon for your plugin and replace `icon.png` (but keep the name to not break any code).
+Fill out all details accordingly. Find a suitable icon for your plugin and replace `icon.png` (but keep the name to not break any code). Find a more elaborate explanation [here](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_PluginBasics.md#metadatatxt).
 
 ### Zip plugin
 
