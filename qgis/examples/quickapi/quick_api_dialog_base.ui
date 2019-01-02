@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>234</width>
-    <height>74</height>
+    <width>251</width>
+    <height>105</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,16 +15,17 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLineEdit" name="lineedit_xy">
-     <property name="font">
-      <font>
-       <italic>true</italic>
-      </font>
+    <widget class="QgsFilterLineEdit" name="lineedit_xy">
+     <property name="placeholderText">
+      <string>Y, X (Lat/Lon)</string>
      </property>
-     <property name="text">
-      <string>Lat, Long</string>
+     <property name="qgisRelation" stdset="0">
+      <string notr="true"/>
      </property>
     </widget>
+   </item>
+   <item>
+    <widget class="QgsProjectionSelectionWidget" name="crs_input"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="button_box">
@@ -38,6 +39,18 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsFilterLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>qgsfilterlineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QgsProjectionSelectionWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsprojectionselectionwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

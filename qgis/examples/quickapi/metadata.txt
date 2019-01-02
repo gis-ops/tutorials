@@ -12,12 +12,12 @@ qgisMinimumVersion=3.0
 description=This plugin queries Open Elevation API
 version=0.1
 author=GIS-OPS UG
-email=support@gis-ops.com
+email=nils@gis-ops.org
 
-about=Example plugin for the tutorial at <homepage>
+about=Returning a PointZ by querying open-elevation API with lat/long.
 
 tracker=https://github.com/nilsnolde/tutorials/issues
-repository=https://github.com/nilsnolde/tutorials
+repository=https://github.com/nilsnolde/tutorials/tree/master/qgis/examples/quickapi
 # End of mandatory metadata
 
 # Recommended items:
@@ -26,7 +26,7 @@ repository=https://github.com/nilsnolde/tutorials
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=python
+tags=web
 
 homepage=http://gis-ops.com
 category=Vector
