@@ -2,7 +2,7 @@
 
 This blog is a reference guide to QGIS 3 plugin lingo and explains important concepts. It's mostly based on output of [Plugin Builder 3](https://plugins.qgis.org/plugins/pluginbuilder/), which is very useful for generating the necessary boiler plate code. However, it's hard to decipher all the hidden meanings of the code it supplies.
 
-If you miss documentation of some methods or concepts, please put an issue or even a pull request.
+If you miss documentation of some methods or concepts, please put an [issue](https://github.com/gis-ops/tutorials/issues) or even a [pull request](https://github.com/gis-ops/tutorials/pulls).
 
 > **Disclaimer**
 >
@@ -78,7 +78,7 @@ Find a more detailed description below.
 
 ### `resources.qrc`
 
-That's a Qt resource file. Basically, it contains instructions for the Qt framework where to find which resources, e.g. plugin icons. Find a more detailed discussion [here](#resources-qrc). It needs to be compiled to `resources.py` and imported in `my_plugin.py`.
+That's a Qt resource file. Basically, it contains instructions for the Qt framework where to find which resources, e.g. plugin icons. Find a more detailed discussion [here](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_QtDesigner.md#qt-resourcesqrc). It needs to be compiled to `resources.py` and imported in `my_plugin.py`.
 
 ### `__init__.py`
 
@@ -169,7 +169,7 @@ First thing it does here: check if this is the first time the plugin is called. 
 
 So, if `result` is `True` (or 1, which is equivalent in Python), meaning the user clicked OK, we want the plugin to execute its costum code. This is finally where the boiler plate ends and the action starts.
 
-## Documentation
+## Documentation Stores
 
 ### PyQt5
 

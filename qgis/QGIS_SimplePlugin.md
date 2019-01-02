@@ -5,15 +5,15 @@ This tutorial follows you through the development process of a simple QGIS 3 Pyt
 **Goals**:
 
 - get more familiar with `PyQGIS` and `PyQt5` and the respective documentation
-- build a GUI with QGIS native Qt Designer
 - understand how QGIS works with plugins
+- build a GUI with QGIS native Qt Designer
 - connect GUI elements to Python functions
 - deploy the plugin locally and take necessary steps for a successful publication
 
 **Plugin functionality**:
 
 - User copy/pastes X, Y coordinates into a text field
-- Upon OK button click, the [Nominatim API](https://wiki.openstreetmap.org/wiki/Nominatim) is queried
+- Upon OK button click, the [Nominatim API](https://wiki.openstreetmap.org/wiki/Nominatim) is queried on its Reverse Geocoding endpoint
 - A Point layer is generated in-memory, displayed on the map and zoomed to
 
 > **Disclaimer**
@@ -35,8 +35,8 @@ This tutorial follows you through the development process of a simple QGIS 3 Pyt
 
 - Basic Python knowledge
 - Familiarity with
-	- Qt Designer application, see [our tutorial]()
-	- Python Plugin Basics, see [our tutorial]()
+	- Qt Designer application, see [our tutorial](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_QtDesigner.md)
+	- Python Plugin Basics, see [our tutorial](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_PluginBasics.md)
 
 ## First steps
 
@@ -63,11 +63,11 @@ The Plugin Builder will have generated a lot of (well-intended) files now. Head 
    └──resources.qrc
 ```
 
-A more thorough explanation of the generated files and methods is [here]().
+A more thorough explanation of the generated files and methods is [here](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_PluginBasics.md#detailed-module-and-method-description).
 
 ### Compile `resources.qrc`
 
-A more detailed description of the concept of `resources.qrc` can be found [here]().
+A more detailed description of the concept of `resources.qrc` can be found [here](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_QtDesigner.md#qt-resourcesqrc).
 
 Plugin Builder 3 will try to compile your resource file, but often enough fails to determine the system path of the `pyrcc5` executable, so you'll have to do it manually:
 
@@ -115,7 +115,7 @@ Note, this only works for code alterations outside of the main `__init__.py`.
 
 First, start Qt Designer. The app is shipped on all OS's with QGIS and should be available as an executable on your computer.
 
-If you haven't worked with Qt Designer before, we recommend our short [Qt Designer]() tutorial.
+If you haven't worked with Qt Designer before, we recommend our short [Qt Designer](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_QtDesigner.md) tutorial.
 
 ### Build GUI
 
@@ -144,7 +144,7 @@ In this tutorial we will throw a few fundamental programming principles over boa
 
 These are really mantras you can't repeat often enough. There will be other tutorials focusing on testing.
 
-Also, if you're not sure about the basics of QGIS Plugins, head over to our [QGIS Plugin 101]() for reference.
+Also, if you're not sure about the basics of QGIS Plugins, head over to our [QGIS Plugin 101](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_PluginBasics.md) for reference.
 
 ### Logic
 
@@ -223,7 +223,7 @@ except:
 
 This will just pop up an error message with an OK button and a custom message and then end the plugin logic.
 
-**DEBUG**: add `print(crs_input.authid(), lineedit_yx)` to the end and reload plugin in QGIS.
+**DEBUG**: add `print(crs_input.authid(), lineedit_yx)` to the end and reload the plugin in QGIS.
 
 ### 2. Convert user input to QGIS objects
 
@@ -330,7 +330,7 @@ self.project.addMapLayer(layer_out)
 
 First, you build a Point object from the response X & Y. A `QgsFeature` is how QGIS understands a single feature entity. It holds information on geometry and attributes, which you'll have to set. Remember, `QgsPointXY` is not a geometry, only a Point object (confusing, really, since `QgsPoint` **is** a geometry), so we'll have to create a geometry from it first.
 
-The layer's attributes (i.e. the field names) are actually not known to the new feature. But you can still pass an ordered list of attribute values, which will have to be in the same order as the layer initialization in the last code block, i.e. first `address`, then `license` and of course hold the same data type.
+The layer's attributes (i.e. the field names) are actually not known to the new feature. But you can still pass an ordered list of attribute values, which will have to be in the same order as the layer initialization in the previous code block, i.e. first `address`, then `license` and of course hold the same data type.
 
 When adding features to map layers, it's important to add them to the `dataProvider()` if you want the features to persist.
 
@@ -364,7 +364,7 @@ First, construct `QgsPointXY`s from the extent of `boundingbox` and add those to
 
 ## Final plugin
 
-When you've gone through all the steps above and your plugin works as expected, it's time to prepare for upload to the QGIS plugin repository.
+When you've gone through all the steps above and your plugin works as expected, it's time to prepare for (a hypothetical) upload to the QGIS plugin repository.
 
 **NOTE: do not upload this plugin to the QGIS repository!!**
 
