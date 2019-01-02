@@ -1,6 +1,6 @@
 # QGIS 3 - Build your first plugin
 
-This tutorial follows you through the development process of a simple QGIS 3 Python plugin [Plugin Builder](http://g-sherman.github.io/Qgis-Plugin-Builder/).
+This tutorial follows you through the development process of a simple QGIS 3 Python plugin using the amazing [Plugin Builder](http://g-sherman.github.io/Qgis-Plugin-Builder/).
 
 **Goals**:
 
