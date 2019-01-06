@@ -14,7 +14,7 @@ The final plugin can be found in our [tutorial repository](https://github.com/gi
 
 **Plugin functionality**:
 
-- User copy/pastes X, Y coordinates into a text field
+- User copy/pastes X, Y coordinates into a text field and specifies the CRS
 - Upon OK button click, the [Nominatim API](https://wiki.openstreetmap.org/wiki/Nominatim) is queried on its Reverse Geocoding endpoint
 - A Point layer is generated in-memory, displayed on the map and zoomed to
 
