@@ -1,6 +1,6 @@
 # QGIS 3 - Build your first plugin
 
-This tutorial follows you through the development process of a simple QGIS 3 Python plugin using the amazing [Plugin Builder 3](http://g-sherman.github.io/Qgis-Plugin-Builder/). 
+This tutorial follows you through the development process of a simple QGIS 3 Python plugin using the amazing [Plugin Builder 3](http://g-sherman.github.io/Qgis-Plugin-Builder/).
 
 The final plugin can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quickapi)
 
@@ -46,7 +46,7 @@ The final plugin can be found in our [tutorial repository](https://github.com/gi
 
 If you have successfully installed the Plugin Builder 3 plugin, it is available in the *Plugins* menu in QGIS. Make sure to fill out the details similar to ours:
 
-![Plugin Reloader settings](static/img/quick_api_img1.png)
+![Plugin Reloader settings](https://github.com/gis-ops/tutorials/tree/master/qgis/static/img/quick_api_img1.png)
 
 Note, there will be a few more dialogs, just use common sense when filling those in. Or accept the defaults.
 
@@ -97,7 +97,7 @@ Run this command whenever you change something in your development project.
 
 Start QGIS and head over to *Plugins* ► *Manage and Install Plugins* et voila:
 
-![Successful installation](static/img/quick_api_img2.png)
+![Successful installation](https://github.com/gis-ops/tutorials/tree/master/qgis/static/img/quick_api_img2.png)
 
 If you activate it, a new icon will be added to the Plugin toolbar. Also, you'll find the plugin in the *Vector* menu in QGIS.
 
@@ -135,7 +135,7 @@ Do the following steps:
 
 Now, your GUI should look similar to this:
 
-![Final GUI](static/img/quick_api_img4.png)
+![Final GUI](https://github.com/gis-ops/tutorials/tree/master/qgis/static/img/quick_api_img4.png)
 
 ## Code
 
