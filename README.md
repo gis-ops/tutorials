@@ -1,6 +1,6 @@
 # GIS • OPS Tutorials
 
-This is the repository for our tutorials and posts on [gis-ops.com](https://gis-ops.com).
+This is the repository for our tutorials and posts on [gis-ops.com](https://gis-ops.com/tutorials).
 
 We :heart: open source, so we chose to open our tutorials as well, which has some nice side effects:
 
