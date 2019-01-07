@@ -8,7 +8,7 @@ It's the easiest way to create and alter UI files for QGIS plugins.
 
 In the startup dialog, open create a new *Dialog with Buttons Bottom* dialog, which will give you a bare-bone UI. For easier navigation, here's a quick breakdown of the Qt Designer interface:
 
-![Qt Designer Interface](static/img/qt_designer_img1.png)
+![Qt Designer Interface](https://github.com/gis-ops/tutorials/raw/master/qgis/static/img/qt_designer_img1.png)
 
 ### 1 Available widgets
 
