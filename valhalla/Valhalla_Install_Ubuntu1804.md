@@ -1,4 +1,7 @@
 # How to build and install Valhalla 3.0.1 on Ubuntu 18.04
+
+## Introduction
+
 [Valhalla](https://github.com/valhalla) is a performant open source routing software (MIT license) written in C++ and mainly designed to consume OpenStreetMap data.
 
 Through its hardware near design, Valhalla offers a wide range of scalable and stable features, e.g.:
@@ -27,9 +30,7 @@ The following list of companies using Valhalla in their productive systems empha
 
 The Valhalla code and more details can be found at their [GitHub repository](https://github.com/valhalla) which is maintained by [many contributors](https://github.com/valhalla/valhalla/graphs/contributors).
 
-## The following blog will teach you **how to build** this awesome piece of software from scratch, **on Ubuntu 18.04**.
-
-**Goals**:
+**Goals of this tutorials**:
 
 -   get familiar with building software on Ubuntu 18.04
 -   learn how to build and install Valhalla correctly
