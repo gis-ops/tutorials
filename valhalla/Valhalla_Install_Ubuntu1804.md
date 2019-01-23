@@ -62,16 +62,17 @@ If you're new to building software, `don't try this tutorial on a setup you use 
 
 Alternatively we recommend you to directly use our [Valhalla docker tutorial](foo) or run this tutorial in a freshly installed [Ubuntu 18.04 with Virtual Box](https://linuxhint.com/install_ubuntu_18-04_virtualbox/).
 
-## Next steps:
-If you already have a running version of Valhalla and want to learn more, head over to our tutorial on [How to configure and use Valhalla on a local Ubuntu setup](foo).
+## After the tutorial:
+If you already have a running version of Valhalla and want to learn more, head over to our tutorial on [How to configure and use Valhalla](foo).
 
 ---
 
-## Steps to build and install Valhalla (1-5)
+## 0. Initial thoughts
 If you have read to this line i assume you're interested in building and installing Valhalla.
 The following steps will guide you through the whole process and should cover all necessary details.
 In order to build Valhalla on Ubuntu 18.04, you will also need to build an extra dependency called `prime_server` besides Valhalla itself. So don't be confused ;).
-### 1. Create a temporary folder
+
+## 1. Create a temporary folder
 First you should create a temporary folder, where all the magic will happen:
 ```bash
 mkdir ~/building_valhalla && cd $_
@@ -79,17 +80,17 @@ mkdir ~/building_valhalla && cd $_
 -   `mkdir ~/building_valhalla` is the command to create the folder called `building_valhalla` in our home folder `~/`.
 -   `cd $_` changes the terminal path directly to the newly created folder. `$_` is a system variable and holds the output of the last command line call. In this case the path to the newly created folder.
 
-### 2. Preparations
+## 2. Preparations
 In order to build Valhalla on Ubuntu 18.04 you will need to prepare your system with some vital packages.
 
-#### Update the system  
+### Update the system  
 First update your systems packages with:
 ```bash
 sudo apt-get update
 ```
 This will give you access to the latest available Ubuntu packages through apt-get.
 
-#### Install some basic tools
+### Install some basic tools
 Then you need to install some basic packages. Those packages should be present on a freshly installed Ubuntu 18.04 but just in case they aren't, run the command:
 ```bash
 sudo apt-get install -y git wget curl ca-certificates gnupg2
@@ -98,7 +99,7 @@ sudo apt-get install -y git wget curl ca-certificates gnupg2
 -   `wget` and `curl` are handy tools to download nearly anything from any source through the cli.  
 -   `ca-certificates` and `gnupg2` gives you the tools needed to load and verify packages from third-party sources.
 
-#### Install the C++ toolchain
+### Install the C++ toolchain
 Now you need to install the C++ toolchain. This will give us the basic tools to successfully build and install software, written in C++:
 ```bash
 sudo apt-get install -y cmake build-essential
@@ -107,7 +108,7 @@ sudo apt-get install -y cmake build-essential
 -   `g++` is the actual c++ compiler and will be needed to build Valhalla.
 -   `build-essential` holds all the packages needed to build Debian/Ubuntu packages. It serves as the basic package to build from source in Ubuntu.
 
-#### Install the remaining dependencies
+### Install the remaining dependencies
 Then install the rest of the needed dependencies for building the prime server and Valhalla:
 ```bash
 sudo apt-get install -y libsqlite3-mod-spatialite libsqlite3-dev libspatialite-dev \
@@ -130,7 +131,7 @@ sudo apt-get install -y libsqlite3-mod-spatialite libsqlite3-dev libspatialite-d
 -   `libboost-all-dev` is needed by Valhalla to deal with graph and storage related tasks.
 -   `liblua5.2-dev` is needed by the build setup to run script files written in Lua.
 
-### 3. Fix the Ubuntu 18.04 exclusive `sqlite3-mod-spatialite` bug
+## 3. Fix the Ubuntu 18.04 exclusive `sqlite3-mod-spatialite` bug
 Ubuntu 18.04 has a bug of not linking `sqlite3-mod-spatialite` to the folder where Valhalla will look for it.
 In order to let Valhalla see this extension, you need to create a symbolic link to the correct folder:
 ```bash
@@ -138,11 +139,11 @@ sudo ln -s /usr/lib/x86_64-linux-gnu/mod_spatialite.so /usr/lib/mod_spatialite
 ```
 Now Valhalla should be able to correctly resolve the `sqlite3-mod-spatialite` extensions location once it is building.
 
-### 4. Build the prime server dependency
-#### Needed dependencies
+## 4. Build the prime server dependency
+### Needed dependencies
 In order to correctly build the `prime server` make sure you have installed the `libczmq-dev` and `libzmq5` packages!
 
-#### Clone the repository
+### Clone the repository
 First clone the repository and change inside the newly created directory. Then you should checkout all submodules in order to retrieve linked subgits:
 ```bash
 git clone https://github.com/kevinkreiser/prime_server.git
@@ -150,7 +151,7 @@ cd prime_server
 git submodule update --init --recursive
 ```
 
-#### Configure the build setup
+### Configure the build setup
 After that you will stay inside the directory and just run autogen.sh and configure the build:
 
 ```bash
@@ -161,7 +162,7 @@ After that you will stay inside the directory and just run autogen.sh and config
 -   `configure` will check if the ready to compile data set is suitable for the current system and if all dependencies are fulfilled.
 -   `--prefix=/usr` and `LIBS="-lpthread"` will make sure that the prime server is installed to the user directory and that the dependency `lpthread` is correctly linked to the build files.
 
-#### Build and install the prime server
+### Build and install the prime server
 If the configure command finishes without any errors, you are ready to build the prime server. Again, you will stay inside the same directory and just call the following commands to finally build and install the `prime_server`:
 ```bash
 make all -j$(nproc)
@@ -179,10 +180,10 @@ If you want to change that for some reason, you can easily set it to a different
 The number shouldn't be higher than the maximum number of cores your cpu has.
 E.g. for a quad core processor don't go higher than `-j4`...
 
-### 5. Build and install Valhalla
+## 5. Build and install Valhalla
 If everything worked without error until this point, you're good to go to finally build Valhalla.
 
-#### Clone the repository and update the submodules
+### Clone the repository and update the submodules
 Now you need to clone the Valhalla repository from GitHub and cd into the newly created folder:
 ```bash
 git clone https://github.com/valhalla/valhalla
@@ -195,7 +196,7 @@ git submodule update --init --recursive
 ```
 This will give us the up-to-date versions of all needed and included submodules, `OSM-binary`, `OSMLR`, `date`, `dirent` and `rapidjson`.
 
-#### Optional: Install node for Valhalla node support
+### Optional: Install node for Valhalla node support
 If you want to enable the experimental node support in Valhalla you need to setup Node first:
 ```bash
 curl -o- curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
@@ -210,7 +211,7 @@ npm install --ignore-scripts --unsafe-perm=true
 -   `nvm install 10 && nvm use 10` will install node 10 and change it to the standard node version
 -   `npm install --ignore-scripts --unsafe-perm=true` will install the Valhalla Node bindings. `--unsafe-perm=true` is set to avoid problems executing as a non root user
 
-#### Build and install Valhalla
+### Finally: Build and install Valhalla
 If you reached this point without errors, you're good to go to build Valhalla. Make sure you set `DENABLE_NODE_BINDINGS` to `On` if you want Valhalla to build with Node support:
 ```bash
 mkdir build
@@ -257,11 +258,11 @@ make install
 -   `make -j$(nproc) check` runs the Valhalla tests with all available cores. **Keep a close eye to the successful run of all tests!**
 -   `make install` installs Valhalla to your system  
 
-## Next steps:
+## 6. Next steps:
 Now that Valhalla is successfully running in Ubuntu 18.04, head over to our
-Tutorial [How to configure and use Valhalla on a local Ubuntu setup](foo).
+Tutorial [How to configure and use Valhalla](foo).
 
-## Important Notes:
+## 7. Important Notes:
 The release of Ubuntu 18.04 has changed a few system side things.
 Thankfully Valhalla is a good programmed and designed piece of software and will deal with the most differences
 and will inform the user about that.
@@ -292,7 +293,7 @@ and showing you:
 ```bash
 u modifier ignored since D is the default (see U)
 ```
-This comes from the fact that `prime_server` uses a deprecated compilation flag when calling the library `libtool`. This is okay because `libtool` automatically links to the new flag and is just warning about it.
+This comes from the fact that `prime_server` uses a deprecated compilation flag when calling the library `libtool`. This is okay because `libtool` automatically links to the new flag and is just warning about it  
 
 -   Another possible warning could come from libprotobuf:
 ```
