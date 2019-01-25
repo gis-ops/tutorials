@@ -62,7 +62,7 @@ If you're new to building software, `don't try this tutorial on a setup you use 
 
 Alternatively we recommend you to directly use our [Valhalla docker tutorial](foo) or run this tutorial in a freshly installed [Ubuntu 18.04 with Virtual Box](https://linuxhint.com/install_ubuntu_18-04_virtualbox/).
 
-## After the tutorial:
+### After the tutorial:
 If you already have a running version of Valhalla and want to learn more, head over to our tutorial on [How to configure and run Valhalla](foo).
 
 ---
@@ -264,11 +264,11 @@ make install
 -   `make -j$(nproc) check` runs the Valhalla tests with all available cores. **Keep a close eye to the successful run of all tests!**
 -   `make install` installs Valhalla to your system  
 
-## Next steps:
+### Next steps:
 Now that Valhalla is successfully running in Ubuntu 18.04, head over to our
 Tutorial [How to configure and run Valhalla](foo).
 
-## Important Notes:
+### Important Notes:
 The release of Ubuntu 18.04 has changed a few system side things.
 Thankfully Valhalla is a good programmed and designed piece of software and will deal with the most differences
 and will inform the user about that.
