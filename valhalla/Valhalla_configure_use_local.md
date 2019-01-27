@@ -1,4 +1,4 @@
-# How to configure and run Valhalla on Ubuntu 18.04
+# How to configure and run Valhalla locally on Ubuntu 18.04
 ## Introduction
 
 [Valhalla](https://github.com/valhalla) is a high-performance open source routing software (MIT license) written in C++ and mainly designed to consume OpenStreetMap data.
