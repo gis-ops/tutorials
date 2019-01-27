@@ -2,7 +2,7 @@
 
 This blog is a reference guide to QGIS 3 plugin lingo and explains important concepts. It's mostly based on output of [Plugin Builder 3](https://plugins.qgis.org/plugins/pluginbuilder/), which is very useful for generating the necessary boiler plate code. However, it's hard to decipher all the hidden meanings of the code it supplies.
 
-If you miss documentation of some methods or concepts, please put an [issue](https://github.com/gis-ops/tutorials/issues) or even a [pull request](https://github.com/gis-ops/tutorials/pulls).
+If you miss documentation of some methods or concepts, please open an [issue on GitHub](https://github.com/gis-ops/tutorials/issues) or create a [pull request](https://github.com/gis-ops/tutorials/pulls) with your enhancement.
 
 > **Disclaimer**
 >
@@ -11,7 +11,7 @@ If you miss documentation of some methods or concepts, please put an [issue](htt
 
 ## Development environment
 
-QGIS generally ships with the official [Python distribution](https://www.python.org/downloads/release/python-360/), which is fairly slim with regards to included packages. Additionally, it ships multiple convenience packages, like **`requests`**, **`shapely`**, **`matploblib`**, **`SciPy`**, **`NumPy`**. Feel free to extend this list in a PR, since there doesn't seem to be an online resource. Just note here, as a Linux user you might find it very natural to have e.g. **`Pandas`** installed. However, Windows users will not have that library in their native QGIS Python distribution.
+QGIS generally ships with the official [Python distribution](https://www.python.org/downloads/release/python-360/), which is fairly slim with regards to included packages. Additionally, it ships multiple convenience packages, like **`requests`**, **`shapely`**, **`matplotlib`**, **`SciPy`** and **`NumPy`**. Feel free to extend this list in a PR, since there doesn't seem to be extensive documentation.
 
 Under Linux (and presumably Mac OS), QGIS 3 utilizes the **system Python3** executable and installs all needed libraries in its `PYTHONPATH`. Usually, it's not practical to use virtual environments for QGIS plugins. **WINDOWS** users are not so lucky: they will have to use the OSGeo4W Python executable or modify their `PYTHONPATH` to reflect QGIS native Python libraries.
 
@@ -19,7 +19,7 @@ So, for Linux/Mac users it's straight forward to use an IDE, like [Sypder](https
 
 ## Plugin system paths
 
-In these paths QGIS looks for external plugins:
+QGIS will look for external plugins in these paths :
 
 - Linux: `~/.local/share/QGIS/QGIS3/profiles/default/python/plugins`
 
@@ -29,9 +29,9 @@ In these paths QGIS looks for external plugins:
 
 ## Deploy plugin to QGIS
 
-Since you usually won't work in the native QGIS plugin path, there's a few extra steps to deploy the plugin so that QGIS sees it and you see changes you make along the development.
+Since you usually won't work in the native QGIS plugin path, there's a few extra steps to deploy the plugin so that QGIS recognizes it and you see changes you make along the development.
 
-If you altered the `resources.qrc` file, you'll need to compile the `resources.py` before:
+If you altered the `resources.qrc` file, you'll need to compile the `resources.py` before you copy the code from your project folder to the plugin path:
 
 ```bash
 pyrcc5 -o resources.py resources.qrc
@@ -39,11 +39,13 @@ pyrcc5 -o resources.py resources.qrc
 cp -arf myplugin/ ~/.local/share/QGIS/QGIS3/profiles/default/python/plugins
 ```
 
-Then, use the [Plugin Reloader](https://plugins.qgis.org/plugins/plugin_reloader/) plugin to reload your modified code on-the-fly, without restarting QGIS. **Note**, that this only works if you didn't modify any methods which are **only** loaded on QGIS startup, like the root's `__init__.py` or the main module's `__init__(self)` method.
+You might also just create a link from the plugin path to the project folder.
+
+Then, use the [Plugin Reloader](https://plugins.qgis.org/plugins/plugin_reloader/) plugin to reload your modified code on-the-fly from within QGIS, without restarting QGIS. **Note**, that this only works if you didn't modify any methods which are **only** loaded on QGIS startup, like the root's `__init__.py` or the main module's `__init__(self)` method.
 
 ## `metadata.txt`
 
-This is the main source for the plugin repository, but also the QGIS Plugin Manager, which both extract information about author, version etc from here. Generally, you can use this file to store all kinds of meta information, like a help URL or collaborators. There's not exactly a standard for this file format, but it's similar to INI configuration files in structure with `[sections]` and `key=value` pairs. A useful resource is the [Python implementation](https://docs.python.org/3/library/configparser.html#supported-ini-file-structure).
+This is the main source for the plugin repository, but also the QGIS Plugin Manager, which both extract information about author, version etc. from here. Generally, you can use this file to store all kinds of meta information, like a help URL or collaborators. There's not exactly a standard for this file format, but it's similar to INI configuration files in structure with `[sections]` and `key=value` pairs. A useful resource is the [Python implementation](https://docs.python.org/3/library/configparser.html#supported-ini-file-structure).
 
 The metadata file can be parsed in Python with the native `configparser` library. It makes sense to keep `metadata.txt` as the only entry point for meta information and, when needed in the code base, import the configuration from it (like `version`).
 
@@ -124,7 +126,7 @@ We'll go through the lines in order:
 
 - `self.iface`: arguably the most important instance. It saves a reference to the QGIS GUI interface (`qgis.gui.QgisInterface`)
 
-- `locale`: all code lines concerning locales, you can (more or less) safely ignore for now. They mostly deal with translations.
+- `locale`: all code lines concerning locales, you can (more or less) safely ignore for now. They mostly deal with translations and internationalization.
 
 - `self.actions`: a container for `QAction`s, which we'll explain a little later.
 
@@ -132,7 +134,7 @@ We'll go through the lines in order:
 
 #### `def tr(self, message)`
 
-If translation would be set up, this method would handle that. You can read a little more about it [here](https://docs.qgis.org/testing/en/docs/pyqgis_developer_cookbook/plugins.html#translation).
+If your plugin makes use of translations, this method will handle it. You can read more about it [here](https://docs.qgis.org/testing/en/docs/pyqgis_developer_cookbook/plugins.html#translation).
 
 #### `def add_action(self, ...)`
 
@@ -169,9 +171,9 @@ Really, this function could be called anything you'd like. There's no hidden mea
 
 First thing it does here: check if this is the first time the plugin is called. Remember, this function is called every time the user clicks on the plugin toolbar button/menu entry. Only if it's the first start, it'll build the GUI by instantiating the `QuickApiDialog` class (which calls its `setupUi()` in its `__init__()`) and assigning it to `dlg`. If the GUI would be freshly built every time the user calls the plugin, all previous GUI settings would be lost. `dlg` now holds all plugin GUI objects, which can be accessed by the names you gave them in Qt Designer.
 
-`dlg.show()` shows the GUI modeless (i.e. the user can interact with QGIS while the GUI is open) .
+`dlg.show()` shows the GUI modeless (i.e. the user can interact with QGIS main window while the plugin GUI is open) .
 
-`dlg.exec_()` is a shortcut method to show the GUI (yes, this is actually duplicate functionality) and returns the option the user chose (0 for pressing Cancel button, 1 for pressing OK button). The internals are little elaborate and you can read more about it [here](http://doc.qt.io/qt-5/qdialog.html#modal-dialogs). I think the reason why `show()` is implemented on top of `exec_()` is that `exec_()` will return a modal dialog (i.e. user can't interact with parent window), while `show()` makes sure it's modeless. Nevertheless, a little dirty.
+`dlg.exec_()` is a shortcut method to show the GUI (yes, this is actually duplicate functionality) and returns the option the user chose (0 for pressing Cancel button, 1 for pressing OK button). The internals are a little elaborate and you can read more about it [here](http://doc.qt.io/qt-5/qdialog.html#modal-dialogs). I think the reason why `show()` is implemented on top of `exec_()` is that `exec_()` will return a modal dialog (i.e. user can't interact with parent window), while `show()` makes sure it's modeless. Nevertheless, a little dirty.
 
 *BTW*: `exec_()` is equivalent to `exec()` and was introduced by `PyQt`, since `exec` was a reserved keyword until Python 3. `exec_()` is still best practice.
 
@@ -185,13 +187,13 @@ PyQt5 (and its C++ parent Qt) is the GUI framework QGIS relies on. Most UI relat
 
 Unfortunately, the direct code documentation of PyQt5 provided by Riverside is non-existing. However, there are a few ways to help yourself here:
 
-- you're using an IDE? Great! If you're lucky `Ctrl+Q` in PyCharm (`Ctrl+I` in Spyder) will show input and output parameters of the selected function.
+- you're using an IDE? Great! If you're lucky, `Ctrl+Q` in PyCharm (`Ctrl+I` in Spyder) will show input and output parameters of the selected function.
 
 - the main documentation is [here](http://pyqt.sourceforge.net/Docs/PyQt5/QtWidgets.html#PyQt5-QtWidgets). However, it usually only refers you to the C++ documentation of the Qt library, which PyQt5 wraps for Python. That documentation can be slightly overwhelming. You'll get through it though, just consider these few guidelines (taking `QLineEdit` as reference):
 	- in [Functions](https://doc.qt.io/qt-5/qlineedit.html#public-functions) description, the first column tells you which object type is returned. `void` does not return anything. `QString` is implemented as a simple Python `str`. The first few rows let you know how to construct an instance of the widget.
 	- the Properties are implemented as methods, not attributes, i.e. in [`QLineEdit`](https://doc.qt.io/qt-5/qlineedit.html#properties), `text` is implemented in `PyQt5` as `<some QLineEdit widget>.text()`, which will give you the current text of the widget
 	- obviously every widget inherits a plethora of functions, methods and signals of its parent widgets, which is why using the C++ documentation is only good for specific lookups
-	- Signal and Slots we'll deal with later
+	- we will deal with Signals and Slots later
 
 - to lookup properties of a specific widget, use Qt Creator's [Properties](#3-property-editor) panel
 
@@ -201,6 +203,6 @@ PyQGIS is the standard synonym for the `qgis` Python library (which will help yo
 
 - main documentation is here: https://www.qgis.org/pyqgis/master/. From QGIS v3.x on, the documentation improved A LOT! If you ever wonder how to access certain QGIS related properties or methods, either use the search box. Or drill down manually. Basically, the (commonly) 2 most important modules in PyQGIS are `gui` and `core`. The classes are ordered by broader GIS topics (Attributes, Fields and so on) and class names are very descriptive, so you should find your way easily. **Note**, that some class names are prefixed by `Qgs`, some are prefixed by `Qgis` (no, that's not confusing at all...). Occassionally, you'll find that the [C++ documentation](https://qgis.org/api/) is more descriptive than the Python one.
 
-- the main online platform is [Stack Exchange](https://gis.stackexchange.com). All the great QGIS goddesses and gods frequently visit and can help you out of your misery. Apply common sense before asking questions though, i.e. research for at least 20 mins. It really boosts your understanding if you solve problems on your own.
+- the main online platform for questions is [Stack Exchange](https://gis.stackexchange.com). All the great QGIS goddesses and gods frequently visit and can help you out of your misery. Apply common sense before asking questions though, i.e. research for at least 20 mins. It really boosts your understanding if you solve problems on your own. Also, your question might have been asked before.
 
 - For more general questions which could be interesting for the whole community, subscribe to the QGIS developer [mailing list](https://lists.osgeo.org/mailman/listinfo/qgis-developer)
