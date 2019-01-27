@@ -1,3 +1,12 @@
+### Valhalla Tutorials
+This Tutorial is part of our [Valhalla tutorial series](https://github.com/gis-ops/tutorials/tree/master/valhalla):
+
+-   [How to build and install Valhalla on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_Install_Ubuntu1804.md)
+-   [How to configure and run Valhalla locally on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_configure_use_local.md)
+-   [How to setup and run Valhalla with Docker](foo)
+
+---
+
 # How to build and install Valhalla on Ubuntu 18.04
 
 ## Introduction
@@ -63,7 +72,7 @@ If you're new to building software, `don't try this tutorial on a setup you use 
 Alternatively we recommend you to directly use our [Valhalla docker tutorial](foo) or run this tutorial in a freshly installed [Ubuntu 18.04 with Virtual Box](https://linuxhint.com/install_ubuntu_18-04_virtualbox/).
 
 ### After the tutorial:
-If you already have a running version of Valhalla and want to learn more, head over to our tutorial on [How to configure and run Valhalla](foo).
+If you already have a running version of Valhalla and want to learn more, head over to our tutorial on [How to configure and run Valhalla on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_configure_use_local.md).
 
 ---
 
@@ -263,7 +272,7 @@ make install
 
 ### Next steps:
 Now that Valhalla is successfully running in Ubuntu 18.04, head over to our
-Tutorial [How to configure and run Valhalla](foo).
+Tutorial [How to configure and run Valhalla on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_configure_use_local.md).
 
 ### Important Notes:
 The release of Ubuntu 18.04 has changed a few system side things.
