@@ -1,8 +1,8 @@
-# How to build and install Valhalla 3.0.2 on Ubuntu 18.04
+# How to build and install Valhalla on Ubuntu 18.04
 
 ## Introduction
 
-[Valhalla](https://github.com/valhalla) is a performant open source routing software (MIT license) written in C++ and mainly designed to consume OpenStreetMap data.
+[Valhalla](https://github.com/valhalla) is a high-performance open source routing software (MIT license) written in C++ and mainly designed to consume OpenStreetMap data.
 
 Through its hardware near design, Valhalla offers a wide range of scalable and stable features, e.g.:
 
@@ -75,7 +75,7 @@ In order to build Valhalla on Ubuntu 18.04, you will also need to build an extra
 First you should create a temporary folder, where all the magic will happen:
 ```bash
 mkdir ~/building_valhalla && cd $_
-```
+```  
 -   `mkdir ~/building_valhalla` is the command to create the folder called `building_valhalla` in our home folder `~/`.
 -   `cd $_` changes the terminal path directly to the newly created folder. `$_` is a system variable and holds the output of the last command line call. In this case the path to the newly created folder.
 
@@ -114,7 +114,7 @@ sudo apt-get install -y libsqlite3-mod-spatialite libsqlite3-dev libspatialite-d
                         autoconf libtool pkg-config libczmq-dev libzmq5 \
                         libcurl4-openssl-dev zlib1g-dev jq libgeos-dev \
                         libgeos++-dev libprotobuf-dev protobuf-compiler \
-                        libboost-all-dev liblua5.2-dev
+                        libboost-all-dev liblua5.2-dev spatialite-bin unzip
 
 ```
 -   `libsqlite3-mod-spatialite`, `libsqlite3-dev` and `libspatialite-dev` are needed for Valhallas spatial processes to work.
@@ -129,6 +129,8 @@ sudo apt-get install -y libsqlite3-mod-spatialite libsqlite3-dev libspatialite-d
 -   `protobuf-compiler` is the compiler for protobuf functions and works together with `libprotobuf-dev`.
 -   `libboost-all-dev` is needed by Valhalla to deal with graph and storage related tasks.
 -   `liblua5.2-dev` is needed by the build setup to run script files written in Lua.
+-   `spatialite-bin` for the spatialite support of Valhalla for building timezone and admin areas.
+-   `unzip` for unzipping files. It is used internally by Valhalla.
 
 ## 3. Fix the Ubuntu 18.04 exclusive `sqlite3-mod-spatialite` bug
 Ubuntu 18.04 has a bug of not linking `sqlite3-mod-spatialite` to the folder where Valhalla will look for it.
@@ -187,12 +189,7 @@ Now you need to clone the Valhalla repository from GitHub and cd into the newly 
 ```bash
 git clone https://github.com/valhalla/valhalla
 cd valhalla
-```
-Now we need to checkout the Valhalla version 3.0.2 by typing:
-```bash
-git checkout 3f37072
-```
-This will give us access to the commit hash leading to the Release version 3.0.2.  
+```   
 
 After that, sync and update the submodules:
 ```bash
