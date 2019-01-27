@@ -1,3 +1,12 @@
+### Valhalla Tutorials
+This Tutorial is part of our [Valhalla tutorial series](https://github.com/gis-ops/tutorials/tree/master/valhalla):
+
+-   [How to build and install Valhalla on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_Install_Ubuntu1804.md)
+-   [How to configure and run Valhalla locally on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_configure_use_local.md)
+-   [How to setup and run Valhalla with Docker](foo)
+
+---
+
 # How to configure and run Valhalla locally on Ubuntu 18.04
 ## Introduction
 
@@ -315,7 +324,7 @@ firefox isochrone/index-internal.html &
 ```  
 -   This will run `firefox` with the isochrone demo. Be sure to test it in the correct region that you build before.
 
-## Important Notes:
+### Important Notes:
 The configuration of Valhalla is tied to many different scopes and may yield some warnings or error messages that you may be concerned about. The following will try to examine some of them for you:
 -   An error resulting off the `valhalla_build_admins` tool:  
 ```bash
