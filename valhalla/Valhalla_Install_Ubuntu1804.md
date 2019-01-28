@@ -3,7 +3,7 @@ This Tutorial is part of our [Valhalla tutorial series](https://github.com/gis-o
 
 -   [How to build and install Valhalla on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_Install_Ubuntu1804.md)
 -   [How to configure and run Valhalla locally on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_configure_use_local.md)
--   [How to setup and run Valhalla with Docker](foo)
+-   [How to setup and run Valhalla on Ubuntu 18.04 in Docker](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_setup_run_docker.md)
 
 ---
 
@@ -69,7 +69,7 @@ The **prerequisites** section is **made for you** to give you an overview of wha
 ### Recommendations
 If you're new to building software, `don't try this tutorial on a setup you use for your daily work`. Every system is unique and even if you follow each step correctly in this tutorial, building software from scratch is always bonded to system sensitive tasks and can easily mess around with your live system.  
 
-Alternatively we recommend you to directly use our [Valhalla docker tutorial](foo) or run this tutorial in a freshly installed [Ubuntu 18.04 with Virtual Box](https://linuxhint.com/install_ubuntu_18-04_virtualbox/).
+Alternatively we recommend you to directly use our [How to setup and run Valhalla on Ubuntu 18.04 in Docker](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_setup_run_docker.md) or run this tutorial in a freshly installed [Ubuntu 18.04 with Virtual Box](https://linuxhint.com/install_ubuntu_18-04_virtualbox/).
 
 ### After the tutorial:
 If you already have a running version of Valhalla and want to learn more, head over to our tutorial on [How to configure and run Valhalla on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_configure_use_local.md).
@@ -270,6 +270,8 @@ make install
 -   `make -j$(nproc) check` runs the Valhalla tests with all available cores. **Keep a close eye to the successful run of all tests!**
 -   `make install` installs Valhalla to your system  
 
+---
+
 ### Next steps:
 Now that Valhalla is successfully running in Ubuntu 18.04, head over to our
 Tutorial [How to configure and run Valhalla on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_configure_use_local.md).
@@ -293,7 +295,6 @@ ERROR - uv.h not found
 ...
 ```
 You should recheck if you linked the node modules correctly in the section `Optional: Install node for Valhalla node support`.
-In Ubuntu 18.04 this is normal and due to a different way node publishes its header files to path.
 Anyway, you should **have an extra eye** on the `make check` running successfully
 and showing you:
 ```

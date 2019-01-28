@@ -3,11 +3,11 @@ This Tutorial is part of our [Valhalla tutorial series](https://github.com/gis-o
 
 -   [How to build and install Valhalla on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_Install_Ubuntu1804.md)
 -   [How to configure and run Valhalla locally on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_configure_use_local.md)
--   [How to setup and run Valhalla with Docker](foo)
+-   [How to setup and run Valhalla on Ubuntu 18.04 in Docker](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_setup_run_docker.md)
 
 ---
 
-# How to setup and run Valhalla with Docker
+# How to setup and run Valhalla on Ubuntu 18.04 in Docker
 
 ## Introduction
 
@@ -294,6 +294,8 @@ firefox routing/index-internal.html &
 firefox isochrone/index-internal.html &
 ```  
 -   This will run `firefox` with the isochrone demo. Be sure to test it in the correct region that you build before.
+
+---
 
 ### Important Notes:
 The configuration of Valhalla is tied to many different scopes and may yield some warnings or error messages that you may be concerned about. The following will try to examine some of them for you:   
