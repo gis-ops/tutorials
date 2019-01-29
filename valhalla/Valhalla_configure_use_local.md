@@ -324,7 +324,7 @@ The response of your Valhalla server should return something like the following 
   }
 }
 ```  
-If you get a `response` looking like this:
+In case you get a `response` looking like this:
 ```json
 {
 "error_code": 171,
@@ -333,6 +333,9 @@ If you get a `response` looking like this:
 "status": "Bad Request"
 }
 ```
+It is most possible that you didn't change the coordinates for the `curl request` to ones that are inside your chosen OSM extract. Consider adjusting them and running the `curl command` again.
+
+
 ## 7. Valhalla examples
 Now that Valhalla is running successfully we can download and play around with the demo files, provided by Valhalla:
 
