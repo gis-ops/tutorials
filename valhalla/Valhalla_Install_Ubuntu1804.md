@@ -76,16 +76,16 @@ If you have read to this line I assume you're interested in building and install
 The following steps will guide you through the whole process and should cover all necessary details.
 In order to build Valhalla on Ubuntu 18.04, you will also need to build an extra dependency called `prime_server` besides Valhalla itself. So don't be confused ;).
 
-## 1. Create a temporary folder
+## 1. Preparations
+In order to build Valhalla on Ubuntu 18.04 you will need to prepare your system with some vital packages:
+
+### Create a temporary folder
 First you should create a temporary folder, where all the magic will happen:
 ```bash
 mkdir ~/building_valhalla && cd $_
 ```  
 -   `mkdir ~/building_valhalla` is the command to create the folder called `building_valhalla` in our home folder `~/`.
 -   `cd $_` changes the terminal path directly to the newly created folder. `$_` is a system variable and holds the output of the last command line call. In this case the path to the newly created folder.
-
-## 2. Preparations
-In order to build Valhalla on Ubuntu 18.04 you will need to prepare your system with some vital packages:
 
 ### Update the system  
 First update your systems packages with:
@@ -143,7 +143,7 @@ sudo apt-get install -y libsqlite3-mod-spatialite libsqlite3-dev libspatialite-d
 -   `spatialite-bin` for the spatialite support of Valhalla for building timezone and admin areas.
 -   `unzip` for unzipping files. It is used internally by Valhalla.
 
-## 3. Fix the Ubuntu 18.04 exclusive `sqlite3-mod-spatialite` bug
+## 2. Fix the Ubuntu 18.04 exclusive `sqlite3-mod-spatialite` bug
 Ubuntu 18.04 has a bug of not linking `sqlite3-mod-spatialite` to the folder where Valhalla will look for it.
 In order to let Valhalla see this extension, you need to create a symbolic link to the correct folder:
 
@@ -153,7 +153,7 @@ sudo ln -s /usr/lib/x86_64-linux-gnu/mod_spatialite.so /usr/lib/mod_spatialite
 
 Now Valhalla should be able to correctly resolve the `sqlite3-mod-spatialite` extensions location once it is building.
 
-## 4. Build the `prime_server` dependency
+## 3. Build the `prime_server` dependency
 ### Needed dependencies
 In order to correctly build the `prime_server` make sure you have installed the `libczmq-dev` and `libzmq5` packages!
 
@@ -196,7 +196,7 @@ If you want to change that for some reason, you can easily set it to a different
 The number shouldn't be higher than the maximum number of cores your CPU has.
 E.g. for a quad core processor don't go higher than `-j4`...
 
-## 5. Build and install Valhalla
+## 4. Build and install Valhalla
 If everything worked without error until this point, you're good to go to finally build Valhalla.
 
 ### Clone the repository and update the submodules
@@ -285,10 +285,10 @@ make install
 
 ---
 
-## Next steps:
+# Next steps:
 Now that Valhalla is successfully running in Ubuntu 18.04, head over to our Tutorial [*How to configure and run Valhalla on Ubuntu 18.04*](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_configure_use_local.md).
 
-## Troubleshooting
+# Troubleshooting
 The release of Ubuntu 18.04 has changed a few system side things. Thankfully Valhalla is a well programmed and designed piece of software and will deal with the most differences and will keep the user informed.
 
 Here is a list of possible warnings and information that you may encounter:

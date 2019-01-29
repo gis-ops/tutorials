@@ -77,7 +77,10 @@ The **prerequisites** section is **made for you** to give you an overview of wha
 This tutorial will guide you through the process of how to configure and run Valhalla inside of Docker on an Ubuntu OS. You can follow this tutorial (please read our `Disclaimer`) analogous on any Linux distribution with a running docker environment.  
 So let's go, `open your terminal!`
 
-## 1. Test your docker installation
+## 1. Preparations
+
+### Test your docker installation
+
 Depending on your local user rights, test whether you need to run `docker` commands as `sudo` or not by typing:
 ```bash
 docker run hello-world
@@ -116,7 +119,7 @@ command not found: ...
 ```
 You should `install docker first`. For a good tutorial have a look at the [How To Install and Use Docker on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04) and change the tutorial to the desired Ubuntu version.
 
-## 2. Create a temporary folder
+### Create a temporary folder
 First you should create a temporary folder in your home folder to clone the needed docker files to:
 ```bash
 mkdir ~/gisops_docker && cd $_
@@ -125,7 +128,7 @@ mkdir ~/gisops_docker && cd $_
 -   `mkdir ~/gisops_docker` creates our workdir folder in your home folder `~/`.
 -   `cd $_` changes the terminal path directly to the newly created folder. `$_` is a system variable and holds the output of the last command line call. In this case the path to the newly created folder.   
 
-## 3. Clone the docker files
+### Clone the docker files
 Now we're going to clone the `GIS • OPS docker files` to the temporary folder:
 ```bash
 git clone https://github.com/gis-ops/docker.git ~/gisops_docker
@@ -133,7 +136,7 @@ cd ~/gisops_docker/Ubuntu/18.04/Valhalla
 ```
 -   `cd` will change the directory in the correct folder for Valhalla.
 
-## 4. Run docker-compose
+## 2. Run docker-compose
 Now let `docker-compose` build Valhalla by typing:
 ```bash
  docker-compose up -d
@@ -145,7 +148,7 @@ Now let `docker-compose` build Valhalla by typing:
 The `build time` can be `more than 15 minutes`, depending on your hardware. To decrease the build time, be aware that `the build process will use all of your available cores`, so don't do anything CPU consuming while building Valhalla. Watching a movie should be fine though ;)...  
 For error messages or warnings see the `Important Notes` section at the end of the tutorial.
 
-## 6. Run and test Valhalla
+## 3. Run and test Valhalla
 After Valhalla has build and started, it should be directly ready to be used. Let's try.
 First we're going to verify that Valhalla is running by typing:
 ```bash
@@ -275,7 +278,7 @@ In case you get a `response` looking like this:
 ```
 You should change the coordinates to ones that are inside your chosen OSM extract.   
 
-## 7. Valhalla examples
+## 4. Valhalla examples
 Now that Valhalla is running successfully we can download and play around with the demo files, provided by Valhalla:
 ```bash
 git clone --depth=1 --recurse-submodules --single-branch --branch=gh-pages https://github.com/valhalla/demos.git ~/valhalla_demos
@@ -297,7 +300,7 @@ firefox isochrone/index-internal.html &
 
 ---
 
-### Important Notes:
+# Important Notes:
 The configuration of Valhalla is tied to many different scopes and may yield some warnings or error messages that you may be concerned about. The following will try to examine some of them for you:   
 
 -   An error resulting off the `valhalla_build_admins` tool:  

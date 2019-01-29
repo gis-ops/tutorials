@@ -75,7 +75,9 @@ The **prerequisites** section is **made for you** to give you an overview of wha
 This tutorial will guide you through the process of how to configure and run Valhalla. This tutorial is the direct successor of the tutorial on [How to build and install Valhalla on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_Install_Ubuntu1804.md). You can follow this tutorial analogous on any Ubuntu 18.04 in a docker or another Virtual Environment with a built and installed version of Valhalla.  
 So let's go, `open your terminal!`
 
-## 1. Test your Valhalla installation
+## 1. Preparations
+
+### Test your Valhalla installation
 First you should test your local Valhalla installation by typing the following `commands` into your terminal:
 
 ```bash
@@ -92,8 +94,8 @@ valhalla_service
 
 If this is the case, Valhalla seems to be installed. So you can continue.
 
-## 2. Create the needed folders
-First you will need to create a few folders in your home folder where you are going to store all the files needed to configure and run Valhalla:
+### Create the needed folders
+Then you will need to create a few folders in your home folder where you are going to store all the files needed to configure and run Valhalla:
 
 ```bash
 mkdir ~/valhalla && cd $_
@@ -106,8 +108,6 @@ mkdir valhalla_tiles && mkdir conf
 -   `valhalla_tiles` will hold your processed Valhalla files.
 -   `conf` will hold your Valhalla config file.
 
-## 3. Preparations
-You need some basic tools for the following steps.
 
 ### Update the system  
 First update your systems packages with:
@@ -145,7 +145,7 @@ curl -O https://download.geofabrik.de/europe/albania-latest.osm.pbf
 
 -   This will download the `albania-latest.osm.pbf` to the current folder.  
 
-## 4. Prepare the config files
+## 2. Prepare the config files
 ### Build your config file
 The config file is the core part of the Valhalla setup and will hold all necessary file paths, so Valhalla knows where to look for and where to store data. Be sure to follow the instructions strictly:
 
@@ -181,7 +181,7 @@ This step is optional. The time zone areas are used by Valhalla to calculate dep
 
 -   This command will execute the designated script from the downloaded script files. It is important that you run `valhalla_build_timezones` in the `script` folder!
 
-## 5. Build your tiles
+## 3. Build your tiles
 ```bash
 cd ~/valhalla
 valhalla_build_tiles -c conf/valhalla.json albania-latest.osm.pbf
@@ -200,7 +200,7 @@ find valhalla_tiles | sort -n | tar -cf "valhalla_tiles.tar" --no-recursion -T -
 -   `--no-recursion` prevents the `tar` command to scan sub directories.
 -   `-T -` will use the content of the `valhalla_tiles` folder and store it in the current directory.
 
-## 6. Run and test Valhalla
+## 4. Run and test Valhalla
 ### Run Valhalla
 Now we're ready to run Valhalla:
 
@@ -333,10 +333,10 @@ In case you get a `response` looking like this:
 "status": "Bad Request"
 }
 ```
-It is most possible that you didn't change the coordinates for the `curl request` to ones that are inside your chosen OSM extract. Consider adjusting them and running the `curl command` again.
+It is most likely that you didn't change the coordinates for the `curl request` to ones that are inside your chosen OSM extract. Consider adjusting them and running the `curl command` again.
 
 
-## 7. Valhalla examples
+## 5. Valhalla examples
 Now that Valhalla is running successfully we can download and play around with the demo files, provided by Valhalla:
 
 ```bash
@@ -362,7 +362,7 @@ firefox isochrone/index-internal.html &
 
 ---
 
-## Troubleshooting
+# Troubleshooting
 The configuration of Valhalla is tied to many different scopes and may yield some warnings or error messages that you may be concerned about. The following will try to examine some of them for you:
 -   An error resulting from the `valhalla_build_admins` tool:  
 ```
