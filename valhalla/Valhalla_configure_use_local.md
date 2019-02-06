@@ -120,21 +120,26 @@ This will give you access to the latest available Ubuntu packages through apt-ge
 
 ### Install the needed packages
 ```bash
-sudo apt-get install -y svn curl jq
+sudo apt-get install -y curl jq unzip spatial-bin
 ```
 
--   `svn` will install the `svn` package that will be needed to download files from GitHub.
--   `curl` is a handy tool to download nearly anything from any source through the cli
+-   `curl` is a handy tool to download nearly anything from any source through the cli.
 -   `jq` is a cli tool to deal with JSON structures.
+-   `unzip` for unzipping files. It is used internally by Valhalla.
+-   `spatialite-bin` for the spatialite support of Valhalla for building timezone and admin areas.
 
 ### Download the script files
-Stay in the same folder and run the following command to download and prepare the needed scripts:
+Stay in the same folder and run the following commands to download and prepare the needed scripts:
 
 ```bash
-svn export https://github.com/valhalla/valhalla/trunk/scripts ~/valhalla/scripts
+git clone https://github.com/valhalla/valhalla.git ~/valhalla_git/
+cp -R ~/valhalla_git/scripts/ ~/valhalla/scripts
+rm -rf ~/valhalla_git
 ```
 
--   `svn` is a `subversion` tool and is used to download the needed directory from GitHub.  
+-   `git clone` will give you access to the latest Valhalla code.
+-   `rp -R` will recursively copy the needed scripts to our script folder.
+-   `rm -rf` will recursively delete the valhalla_git. It's not needed anymore.  
 
 ### Download the desired OSM extract
 In order to build tiles for Valhalla you need an OSM extract. You can download your desired region from [Geofabrik](https://download.geofabrik.de). Just copy the `*.osm.pbf` link to the extract of your choice. To keep things small we will stick to a small extract in the following example:
@@ -334,31 +339,6 @@ In case you get a `response` looking like this:
 }
 ```
 It is most likely that you didn't change the coordinates for the `curl request` to ones that are inside your chosen OSM extract. Consider adjusting them and running the `curl command` again.
-
-
-## 5. Valhalla examples
-Now that Valhalla is running successfully we can download and play around with the demo files, provided by Valhalla:
-
-```bash
-git clone --depth=1 --recurse-submodules --single-branch --branch=gh-pages https://github.com/valhalla/demos.git ~/valhalla_demos
-cd ~/valhalla_demos
-```  
-
--   This will download the demo files from Valhalla to our local folder `~/valhalla_demos` and change into it.
-
-#### Demo: Route
-```bash
-firefox routing/index-internal.html &
-```  
-
--   This will run `firefox` with the routing demo. Be sure to test it in the correct region that you build before.
-
-#### Demo: Isochrone
-```bash
-firefox isochrone/index-internal.html &
-```  
-
--   This will run `firefox` with the isochrone demo. Be sure to test it in the correct region that you build before.
 
 ---
 
