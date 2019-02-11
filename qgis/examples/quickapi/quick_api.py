@@ -21,27 +21,19 @@
  *                                                                         *
  ***************************************************************************/
 """
-import requests
+import os.path
 
-from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
+import requests
+from PyQt5.QtCore import QCoreApplication, QSettings, QTranslator, qVersion
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QMessageBox
-
-# Initialize Qt resources from file resources.py
-from .resources import *
-
-from qgis.core import (QgsCoordinateReferenceSystem,
-                       QgsCoordinateTransform,
-                       QgsProject,
-                       QgsRectangle,
-                       QgsPointXY,
-                       QgsGeometry,
-                       QgsVectorLayer,
-                       QgsFeature)
+from qgis.core import (QgsCoordinateReferenceSystem, QgsCoordinateTransform,
+                       QgsFeature, QgsGeometry, QgsPointXY, QgsProject,
+                       QgsRectangle, QgsVectorLayer)
 
 # Import the code for the dialog
 from .quick_api_dialog import QuickApiDialog
-import os.path
+from .resources import *
 
 
 class QuickApi:
@@ -97,7 +89,6 @@ class QuickApi:
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('QuickApi', message)
 
-
     def add_action(
         self,
         icon_path,
@@ -108,7 +99,8 @@ class QuickApi:
         add_to_toolbar=True,
         status_tip=None,
         whats_this=None,
-        parent=None):
+        parent=None
+    ):
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -194,13 +186,12 @@ class QuickApi:
                 action)
             self.iface.removeToolBarIcon(action)
 
-
     def run(self):
         """Run method that performs all the real work"""
 
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
-        if self.first_start == True:
+        if self.first_start is True:
             self.first_start = False
             self.dlg = QuickApiDialog()
             # Display WGS84 as default
@@ -255,7 +246,7 @@ class QuickApi:
                     QMessageBox.critical(self.iface.mainWindow(),
                                          "Quick API error",
                                          "The request was not processed succesfully!\n\n"
-                                         "Message:\n" 
+                                         "Message:\n"
                                          "{}".format(response.json()))
                     return
 
@@ -306,6 +297,6 @@ class QuickApi:
                                      "Quick API error",
                                      "The request was not processed succesfully!\n\n"
                                      "HTTP status code: {}"
-                                     "Message:\n" 
+                                     "Message:\n"
                                      "{}".format(response.status_code, response.json()),)
                 return
