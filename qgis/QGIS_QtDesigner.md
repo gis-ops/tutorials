@@ -4,6 +4,12 @@ Qt Designer is an easy-to-use program to build UI's for Qt frameworks. Luckily, 
 
 It's the easiest way to create and alter UI files for QGIS plugins.
 
+**Basic vocabulary**
+
+-   `UI` means `user interface`
+-   `OS` means `operating system`
+-   `GUI` means `graphical user interface`
+
 ## Short roundup of Qt Designer
 
 In the startup dialog, create a new *Dialog with Buttons Bottom* dialog, which will give you a bare-bone UI. For easier navigation, here's a quick breakdown of the Qt Designer interface:
@@ -42,7 +48,7 @@ Quick access to different layouts for container widgets, see its importance righ
 
 ## Qt resources.qrc
 
-Qt has the concept of an in-app resource store, which is defined in `resources.qrc` files on a plugin level. That file has a XML structure and is used to register binary files with Qt in-app, like PNG files. Making use of this internal resource store is of advantage to:
+Qt has the concept of an in-app resource store, which is defined in `resources.qrc` files on a plugin level. That file has a XML structure and is used to register binary files, like PNG images, with Qt in-app. Making use of this internal resource store is of advantage to:
 
 - use images directly in Qt Designer
 - omit path builders in Python to locate those files

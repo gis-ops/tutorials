@@ -65,7 +65,7 @@ The Plugin Builder will have generated a lot of (well-intended) files now. Head 
    └──resources.qrc
 ```
 
-A more thorough explanation of the generated files and methods is [here](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_PluginBasics.md#detailed-module-and-method-description).
+A more thorough explanation of the generated files and methods is available [here](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_PluginBasics.md#detailed-module-and-method-description).
 
 ### Compile `resources.qrc`
 
@@ -256,7 +256,7 @@ if crs_input.authid() != 'EPSG:4326':
 
 ### 3. Request Nominatim API
 
-Nominatim expects a GET request, which means parameters are encoded in the URL string, e.g. https://nominatim.openstreetmap.org/reverse?lat=52.098&lon=8.43&format=json. It's best practice to pass a base URL and the parameters separately, not in one huge URL string. Additionally, Nominatim's [usage policy](https://operations.osmfoundation.org/policies/nominatim/) dictates to include a descriptive `User-Agent` in the request header to identify applications.
+Nominatim expects a GET request, which means parameters are encoded in the URL string, e.g. [https://nominatim.openstreetmap.org/reverse?lat=52.098&lon=8.43&format=json](https://nominatim.openstreetmap.org/reverse?lat=52.098&lon=8.43&format=json). It's best practice to pass a base URL and the parameters separately, not in one huge URL string. Additionally, Nominatim's [usage policy](https://operations.osmfoundation.org/policies/nominatim/) dictates to include a descriptive `User-Agent` in the request header to identify applications.
 
 The full parameter list for Nominatim's reverse endpoint can be found [here](https://wiki.openstreetmap.org/wiki/Nominatim#Reverse_Geocoding). We'll just specify coordinate fields and the format.
 

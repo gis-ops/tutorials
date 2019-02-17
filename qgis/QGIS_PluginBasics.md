@@ -9,6 +9,11 @@ If you miss documentation of some methods or concepts, please open an [issue on 
 > Validity only confirmed for **Ubuntu 18.04** and **QGIS v3.4**
 > Occassionally, the author might choose to give hints on Windows-specific setups. `Ctrl+F` for WINDOWS flags. Mac OS users should find the instructions reasonably familiar.
 
+**Basic vocabulary**
+-   `IDE` means `integrated developer environment`
+-   `UI` means `user interface`
+-   `GUI` means `graphical user interface`
+
 ## Development environment
 
 QGIS generally ships with the official [Python distribution](https://www.python.org/downloads/release/python-360/), which is fairly slim with regards to included packages. Additionally, it ships multiple convenience packages, like **`requests`**, **`shapely`**, **`matplotlib`**, **`SciPy`** and **`NumPy`**. Feel free to extend this list in a PR, since there doesn't seem to be extensive documentation.
@@ -45,11 +50,11 @@ Then, use the [Plugin Reloader](https://plugins.qgis.org/plugins/plugin_reloader
 
 ## `metadata.txt`
 
-This is the main source for the plugin repository, but also the QGIS Plugin Manager, which both extract information about author, version etc. from here. Generally, you can use this file to store all kinds of meta information, like a help URL or collaborators. There's not exactly a standard for this file format, but it's similar to INI configuration files in structure with `[sections]` and `key=value` pairs. A useful resource is the [Python implementation](https://docs.python.org/3/library/configparser.html#supported-ini-file-structure).
+This is the main source for the plugin repository, but also the QGIS Plugin Manager, which both extract information about author, version etc from here. Generally, you can use this file to store all kinds of meta information, like a help URL or collaborators. There's not exactly a standard for this file format, but its structure is similar to that of an INI configuration file in terms of `[sections]` and `key=value` pairs. A useful resource is the [Python implementation](https://docs.python.org/3/library/configparser.html#supported-ini-file-structure).
 
 The metadata file can be parsed in Python with the native `configparser` library. It makes sense to keep `metadata.txt` as the only entry point for meta information and, when needed in the code base, import the configuration from it (like `version`).
 
-Multiline statements (like changelog) must be indented after the first line. Paths are set relatively, e.g. `gui/img/icon.png` if it lives in `<plugin_root>/gui/img`.
+Multiline statements (like in changelogs) must be indented after the first line. Paths are set relatively, e.g. `gui/img/icon.png` if it lives in `<plugin_root>/gui/img`.
 
 ## Detailed module and method description
 
@@ -114,11 +119,11 @@ self.setupUi(self)
 
 ### `my_plugin.py`
 
-This is a bigger beast and you'll spend most time here. It looks scary at first, but trust us, there's a lot of unnecessary boiler plate code here (at least for your current purposes). Instead of stripping it down to the most essential parts, we'll explain all methods. But you will only work with the most important ones. [**required**] methods are implicitly expected and called by the main QGIS application, so don't alter their name or input parameters!
+This is a bigger beast and you'll spend most time here. It looks scary at first, but trust us, there's a lot of unnecessary boiler plate code here (at least for your current purposes). Instead of stripping it down to the most essential parts, we'll explain all methods. But you will only work with the most important ones. \[**required**\] methods are implicitly expected and called by the main QGIS application, so don't alter their name or input parameters!
 
 It only contains a single class `MyPlugin`. This class will be instantiated by the plugin's `__init__.py`'s `classFactory` class, which in turn is called by QGIS on startup to make your plugin known to QGIS. So, really, this is the heart of the plugin.
 
-#### `def __init__(self, iface)` [**required**]
+#### `def __init__(self, iface)` \[**required**\]
 
 The `MyPlugin` class is passed the `iface` parameter, which is a `QgisInterface` and lets you interact with the QGIS GUI.
 
@@ -145,7 +150,7 @@ It's creating a `QAction` object, which can be used to instruct QGIS to add icon
 - set help texts if specified (`setStatusTip`, `setWhatsThis`)
 - add a callback to the action, which is executed when either the icon or the menu item are clicked (`action.triggered.connect(callback)`)
 
-#### `def initGui(self)` [**required**]
+#### `def initGui(self)` \[**required**\]
 
 This method is called by QGIS when the main GUI starts up or when the plugin is enabled in the Plugin Manager.
 
@@ -157,7 +162,7 @@ Also note the icon path: `':/plugins/my_plugin/icon.png'`. The colon instructs Q
 
 Also, we state here that the plugin is started for the first time during the lifetime of a running QGIS session.
 
-#### `def unload(self)` [**required**]
+#### `def unload(self)` \[**required**\]
 
 Will be executed when the plugin is disabled. Either in the Plugin Manager or when QGIS shuts down.
 
@@ -201,7 +206,7 @@ Unfortunately, the direct code documentation of PyQt5 provided by Riverside is n
 
 PyQGIS is the standard synonym for the `qgis` Python library (which will help you a lot when googling solutions). For Linux users (with IDE's), documentation is fairly straight forward, as they benefit from auto-completion and inline documentation. **WINDOWS** users who did not manually change their Python executable to QGIS' one (or include the appropriate directories in their PYTHONPATH), won't be as lucky.
 
-- main documentation is here: https://www.qgis.org/pyqgis/master/. From QGIS v3.x on, the documentation improved A LOT! If you ever wonder how to access certain QGIS related properties or methods, either use the search box. Or drill down manually. Basically, the (commonly) 2 most important modules in PyQGIS are `gui` and `core`. The classes are ordered by broader GIS topics (Attributes, Fields and so on) and class names are very descriptive, so you should find your way easily. **Note**, that some class names are prefixed by `Qgs`, some are prefixed by `Qgis` (no, that's not confusing at all...). Occassionally, you'll find that the [C++ documentation](https://qgis.org/api/) is more descriptive than the Python one.
+- main documentation is here: [https://www.qgis.org/pyqgis/master/](https://www.qgis.org/pyqgis/master/). From QGIS v3.x on, the documentation improved A LOT! If you ever wonder how to access certain QGIS related properties or methods, either use the search box. Or drill down manually. Basically, the (commonly) 2 most important modules in PyQGIS are `gui` and `core`. The classes are ordered by broader GIS topics (Attributes, Fields and so on) and class names are very descriptive, so you should find your way easily. **Note**, that some class names are prefixed by `Qgs`, some are prefixed by `Qgis` (no, that's not confusing at all...). Occassionally, you'll find that the [C++ documentation](https://qgis.org/api/) is more descriptive than the Python one.
 
 - the main online platform for questions is [Stack Exchange](https://gis.stackexchange.com). All the great QGIS goddesses and gods frequently visit and can help you out of your misery. Apply common sense before asking questions though, i.e. research for at least 20 mins. It really boosts your understanding if you solve problems on your own. Also, your question might have been asked before.
 
