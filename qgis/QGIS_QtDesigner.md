@@ -1,22 +1,22 @@
 # QGIS - Qt Designer for Plugins
 
-Qt Designer is an easy-to-use program to build UI's for Qt frameworks. Luckily, QGIS ships the program with its core on all OS's and should be available as an executable on your computer.
+Qt Designer is an easy-to-use program to build UI's for Qt frameworks. Luckily, QGIS ships the program with its core on all operating systems and should be available as an executable on your computer.
 
 It's the easiest way to create and alter UI files for QGIS plugins.
 
 ## Short roundup of Qt Designer
 
-In the startup dialog, open create a new *Dialog with Buttons Bottom* dialog, which will give you a bare-bone UI. For easier navigation, here's a quick breakdown of the Qt Designer interface:
+In the startup dialog, create a new *Dialog with Buttons Bottom* dialog, which will give you a bare-bone UI. For easier navigation, here's a quick breakdown of the Qt Designer interface:
 
 ![Qt Designer Interface](https://github.com/gis-ops/tutorials/raw/master/qgis/static/img/qt_designer_img1.png)
 
 ### 1 Available widgets
 
-In Qt lingo all GUI elements are classified as `Widgets`, which can have all kinds of actual UI functionality like buttons, containers or user input elements. Drag a few widgets into your dialog and experiment a bit. There's also several custom QGIS widgets at the very bottom, which extend functionality of Qt widgets (like CRS picker).
+In Qt, all GUI elements are classified as `Widgets`, which can have all kinds of actual UI functionality like buttons, containers or user input elements. Drag a few widgets into your dialog and experiment a bit. There's also several custom QGIS widgets at the very bottom, which extend functionality of Qt widgets (like CRS picker).
 
 ### 2 Object inspector
 
-You can click on widgets in your dialog to select them. But sometimes it's good to see the hierarchy of widgets or select it from a list, e.g. when they're overlapping each other in the dialog.
+You can click on widgets in your dialog to select them. But sometimes it's good to see the hierarchy of widgets or select it from a list, e.g. when they are overlapping each other in the dialog.
 
 ### 3 Property Editor
 
@@ -36,7 +36,7 @@ Quick access to different layouts for container widgets, see its importance righ
 
 - **Every container widget needs a layout!**. Layouts help in... well, layouting (to keep consistent element spacing when resizing etc.). Try out different layout types and add a few widgets to see the behavior.
 
-- **Every widget needs a unique name property defined in `QObject.objectName`!** It'll auto-name your widgets and while it's not required it's highly recommended to use structured naming for widgets. It'll help a lot when you access them in the code later on, which becomes a lot more important with a multitude of widgets.
+- **Every widget needs a unique name property defined in `QObject.objectName`!** It will auto-name your widgets and while it's not required it's highly recommended to use structured naming for widgets. It will help a lot when you access them in the code later on, which becomes more important with a multitude of widgets.
 
 - **Size policies are important!** When building bigger GUIs it will be increasingly important to define how widgets behave visually within their layout. When the user changes the window size, it can be disorienting if a button scales with the resizing. Size policies define the widget's size behavior within the layout.
 
@@ -47,7 +47,7 @@ Qt has the concept of an in-app resource store, which is defined in `resources.q
 - use images directly in Qt Designer
 - omit path builders in Python to locate those files
 
-The `resources.qrc` file has to be compiled to a Python file, e.g. `resources.py` by `pyrcc5 -o resources.py resources.qrc`. The compiling will encode all binary files found in `resources.qrc` and include them as binary strings in `resources.py`. When you import the Python file in the main Python module of a QGIS plugin, all specified files will be registered in QGIS and accessible in your Python code via their shorthand URI `':<prefix>/<file_path>'`.
+The `resources.qrc` file has to be compiled to a Python file, e.g. `resources.py` by running `pyrcc5 -o resources.py resources.qrc`. The compilation will encode all binary files found in `resources.qrc` and include them as binary strings in `resources.py`. When you import the Python file in the main Python module of a QGIS plugin, all specified files will be registered in QGIS and accessible in your Python code via their shorthand URI `':<prefix>/<file_path>'`.
 
 ### Structure
 
@@ -71,7 +71,7 @@ Alternatively you can add more files via Qt Designer (*View* ► *Resource Brows
 
 #### In Python
 
-When you compiled the resource file to `resources.py`, just import the module in the main module of your plugin, e.g. `from resources import *`. That will magically register all resources with QGIS and your plugin, even though no object are directly called.
+When you compiled the resource file to `resources.py`, just import the module in the main module of your plugin, e.g. `from resources import *`. That will magically register all resources with QGIS and your plugin, even though no objects are directly called.
 
 Then you can access the registered files with `':<prefix>/<file_path>'`, e.g. `icon_path = ':/plugins/quick_api/icon.png'`. That works plugin-wide, without re-importing `resources` anywhere else.
 
