@@ -1,8 +1,18 @@
+### QGIS Tutorials
+
+This tutorial is part of our QGIS tutorial series:
+
+- [QGIS 3 - Plugin 101](https://gis-ops.com/qgis-3-plugin-development-reference-guide/)
+- [QGIS 3 - Qt Designer for Plugins](https://gis-ops.com/qgis-3-qt-designer-explained/)
+- [QGIS 3 - Build your first plugin](https://gis-ops.com/qgis-simple-plugin/)
+
+---
+
 # QGIS 3 - Build your first plugin
 
 This tutorial follows you through the development process of a simple QGIS 3 Python plugin using the amazing [Plugin Builder 3](http://g-sherman.github.io/Qgis-Plugin-Builder/).
 
-The final plugin can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quickapi)
+The final plugin can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quickapi).
 
 **Goals**:
 
@@ -369,6 +379,8 @@ First, construct `QgsPointXY`s from the extent of `boundingbox` and add those to
 ## Final plugin
 
 When you've gone through all the steps above and your plugin works as expected, it's time to prepare for (a hypothetical) upload to the QGIS plugin repository.
+
+The final plugin can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quickapi). Feel free to clone it and compare.
 
 **NOTE: do not upload this plugin to the QGIS repository!!**
 
