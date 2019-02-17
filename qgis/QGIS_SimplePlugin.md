@@ -88,7 +88,7 @@ At this point you can already test if QGIS loads your new (very unfunctional) pl
 First, you should create the directory where your plugin will be picked up on QGIS startup and copy all files there:
 
 ```bash
-cp -arf ../quickapi $HOME/.local/share/QGIS/QGIS3/profiles/default/python/plugins/
+cp -arf ../quick_api $HOME/.local/share/QGIS/QGIS3/profiles/default/python/plugins/
 ```
 
 Run this command whenever you change something in your development project.
