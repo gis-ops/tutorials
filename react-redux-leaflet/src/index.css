@@ -1,0 +1,8 @@
+@import "~semantic-ui-css/semantic.css";
+@import "~leaflet/dist/leaflet.css";
+@import "~tachyons/css/tachyons.css";
+
+body {
+  margin: 0;
+  padding: 0;
+}

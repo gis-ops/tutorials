@@ -1,4 +1,4 @@
-# Building a React/Redux Leaflet Web(M)app from scratch
+# Building a React/Redux/Leaflet Web(M)app from scratch
 
 ![HERE Isoline Routing in New York City](https://user-images.githubusercontent.com/10322094/53057065-97a60980-34a5-11e9-8845-bd86e12c2320.png "HERE Isoline Routing in New York City")
 
@@ -20,12 +20,12 @@ To follow this tutorial, you will need the following:
 
 - Knowledge of JavaScript; in particular we will generally be using [ES2016](http://es6-features.org/#Constants).
 - A basic understanding of Single-Page-Applications, ReactJS, JSX, Redux and Leaflet. We recommend the following [basic tutorial](https://redux.js.org/introduction/getting-started) which will give you a decent introduction why and how to combine react with redux.
-- A shell environment with preinstalled [Node.js](https://nodejs.org/en/download/) giving you the ability to use its package manager `npm`.
+- A shell environment with preinstalled [Node.js](https://nodejs.org/en/download/) giving you the ability to use its package manager `npm` and `npx`.
 - A simple text editor such as [Sublime Text](https://www.sublimetext.com/).
 
 ## Step 1 - Set up your app folder structure
 
-Open your shell and create your working directory which will be used throughout this tutorial.
+Open your shell and create your working directory in your home folder (or wherever) which will be used throughout this tutorial.
 
 ```sh
 mkdir ~/react-redux-leaflet && cd $_
@@ -668,6 +668,7 @@ When an address is selected by the user, we obviously want to update our isochro
 Please find more comprehensive details inline. 
 
 ```javascript
+...
 
 // use these or add your own credentials
 const hereAppCode = '0XXQyxbiCjVU7jN2URXuhg'
@@ -752,6 +753,7 @@ export const updateCenter = payload => ({
    ...payload
 })
 
+...
 ```
 
 The actions are now in place which subsequently have to be reduced. 
@@ -760,6 +762,7 @@ To this end, please open your `index.js` in the reducer folder and import these 
 ### reducers/index.js
 
 ```javascript
+...
 
 import {
   UPDATE_TEXTINPUT,
@@ -768,12 +771,14 @@ import {
   UPDATE_CENTER
 } from '../actions/actions' 
 
+...
 ```
 
 And please add the the following cases to our switch clause in order for the reducer to know what to reduce for which action:
 
 
 ```javascript
+...
 
 // when a user inputs text we update the userInput :) easy!
 case UPDATE_TEXTINPUT:
@@ -804,6 +809,7 @@ case UPDATE_CENTER:
     }
   }
 
+...
 ```
 
 To complete this step we have to import the controls to our application.
@@ -1045,12 +1051,14 @@ export const UPDATE_SETTINGS = 'UPDATE_SETTINGS'
 and export it for our settings component to access:
 
 ```javascript
+...
 
 export const updateSettings = payload => ({
   type: UPDATE_SETTINGS,
   ...payload
 })
 
+...
 ```
 
 Last but not least, we will update our reducer. 
@@ -1060,6 +1068,7 @@ Last but not least, we will update our reducer.
 Go ahead and add this snippet:
 
 ```javascript
+...
 
 case UPDATE_SETTINGS:
   return {
@@ -1067,6 +1076,7 @@ case UPDATE_SETTINGS:
     settings: action.settings
   }
 
+...
 ```      
 
 How easy? But please don't forget to import the action which by now should look something like this:
@@ -1215,6 +1225,7 @@ render() {
 And our button is calling `handleFetchIsochrones` which looks like:
 
 ```javascript
+...
 
 handleFetchIsochrones = () => {
   const { dispatch, settings} = this.props;
@@ -1226,11 +1237,15 @@ handleFetchIsochrones = () => {
   }
 };
 
+...
+
 ```
 
 And finally don't forget to amend the missing state mappings..
 
 ```javascript
+...
+
 const mapStateToProps = state => {
   const userTextInput = state.isochronesControls.userInput
   const results = state.isochronesControls.geocodeResults
@@ -1251,6 +1266,9 @@ const mapStateToProps = state => {
     isFetchingIsochrones
   };
 };
+
+...
+
 ```
 
 Clicking the button won't do much at the moment as the actions and reducers are missing.
@@ -1272,6 +1290,7 @@ export const REQUEST_ISOCHRONES_RESULTS = 'REQUEST_ISOCHRONES_RESULTS'
 ```
 
 ```javascript
+...
 
 export const fetchHereIsochrones = payload => dispatch => {
 
@@ -1368,6 +1387,7 @@ export const requestIsochronesResults = () => ({
   type: REQUEST_ISOCHRONES_RESULTS
 })
 
+...
 ```
 
 To be reduced.
@@ -1390,11 +1410,14 @@ import {
   RECEIVE_ISOCHRONES_RESULTS,
 } from "../actions/actions"
 
+...
 ```
 
 And add your reduce cases:
 
 ```javascript
+
+...
 
 case REQUEST_ISOCHRONES_RESULTS:
   return {
@@ -1410,6 +1433,8 @@ case RECEIVE_ISOCHRONES_RESULTS:
       results: action.results
     }
   }
+
+...
 
 ``` 
 
@@ -1436,6 +1461,8 @@ This is obviously calling 2 additional functions.
 The first adds a marker to the map... which looks something like this:
 
 ```javascript
+
+...
 
 addIsochronesCenter() {
   
@@ -1467,6 +1494,8 @@ addIsochronesCenter() {
   }
 }
 
+...
+
 ```
 
 ...and the second handles the visualization of isochrones.
@@ -1474,20 +1503,25 @@ This method uses chromajs which yet has to be imported with `import chroma from 
 
 
 ```javascript
+...
+
 addIsochrones() {
 
   isochronesLayer.clearLayers();
 
   const isochrones = this.props.isochronesControls.isochrones.results;
 
+  // if we have polygons in our response
   if (isochrones.length > 0) {
     let cnt = 0;
 
+    // let's define a beautiful color range
     const scaleHsl = chroma
       .scale(["#f44242", "#f4be41", "#41f497"])
       .mode("hsl")
       .colors(isochrones.length);
 
+    // looping through all polygons and adding them to the map
     for (const isochrone of isochrones) {
       for (const isochroneComponent of isochrone.component) {
         L.polygon(
@@ -1509,13 +1543,20 @@ addIsochrones() {
     this.map.fitBounds(isochronesLayer.getBounds())
   }
 }
+
+...
+
 ```
 
 ### Wrap-up
 
-At this point you have managed to build a simple web-app based on react, redux and leaflet to consume isochrones from HERE Maps, congratulations.
-If you have ideas how to improve this tutorial or in case something didn't work as you expected it to please leave some feedback on [GitHub](https://github.com/gis-ops/tutorials/issues/new). 
-Thanks for being part of this!
+At this point you have managed to build a simple web-app based on react, redux and leaflet which fetches and consumes isochrones from HERE Maps, congratulations.
+As you may have already gathered from the documentation, the HERE Maps Isochrones API is fairly feature rich and we haven't implemented all of the possible options and features yet.
+To this end, if you are interested to enhance the code we built together in this tutorial with new features you might want to have a look at [https://gis-ops.github.io/reachability-analysis](https://gis-ops.github.io/reachability-analysis) which is using the code of this tutorial as a skeleton and building additional options on top. 
+
+If you have ideas how to improve this tutorial or in case something didn't work as you expected please feel free to leave some lovely feedback on our [GitHub](https://github.com/gis-ops/tutorials/issues/new). 
+
+Thanks for working through this tutorial - your GIS-OPS team.
 
 ![HERE Isochrones in Iceland](https://user-images.githubusercontent.com/10322094/53057271-9cb78880-34a6-11e9-9204-1dbfb4ad0809.png "HERE Isochrones in Iceland")
 
