@@ -1,27 +1,29 @@
 # Building a React/Redux Leaflet Web(M)app from scratch
 
-![HERE Isoline Routing in Istanbul](https://user-images.githubusercontent.com/10322094/51332346-df3b0f00-1a7b-11e9-82e6-abd7eb397545.png "HERE Isoline Routing in Istanbul")
+![HERE Isoline Routing in New York City](https://user-images.githubusercontent.com/10322094/53057065-97a60980-34a5-11e9-8845-bd86e12c2320.png "HERE Isoline Routing in New York City")
 
 In this tutorial you will learn how to use ReactJS, Redux and Leaflet to create a simple but powerful maps application which is capable of consuming the HERE Isoline Routing API.
 
-So what are isochrone maps exactly good for? 
+Ummmh, so what are isochrone maps exactly good for? Let's have a look what wikipedia says.
 
-*An isochrone map (or chart/diagram) in geography and urban planning is a map showing areas related to isochrones between different points. An isochrone is defined as "a line drawn on a map connecting points at which something occurs or arrives at the same time". Such a map is sometimes termed simply an isochrone (iso = equal, chrone = time) [Wikipedia](https://en.wikipedia.org/wiki/Isochrone_map).*
+*An isochrone map (or chart/diagram) in geography and urban planning is a map showing areas related to isochrones between different points. An isochrone is defined as "a line drawn on a map connecting points at which something occurs or arrives at the same time". Such a map is sometimes termed simply an isochrone (iso = equal, chrone = time) [Wikipedia](https://en.wikipedia.org/wiki/Isochrone_map).*  
 
-This application consumes the useful **HERE Maps Isoline Routing API** to determine areas of reachability from a given point. As a user you have the possibilty to select a magnitude of travelling options, starting from the mode of travel to the specified range and intervals [HERE Maps Isoline Routing Options](https://developer.here.com/documentation/routing/topics/resources.html). 
+This application does exactly this by consuming the useful **HERE Maps Isoline Routing API** to determine areas of reachability from a given point on the globe. 
+As a user you have the possibilty to select a magnitude of travelling options, starting from the mode of travel to the specified range and intervals; 
+Read moe about the options in the [HERE Maps Isoline Routing Documentation](https://developer.here.com/documentation/routing/topics/resources.html). 
 
-**Note:** In order to use this application, please [register a freemium HERE Maps account](https://developer.here.com/?create=Freemium-Basic&keepState=true&step=account) and input your credentials in the app settings.
+**Note:** In order to use this application, please [register a freemium HERE Maps account](https://developer.here.com/?create=Freemium-Basic&keepState=true&step=account) and input your credentials in the app settings (we will show you where later).
 
-### Prerequisites
+## Prerequisites
 
 To follow this tutorial, you will need the following:
 
 - Knowledge of JavaScript; in particular we will generally be using [ES2016](http://es6-features.org/#Constants).
-- A very very basic understanding of Single-Page-Applications, ReactJS, JSX, Redux and Leaflet. We recommend the following [basic tutorial](https://redux.js.org/introduction/getting-started) which will give you a decent understanding why and how to combine React and Redux.
-- A shell environment with preinstalled [Node.js](https://nodejs.org/en/download/) giving you the ability to use its package manager `npm` 
-- A simple text editor such as [Sublime Text](https://www.sublimetext.com/) 
+- A basic understanding of Single-Page-Applications, ReactJS, JSX, Redux and Leaflet. We recommend the following [basic tutorial](https://redux.js.org/introduction/getting-started) which will give you a decent introduction why and how to combine react with redux.
+- A shell environment with preinstalled [Node.js](https://nodejs.org/en/download/) giving you the ability to use its package manager `npm`.
+- A simple text editor such as [Sublime Text](https://www.sublimetext.com/).
 
-## Step 1 - Setting up your app folder structure
+## Step 1 - Set up your app folder structure
 
 Open your shell and create your working directory which will be used throughout this tutorial.
 
@@ -39,7 +41,7 @@ cd app
 
 This will create a new folder named `app`. 
 Within you will find a folder `src` holding the source files created for the `create-react-app` tutorial. 
-No need for them, so for now please delete all source files as we will replace them with our own.
+No need for them, so for now please delete all source files as we will replace them with our own step by step.
 
 ```sh
 rm -rf src/*
@@ -49,23 +51,24 @@ rm -rf src/*
 
 We will now add some dependencies for our app, for instance to be able to use redux and leaflet on top of react; please run the following commands in sequence.
 
-`npm i -S axios chroma-js leaflet prop-types react-edit-inline2 react-redux react-scripts react-semantic-ui-range redux redux-logger redux-thunk semantic-ui-css semantic-ui-react tachyons throttle-debounce`
+`npm i -S axios chroma-js leaflet prop-types react-redux react-scripts react-semantic-ui-range redux redux-logger redux-thunk semantic-ui-css semantic-ui-react tachyons throttle-debounce`
 
 And some development dependencies, too: 
 
 `npm i -D redux-devtools-extension`
 
-You might be wondering why we need these dependencies; ... TL;DR:
+You might be wondering why we need these dependencies... TL;DR:
 
 - (axios, a promise based HTTP client for the browser and node.js)[https://github.com/axios/axios]
-- (chroma-js for beautiful color ranges)[https://github.com/gka/chroma.js]
-- (leaflet for the map interaction)[https://github.com/Leaflet/Leaflet]
-- (react edit inline to edit text in the browser)[https://github.com/kaivi/ReactInlineEdit#readme]
+- (chroma-js for beautiful color ranges for our polygons)[https://github.com/gka/chroma.js]
+- (leaflet for the map & interaction)[https://github.com/Leaflet/Leaflet]
 - (semantic ui for beautiful interfaces)[https://react.semantic-ui.com/]
 - (tachyons helper css classes, just helpful)[https://tachyons.io/]
 ...
 
-Furthermore we will need some additional folders holding our components as well as actions/reducers for our redux store.
+You might be asking yourself why we aren't using react-leaflet bindings and the reason is simple: you should learn how leaflet works in its very core!
+
+Furthermore we will need some additional folders holding our components as well as actions/reducers for our redux store which will be created in the `src` folder.
 
 ```sh
 mkdir -p -- src/reducers src/actions src/Map src/Controls
@@ -92,12 +95,12 @@ You folder structure should now have the following folder layout:
 └── yarn.lock
 ```
 
-We do not have to worry about the public folder... webpack bla TODO.
+We do not have to worry about the public folder but feel free to read more about webpack in general if you are interested how it bundles and builds the application. 
 
 ## Step 2 - Let's create a map!
 
 With the first steps in place, we can start getting our hands dirty with the code of our first react components.
-We will navigate to our `src` folder which will comprise the first couple of javascript source files. 
+Navigate to our `src` folder which will comprise the first couple of javascript source files. 
 
 ### index.js
 
@@ -106,7 +109,7 @@ The parent javascript root file from which our application will be started is ca
 
 ```sh
 cd src
-touch src/index.js
+touch index.js
 ```
 
 Now please open `index.js` in your text editor and paste the following code:
@@ -152,13 +155,15 @@ Furthermore we initialize or redux store within the constant `store` which will 
 
 The `render` function calls our redux provider with the `App` constant as a child holding the logic and renders it in the root element with the id `root` which can be found in the `public/index.html`. 
 
+Don't be afraid, you will soon be able to connect the dots.
+
 ### index.css
 
-Our stylesheets will live in the same folder within `index.css`. 
+Our stylesheets will live in the same folder `src` in a file we will name `index.css` (you can clearly see the import of this file in `index.js` above. 
 Go ahead and create the file itself with:
 
 ```sh
-touch src/index.css
+touch index.css
 ```
 
 Afterwards paste this css markup:
@@ -206,7 +211,8 @@ This leaves us with the following folder structure:
 
 In the previous step we imported the `App` component in `index.js` (if you have forgotton, please go ahead and reassure yourself).
 This component however isn't around yet which is why we now have to create a new file which also lives in `src` folder.
-This file is very basic and doesn't do much other than importing the map component for now.. which also doesn't exist yet!
+This file is very basic and doesn't do much other than importing the map component for now.. which also doesn't exist yet! 
+Let's create it now within our `src` folder.
 
 
 ```javascript
@@ -256,8 +262,10 @@ With `App.jsx` in place our folder structure will look something like this:
 
 As the name suggests this component will create our map and handle all of our interactions on it.
 Step by step we will add some logic to this component but let's first of all start with basics.
-Looking at the code you will notice quite quickly that it looks quite similar to the `App.jsx` component we built above with the major difference that it makes use of our redux store (remember: state!). 
-We import all required react and react-redux modules, leaflet which we use as our mapping library (yes, we could also use openlayers or something similar) and a re-written (HereTileLayer class)[https://gitlab.com/IvanSanchez/Leaflet.TileLayer.HERE] to import any kind of map styles **HERE Maps** offers (please find the file in this same repository).
+Looking at the code you will notice quite quickly that it looks quite similar to the `App.jsx` component we built above with the major difference that it makes use of our redux store (remember, we will require state). 
+We import all required react and react-redux modules as well as leaflet which we use as our mapping library (yes, we could have used openlayers or something similar) and a slighty adapted [HereTileLayer class](https://gitlab.com/IvanSanchez/Leaflet.TileLayer.HERE) to import any kind of map styles **HERE Maps** offers (please find the file in this same repository). 
+`Map.jsx` lives in the `Map` folder.
+
 To understand the specific code blocks please read the inline comments.
 
 ```javascript
@@ -274,10 +282,14 @@ const style = {
   height: '100vh'
 }
 
+// use these or add your own HERE Maps credentials
+const hereAppCode = '0XXQyxbiCjVU7jN2URXuhg'
+const hereAppId = 'yATlKFDZwdLtjHzyTeCK'
+
 // using the reduced.day map styles, have a look at the imported hereTileLayers for more
-const hereReducedDay = HereTileLayer.here({
-  appId: 'jKco7gLGf0WWlvS5n2fl',
-  appCode: 'HQnCztY23zh2xiTPCFiTMA',
+const hereReducedDay = HereTileLayers.here({
+  appId: hereAppId,
+  appCode: hereAppCode,
   scheme: 'reduced.day'
 })
 
@@ -378,7 +390,7 @@ And to help you keep track of things, this is your new file structure:
 │   ├── Controls
 │   ├── Map
 │   │   ├── Map.jsx
-│   │   └── hereTileLayers.js
+│   │   └── hereTileLayers.js (don't forget to copy this file here)
 │   ├── actions
 │   ├── index.css
 │   ├── index.js
@@ -390,43 +402,49 @@ And to help you keep track of things, this is your new file structure:
 
 ### Creating our initial state
 
-In our map component you will have noticed that we are declaring a constant `mapStateToProps` which is used in the `react-redux connect` function which helps us inject the state into the specific component. 
-Our control center of this app will be a little widget with configurable options hovering over the map which will take care of all of our isochrones settings, addresses and isolines we will receive from the HERE Maps API. 
+In our map component you will have noticed that we are declaring a constant `mapStateToProps` which is used in the `react-redux connect` function which helps us inject the state into a specific component. 
+Our control center of this app will be a little widget with configurable options hovering over the map which will take care of all of our isochrones settings, addresses and isochrones which we will receive from the HERE Maps API. 
 
-To keep a good overview of our state in this tutorial we will add one object to our redux store; its state will be controlled by several actions.
+To keep a good overview of our state in this tutorial we will add one object to our redux store; its state will be controlled by several actions originating from our control component.
 
-Lets go ahead and create a empty file `actions.js` in the actions folder and a file `index.js` in the reducers folder holding our state object for the controls. 
-The constant `initialIsochronesControlsState` is the initial state object used in `isochronesControls` which is initially loaded in `isochronesControls` and later changed depending on the specific action made by the user (which we will step by step add to our controls and redux actions).
+Lets go ahead and 
+
+a) create a empty file `actions.js` in the `actions` folder and 
+b) a file `index.js` in the reducers folder holding our state object for the controls. 
+
+The constant `initialIsochronesControlsState` is the initial state object which is initially loaded in `isochronesControls` and later changed depending on the specific action made by the user from the controls and settings.
+
+### reducers/index.js 
 
 ```javascript
 import { combineReducers } from 'redux'
 
 // these are our initial isochrones settings
 const initialIsochronesControlsState = {
-    userInput: '',
-    geocodeResults: [],
-    isochrones: {
-      results: []
-    },
-    isFetching: false,
+  userInput: "",
+  geocodeResults: [],
+  isochrones: {
+    results: []
+  },
+  isFetching: false,
+  isFetchingIsochrones: false,
+  settings: {
     isochronesCenter: {},
-    isFetchingIsochrones: false,
-    settings : {
-      range: {
-        max: 500,
-        value: 60
-      },
-      interval: {
-        max: 60,
-        value: 10
-      },
-      mode: 'car',
-      rangetype: 'distance',
-      traffic: 'disabled'
-    }
+    range: {
+      max: 500,
+      value: 60
+    },
+    interval: {
+      max: 60,
+      value: 10
+    },
+    mode: "car",
+    rangetype: "distance",
+    traffic: "disabled"
+  }
 }
 
-// our reducer constant returning an unchanged or updated state object depending on the users action, many will follow
+// our reducer constant returning an unchanged or updated state object depending on the users action, many cases will follow
 const isochronesControls = (state = initialIsochronesControlsState, action) => {
   switch (action.type) {
     default:
@@ -443,14 +461,14 @@ export default rootReducer
 ```
 
 Let's quickly summarize what we have achieved so far. 
-If you have followed the tutorial carefully so far, you will have noticed that `index.js` is trying to import the reducer we have just created to initiate the redux store.
+If you have followed the tutorial carefully you will have noticed that `src/index.js` is importing the reducer we have just created to initiate the redux store.
 The `App` which is being called inside inherently has access to this store and obviously all child components also.
 The 2 child components of our app handling all the logic will be our controls (which thus far don't exist) and the map component which has to listen to state changes and accordingly visualize everything on the map.
 And guess what: they are talking to each other through our redux store!
 
-Before we go ahead creating our controls, let's fire up the map with `npm start`; the following screenshot is what you should see (if you are experiencing an error in your shell then please carefully go through the steps again as you may have missed something crucial).
+Before we go ahead though with creating our controls, let's fire up the map with `npm start`; the following screenshot is what you should see (if you are experiencing an error in your shell then please carefully go through the steps again as you may have missed something crucial).
 
-By the way, if you have installed the redux-devtools plugin in your browser you will be able to see the state object above.
+By the way, if you have installed the redux-devtools plugin in your browser you will be able to access the state object.
 
 ![The leaflet map](https://user-images.githubusercontent.com/10322094/52918368-0b051b00-32ee-11e9-97d1-827f3ce57523.png "The leaflet map")
 
@@ -469,8 +487,9 @@ Our isochrones control has the following requirements:
 2. The ability to select a result from the found addresses by the HERE Maps API
 3. The ability to fire isochrones given some preselected settings and address
 
-This obviously requires some user interaction as as the name suggests we need some ACTIONS which will change our state saved in redux! So let's go ahead and start with the first requirement, namely adding an input field and it's specific actions.
-Go through the code line by line and read the inline comments with explanations.
+This obviously requires some user interaction and as the name suggests we need some ACTIONS which will change our state saved in redux! So let's go ahead and start with the first requirement, namely adding an input field and it's specific actions.
+Don't worry too much about the new bits and pieces inside this block of code, you will learn quite quickly what they are doing.
+Please carefully go through the code line by line and read the inline comments with explanations.
 
 
 ```javascript
@@ -482,15 +501,15 @@ import { connect } from "react-redux"
 import {
   Segment,
   Search,
-  Container,
-  Divider
+  Divider,
+  Button
 } from "semantic-ui-react"
 
 // here are our first two actions, we will be adding them in the next step, bare with me!
 import {
   updateTextInput,
   fetchHereGeocode,
-  updateSelectedAddress
+  updateCenter
 } from "../actions/actions"
 
 // to wait for the users input we will add debounce, this is especially useful for "postponing" the geocode requests 
@@ -503,11 +522,10 @@ const segmentStyle = {
   width: "400px",
   top: "10px",
   left: "10px",
-  height: "350px",
-  maxHeight: "calc(100vh - 7vw)",
+  maxHeight: "calc(100vh - 5vw)",
   overflow: "auto",
   padding: "20px"
-}
+};
 
 class Control extends React.Component {
   static propTypes = {
@@ -591,6 +609,7 @@ class Control extends React.Component {
             {/* more about the props can be read here https://react.semantic-ui.com/modules/search the most important part to mention here are our objects being fed to it. When a user types text into the input handleSearchChange is called. When the geocode API is called the variable loading will be set true to show the spinner (coming from state). The results are shown in a dropdown list (also coming from the state) and the value shown in the input is userTextInput (..also from state). */}
             <Search
               onSearchChange={this.handleSearchChange}
+              onResultSelect={this.handleResultSelect}
               type="text"
               fluid
               input={{ fluid: true }}
@@ -624,19 +643,33 @@ export default connect(mapStateToProps)(Control)
 ```
 
 We are dispatching 2 different events in this class.
-First of all we want to update our state when the user inputs text.
-Secondly we want to fire geocoding requests to the HERE Maps API.
-Both are mapped to 2 actions which are imported at the beginning of the file which don't exist yet.
-Let's open `actions.js` in the actions folder and add the following code block:
 
-### actions.js
+1) First of all we want to update our state when the user inputs text.
+2) Secondly we want to fire geocoding requests to the HERE Maps API.
+3) We want to be able to select a result
 
-This is probably the most tricky part to wrap your head around and depending on your prior knowledge of react and redux in general you should understand what is going on quite quickly.
-The actions being called in `Control.jsx` are `updateTextInput` and `fetchHereGeocode` which you can find within this code. The `updateTextInput` action simply forwards the input of the user to the reducer and the `fetchHereGeocode` calls a more complex cascade of events.
-Find details inline. 
+Both are mapped to 2 actions which are imported at the beginning of the file - which don't exist yet.
+So let's open `actions.js` in the actions folder and add the following code block:
+
+### actions/actions.js
+
+This is probably the most tricky part to wrap your head around, however depending on your prior knowledge of react and redux in general you should understand what is going on quite quickly.
+As outline above the actions being called in `Control.jsx` are 
+
+a) `updateTextInput` & 
+b) `fetchHereGeocode` &
+c) `updateCenter`
+
+which you can all find within this piece of actions code.
+
+The `updateTextInput` action simply forwards the input of the user to the reducer and the `fetchHereGeocode` calls a more complex cascade of events.
+When an address is selected by the user, we obviously want to update our isochrones center for further action.
+
+Please find more comprehensive details inline. 
 
 ```javascript
 
+// use these or add your own credentials
 const hereAppCode = '0XXQyxbiCjVU7jN2URXuhg'
 const hereAppId = 'yATlKFDZwdLtjHzyTeCK'
 
@@ -646,7 +679,8 @@ export const REQUEST_GEOCODE_RESULTS = 'REQUEST_GEOCODE_RESULTS'
 export const UPDATE_CENTER = 'UPDATE_CENTER'
 
 export const fetchHereGeocode = payload => dispatch => {
-  // It dispatches a further action to let our state know that requests are about to be made
+
+  // It dispatches a further action to let our state know that requests are about to be made (loading spinner listens to this!)
   dispatch(requestGeocodeResults())
 
   // we define our url and parameters to be sent along
@@ -659,7 +693,7 @@ export const fetchHereGeocode = payload => dispatch => {
 
   url.search = new URLSearchParams(params)
 
-  // we use the fetch API to call HERE MAps with our parameters
+  // we use the fetch API to call HERE Maps with our parameters
   return fetch(url)
     // when a response is returned we extract the json data
     .then(response => response.json())
@@ -669,7 +703,7 @@ export const fetchHereGeocode = payload => dispatch => {
 }
 
 const parseGeocodeResponse = (json, latLng) => {
-  // parsing the response, just a simple example
+  // parsing the response, just a simple example, this could be much more complex as the response from HERE is fairly ritch
   if (json.Response && json.Response.View.length > 0) {
     let processedResults = []
 
@@ -694,13 +728,13 @@ const processGeocodeResponse = (
 ) => dispatch => {
   // parse the json file and dispatch the results to receiveGeocodeResults which will be reduced
   const results = parseGeocodeResponse(json)
+  // let's let the loading spinner now that it doesn't have to spin anymore
   dispatch(receiveGeocodeResults(results))
 }
 
-export const receiveGeocodeResults = (results) => ({
+export const receiveGeocodeResults = payload => ({
   type: RECEIVE_GEOCODE_RESULTS,
-  results: results,
-  receivedAt: Date.now(),
+  results: payload
 })
 
 export const requestGeocodeResults = payload => ({
@@ -721,7 +755,7 @@ export const updateCenter = payload => ({
 ```
 
 The actions are now in place which subsequently have to be reduced. 
-To this end, please open your `index.js` in the reducer folder and import these actions
+To this end, please open your `index.js` in the reducer folder and import these actions right at the beginning of the file
 
 ### reducers/index.js
 
@@ -730,17 +764,18 @@ To this end, please open your `index.js` in the reducer folder and import these 
 import {
   UPDATE_TEXTINPUT,
   REQUEST_GEOCODE_RESULTS,
-  RECEIVE_GEOCODE_RESULTS
+  RECEIVE_GEOCODE_RESULTS,
+  UPDATE_CENTER
 } from '../actions/actions' 
 
 ```
 
-And the following cases that the reducer knows what to reduce for which action:
+And please add the the following cases to our switch clause in order for the reducer to know what to reduce for which action:
 
 
 ```javascript
 
-// when a user inputs text
+// when a user inputs text we update the userInput :) easy!
 case UPDATE_TEXTINPUT:
   return {
     ...state,
@@ -763,31 +798,45 @@ case RECEIVE_GEOCODE_RESULTS:
 case UPDATE_CENTER:
   return {
     ...state,
-    isochronesCenter: action.isochronesCenter
+    settings: {
+      ...state.settings,
+      isochronesCenter: action.isochronesCenter
+    }
   }
 
 ```
 
+To complete this step we have to import the controls to our application.
+
+### App.jsx
+
+a) import the controls with `import Controls from './Controls/Control'`. 
+b) and render them with `<Controls />` inside our `<div>...</div>`.
+
 With all the changes in place you browser should update itself automatically.
 If it doesn't happen then run `npm start` again.
-You will now be able to insert a string which will be geocoded into a list of addresses and it should look like this:
+You will now be able to insert a string which will be geocoded into a list of addresses and once results are returned, you will be able to select one of them.
+It should look something like this:
 
 ![Geocoded addresses](https://user-images.githubusercontent.com/10322094/53017377-b7a6e000-3447-11e9-850a-07e46bf5e929.png "Geocoded addresses")
 
 
 ## Step 4 - Settings for the user
 
-We now want to provide a rich set of options for the user.
+We now want to provide a rich set of options for the user to control the input parameters for the isochrones.
 Let's define some requirements:
 
 1. Ability to select mode pedestrian or car
-2. Ability to turn HERE Maps traffic settings on or off for the car profile
-3. Range type can be either time or distance
-4. Our maximum reachability and the intervals
+2. Ability to turn HERE Maps traffic settings on & off for the car profile
+3. The range type should be able to handle time or distance
+4. We want to set our maximum reachability and the intervals
 
-With some semantic UI components and and some actions to adapt our user settings we could come up with something that looks like this. 
-To keep this tutorial more or less content this component is quite large; this being said, usually I would break this component up into smaller parts.
+With some beautiful semantic UI components and and some further actions to adapt the settings we could come up with something that looks like this. 
+By the way, to keep this tutorial more or less content, this component is quite large; this being said, usually I would recommend to break this component up into smaller parts.
 Please read the inline comments to understand what is going on in the logic.
+
+
+### Controls/Settings.jsx
 
 ```javascript
 
@@ -1034,6 +1083,24 @@ import {
 } from '../actions/actions'
 ```
  
+You probably are able to guess what comes next.
+Import the settings component to our controls and call it, you decide where!
+
+```javascript
+import Settings from "./Settings"
+```
+
+& 
+
+```javascript
+...
+
+<div className="mt2"><Settings /></div>
+
+...
+```
+
+
 With everything in place, you should be able to see the settings component in action which are interactive and thus update the state when selecting them.
 
 ![Settings in action](https://user-images.githubusercontent.com/10322094/53034316-d4a0da80-346a-11e9-8c79-69b5ae76af59.png "Settings in action")
@@ -1044,17 +1111,23 @@ With everything in place, you should be able to see the settings component in ac
 We are almost there. 
 By now we can input an address and make some settings.
 The next step is to query the HERE Maps API for some wonderful looking isochrones.
-What now is missing is 1) a button to call the isochrones and b) the action behind which ultimately holds some logic to plot the response on our map.
+What now is missing is 
+
+a) a button to call the isochrones and 
+b) the action behind which ultimately holds some logic to plot the response on our map.
+
+
+We will handle this logic in our control component.
 
 ### Control.jsx
 
-We first of all have to add some new `propTypes` to our component.
+We first of all we should add some new `propTypes` to our component.
 
 ```javascript
 ...
-
-isFetchingIsochrones: PropTypes.bool.isRequired,
-isochronesCenter: PropTypes.object
+// new
+isochronesCenter: PropTypes.object,
+isFetchingIsochrones: PropTypes.bool.isRequired
 
 ...
 
@@ -1069,6 +1142,7 @@ import {
   updateTextInput,
   fetchHereGeocode,
   updateCenter,
+  // new
   fetchHereIsochrones
 } from "../actions/actions";
 
@@ -1076,9 +1150,8 @@ import {
 
 ```
 
-Obviously this action has to be called from a button.. which has to be inserted directly beneath our Search component
-which also has a listener bound to it. 
-Hence our render function will look something like this:
+Obviously this action has to be called from a button.. which has to be inserted directly beneath our Search component with a click listener bound to it.
+Hence our render function of our controls will look something like this:
 
 ```javascript
 ...
@@ -1086,14 +1159,15 @@ Hence our render function will look something like this:
 render() {
   const {
     isFetching,
-    isFetchingIsochrones,
     userTextInput,
+    results,
+    // new
     settings,
-    results
+    isFetchingIsochrones
   } = this.props;
 
+  // if an address is selected we will return true to enable our button!
   const isResultSelected = () => {
-  
     if (settings.isochronesCenter.lat && settings.isochronesCenter.lng) return false
     return true
   
@@ -1165,7 +1239,7 @@ const mapStateToProps = state => {
   // new
   const settings = state.isochronesControls.settings
   // new
-  const isFetchingIsochrones = state.isochronesControls.isFetchingIsochrones;
+  const isFetchingIsochrones = state.isochronesControls.isFetchingIsochrones
 
   return {
     userTextInput,
@@ -1179,19 +1253,30 @@ const mapStateToProps = state => {
 };
 ```
 
-Clicking the button won't do much at the moment as the Actions and reducers are missing.
+Clicking the button won't do much at the moment as the actions and reducers are missing.
 Similarly to the geocode requests we implemented before, we are calling the HERE isochrones API.
 Due to the amount of settings we have created one additional function to help us build the request which is named `processIsolineSettings`.
 Read the inline comments for more information.
 
-### actions.js
+### actions/actions.js
+
+We are exporting 2 new actions.
+
+```javascript 
+...
+
+export const RECEIVE_ISOCHRONES_RESULTS = 'RECEIVE_ISOCHRONES_RESULTS'
+export const REQUEST_ISOCHRONES_RESULTS = 'REQUEST_ISOCHRONES_RESULTS'
+
+...
+```
 
 ```javascript
 
 export const fetchHereIsochrones = payload => dispatch => {
 
   // we let the app know that we are calling the isochrones API 
-  dispatch(requestIsochronesResults()
+  dispatch(requestIsochronesResults())
 
   // we generate our GET parameters from the settigns
   const isolineParameters = processIsolineSettings(payload.settings)
@@ -1328,14 +1413,15 @@ case RECEIVE_ISOCHRONES_RESULTS:
 
 ``` 
 
-Drum roll. 
-Firing requests will now work, so we now merely have to make our map listen to changes in our redux store which will be updated once a response comes back.
+Drum roll... 
+Firing requests will now work, so we now merely have to make our map listen to changes in our redux store which will be updated once a response is returned by HERE Maps.
 
 
 ### Map.jsx
 
-Whenever isochrone results are returned we want to update the map.
-With a handy function we can let the map know when this is the case.
+Ok, so whenever isochrone results are returned we want to update the map. 
+With a handy function every react component can use we can let the map know when the state is updated.
+Let's add this to our map component class.
 
 ```javascript
 
@@ -1346,8 +1432,8 @@ componentDidUpdate() {
 
 ```
 
-Which obviously calls 2 additional functions.
-The first adds a marker to the map...
+This is obviously calling 2 additional functions.
+The first adds a marker to the map... which looks something like this:
 
 ```javascript
 
@@ -1384,48 +1470,54 @@ addIsochronesCenter() {
 ```
 
 ...and the second handles the visualization of isochrones.
-This method uses chromejs which needs to be imported with `import chroma from 'chroma-js'`.
+This method uses chromajs which yet has to be imported with `import chroma from 'chroma-js'`.
 
 
 ```javascript
 addIsochrones() {
-    isochronesLayer.clearLayers();
 
-    const isochrones = this.props.isochronesControls.isochrones.results;
+  isochronesLayer.clearLayers();
 
-    if (isochrones.length > 0) {
-      let cnt = 0;
+  const isochrones = this.props.isochronesControls.isochrones.results;
 
-      const scaleHsl = chroma
-        .scale(["#f44242", "#f4be41", "#41f497"])
-        .mode("hsl")
-        .colors(isochrones.length);
+  if (isochrones.length > 0) {
+    let cnt = 0;
 
-      for (const isochrone of isochrones) {
-        for (const isochroneComponent of isochrone.component) {
-          L.polygon(
-            isochroneComponent.shape.map(function(coordString) {
-              return coordString.split(",");
-            }),
-            {
-              fillColor: scaleHsl[cnt],
-              weight: 2,
-              opacity: 1,
-              color: "white",
-              pane: "isochronesPane"
-            }
-          ).addTo(isochronesLayer);
-        }
-        cnt += 1;
+    const scaleHsl = chroma
+      .scale(["#f44242", "#f4be41", "#41f497"])
+      .mode("hsl")
+      .colors(isochrones.length);
+
+    for (const isochrone of isochrones) {
+      for (const isochroneComponent of isochrone.component) {
+        L.polygon(
+          isochroneComponent.shape.map(function(coordString) {
+            return coordString.split(",");
+          }),
+          {
+            fillColor: scaleHsl[cnt],
+            weight: 2,
+            opacity: 1,
+            color: "white",
+            pane: "isochronesPane"
+          }
+        ).addTo(isochronesLayer);
       }
-
-      this.map.fitBounds(isochronesLayer.getBounds())
+      cnt += 1;
     }
+
+    this.map.fitBounds(isochronesLayer.getBounds())
   }
+}
 ```
 
-### DONE!
+### Wrap-up
 
+At this point you have managed to build a simple web-app based on react, redux and leaflet to consume isochrones from HERE Maps, congratulations.
+If you have ideas how to improve this tutorial or in case something didn't work as you expected it to please leave some feedback on [GitHub](https://github.com/gis-ops/tutorials/issues/new). 
+Thanks for being part of this!
+
+![HERE Isochrones in Iceland](https://user-images.githubusercontent.com/10322094/53057271-9cb78880-34a6-11e9-9204-1dbfb4ad0809.png "HERE Isochrones in Iceland")
 
 
 
