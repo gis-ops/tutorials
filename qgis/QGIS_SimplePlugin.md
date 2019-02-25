@@ -65,7 +65,7 @@ Note, there will be a few more dialogs, just use common sense when filling those
 The Plugin Builder will have generated a lot of (well-intended) files now. Head over to your new plugin project directory and `ls -ll`. Though well-intended, a lot of files are convenience files, which don't really help in the beginning. You can safely delete all files and folders except for these:
 
 ```bash
-├──quickapi
+├──quick_api
    ├──icon.png
    ├──__init__.py
    ├──metadata.txt
@@ -118,6 +118,8 @@ Whenever you replace the plugin code with a newer version, make sure to use the 
 Note, this only works for code alterations outside of the main `__init__.py`.
 
 #### Troubleshooting
+
+- if you can't access `pyrcc5`, it might not be installed on your system for mysterious reasons. In that case, please try `sudo apt-get install pyqt5-dev-tools`, which should contain `pyrcc5`.
 
 - if you don't see the plugin in the manager after a QGIS restart, check you didn't accidentally set the `experimental` flag by allowing experimental plugins in *Plugin Manager* ► *Settings*.
 
@@ -390,11 +392,11 @@ Fill out all details accordingly. Find a suitable icon for your plugin and repla
 
 ### Zip plugin
 
-For the QGIS plugin repository to accept your plugin, you must zip the whole `quickapi` folder. We recommend to create a `dist` folder top-level:
+For the QGIS plugin repository to accept your plugin, you must zip the whole `quick_api` folder. We recommend to create a `dist` folder top-level:
 
 ```bash
 mkdir dist/
-zip -r dist/quickapi_v0.1.zip quickapi
+zip -r dist/quick_api_v0.1.zip quickapi
 ```
 
 ### Upload plugin
