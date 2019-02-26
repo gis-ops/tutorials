@@ -47,8 +47,8 @@ The final plugin can be found in our [tutorial repository](https://github.com/gi
 
 - Basic Python knowledge
 - Familiarity with
-	- Qt Designer application, see [our tutorial](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_QtDesigner.md)
-	- Python Plugin Basics, see [our tutorial](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_PluginBasics.md)
+	- Qt Designer application, see [our tutorial](https://gis-ops.com/qgis-3-qt-designer-explained/)
+	- Python Plugin Basics, see [our tutorial](https://gis-ops.com/qgis-3-plugin-development-reference-guide/)
 
 ## First steps
 
@@ -75,11 +75,11 @@ The Plugin Builder will have generated a lot of (well-intended) files now. Head 
    └──resources.qrc
 ```
 
-A more thorough explanation of the generated files and methods is available [here](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_PluginBasics.md#detailed-module-and-method-description).
+A more thorough explanation of the generated files and methods is available [here](https://gis-ops.com/qgis-3-plugin-development-reference-guide/#detailed-module-and-method-description).
 
 ### Compile `resources.qrc`
 
-A more detailed description of the concept of `resources.qrc` can be found [here](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_QtDesigner.md#qt-resourcesqrc).
+A more detailed description of the concept of `resources.qrc` can be found [here](https://gis-ops.com/qgis-3-qt-designer-explained/#qt-resourcesqrc).
 
 Plugin Builder 3 will try to compile your resource file, but often enough fails to determine the system path of the `pyrcc5` executable, so you'll have to do it manually:
 
@@ -129,7 +129,7 @@ Note, this only works for code alterations outside of the main `__init__.py`.
 
 First, start Qt Designer. The app is shipped on all OS's with QGIS and should be available as an executable on your computer.
 
-If you haven't worked with Qt Designer before, we recommend our short [Qt Designer](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_QtDesigner.md) tutorial.
+If you haven't worked with Qt Designer before, we recommend our short [Qt Designer](https://gis-ops.com/qgis-3-qt-designer-explained/) tutorial.
 
 ### Build GUI
 
@@ -137,7 +137,7 @@ You will build a very simple GUI: only a small box where the user can paste a X,
 
 Do the following steps:
 
-1. Select the dialog window and press `Lay Out Vertically` button in the [toolbar](#4-layout-toolbar)
+1. Select the dialog window and press `Lay Out Vertically` button in the toolbar
 2. Drag a `QgsFilterLineEdit` widget to the dialog and insert it above the buttons
 3. Alter the following properties of the new widget:
 	- `QObject.objectName`: lineedit_xy
@@ -160,7 +160,7 @@ In this tutorial we will throw a few fundamental programming principles over boa
 
 These are really mantras you can't repeat often enough. There will be other tutorials focusing on testing.
 
-Also, if you're not sure about the basics of QGIS Plugins, head over to our [QGIS Plugin 101](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_PluginBasics.md) for reference.
+Also, if you're not sure about the basics of QGIS Plugins, head over to our [QGIS Plugin 101](https://gis-ops.com/qgis-3-plugin-development-reference-guide/) for reference.
 
 ### Logic
 
@@ -388,7 +388,7 @@ The final plugin can be found in our [tutorial repository](https://github.com/gi
 
 ### `metadata.txt`
 
-Fill out all details accordingly. Find a suitable icon for your plugin and replace `icon.png` (but keep the name to not break any code). Find a more elaborate explanation [here](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_PluginBasics.md#metadatatxt).
+Fill out all details accordingly. Find a suitable icon for your plugin and replace `icon.png` (but keep the name to not break any code). Find a more elaborate explanation [here](https://gis-ops.com/qgis-3-plugin-development-reference-guide/#metadatatxt).
 
 ### Zip plugin
 
