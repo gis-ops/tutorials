@@ -1,9 +1,9 @@
 ### Valhalla Tutorials
-This Tutorial is part of our [Valhalla tutorial series](https://github.com/gis-ops/tutorials/tree/master/valhalla):
+This Tutorial is part of our Valhalla tutorial series:
 
--   [How to build and install Valhalla on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_Install_Ubuntu1804.md)
--   [How to configure and run Valhalla locally on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_configure_use_local.md)
--   [How to setup and run Valhalla on Ubuntu 18.04 in Docker](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_setup_run_docker.md)
+-   [How to build and install Valhalla on Ubuntu 18.04](https://gis-ops.com/how-to-install-and-use-docker-on-ubuntu-18-04/)
+-   [How to configure and run Valhalla locally on Ubuntu 18.04](https://gis-ops.com/valhalla-how-to-run-on-ubuntu-18-04/)
+-   [How to setup and run Valhalla on Ubuntu 18.04 in Docker](https://gis-ops.com/valhalla-how-to-run-with-docker/)
 
 ---
 
@@ -177,7 +177,8 @@ curl http://localhost:8002/route --data `curl http://localhost:8002/route --data
 -   If you used another OSM extract replace the `lat` and `lon` variables from the curl command with ones inside your extract.
 
 ### Assess the response
-The response of your Valhalla server should return something like the following JSON structure, depending on your OSM extract and the used coordinates:
+The response of your Valhalla server should return something like the following JSON structure, depending on your OSM extract and the used coordinates.
+You should change the coordinates to ones that are inside your chosen OSM extract.   
 ```json
 {
   "trip": {
@@ -276,27 +277,7 @@ In case you get a `response` looking like this:
 "status": "Bad Request"
 }
 ```
-You should change the coordinates to ones that are inside your chosen OSM extract.   
-
-## 4. Valhalla examples
-Now that Valhalla is running successfully we can download and play around with the demo files, provided by Valhalla:
-```bash
-git clone --depth=1 --recurse-submodules --single-branch --branch=gh-pages https://github.com/valhalla/demos.git ~/valhalla_demos
-cd ~/valhalla_demos
-```  
--   This will download the demo files from Valhalla to our local folder `~/valhalla_demos` and change into it `cd ~/valhalla_demos`.
-
-#### Demo: Route
-```bash
-firefox routing/index-internal.html &
-```  
--   This will run `firefox` with the routing demo. Be sure to test it in the correct region that you build before.
-
-#### Demo: Isochrone
-```bash
-firefox isochrone/index-internal.html &
-```  
--   This will run `firefox` with the isochrone demo. Be sure to test it in the correct region that you build before.
+It is most likely that you didn't change the coordinates for the `curl request` to ones that are inside your chosen OSM extract. Consider adjusting them and running the `curl command` again.
 
 ---
 
