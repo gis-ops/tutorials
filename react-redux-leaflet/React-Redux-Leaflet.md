@@ -1,6 +1,6 @@
 # Building a React/Redux/Leaflet Web(M)app from scratch
 
-![HERE Isoline Routing in New York City](https://user-images.githubusercontent.com/10322094/53057065-97a60980-34a5-11e9-8845-bd86e12c2320.png "HERE Isoline Routing in New York City")
+![HERE Isoline Routing in New York City](https://user-images.githubusercontent.com/10322094/53686533-95a33c80-3d28-11e9-9f8a-59951bcdfedd.png "HERE Isoline Routing in New York City")
 
 In this tutorial you will learn how to use ReactJS, Redux and Leaflet to create a simple but powerful maps application which is capable of consuming the HERE Isoline Routing API.
 
