@@ -470,7 +470,7 @@ Before we go ahead though with creating our controls, let's fire up the map with
 
 By the way, if you have installed the redux-devtools plugin in your browser you will be able to access the state object.
 
-![The leaflet map](https://user-images.githubusercontent.com/10322094/52918368-0b051b00-32ee-11e9-97d1-827f3ce57523.png "The leaflet map")
+![The leaflet map](https://user-images.githubusercontent.com/10322094/53686550-d0a57000-3d28-11e9-99c7-20055b815cac.png "The leaflet map")
 
 
 ## Step 3 - Let's add controls!
