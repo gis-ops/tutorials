@@ -1558,7 +1558,7 @@ If you have ideas how to improve this tutorial or in case something didn't work 
 
 Thanks for working through this tutorial - your GIS-OPS team.
 
-![HERE Isochrones in Iceland](https://user-images.githubusercontent.com/10322094/53057271-9cb78880-34a6-11e9-9204-1dbfb4ad0809.png "HERE Isochrones in Iceland")
+![HERE Isochrones in Iceland](https://user-images.githubusercontent.com/10322094/53686593-49a4c780-3d29-11e9-963d-53896fd8aa54.png "HERE Isochrones in Iceland")
 
 
 
