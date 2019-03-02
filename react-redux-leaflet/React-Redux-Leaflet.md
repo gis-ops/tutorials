@@ -1113,7 +1113,7 @@ import Settings from "./Settings"
 
 With everything in place, you should be able to see the settings component in action which are interactive and thus update the state when selecting them.
 
-![Settings in action](https://user-images.githubusercontent.com/10322094/53034316-d4a0da80-346a-11e9-8c79-69b5ae76af59.png "Settings in action")
+![Settings in action](https://user-images.githubusercontent.com/10322094/53686571-12ceb180-3d29-11e9-9f93-e3577198f6ca.png "Settings in action")
 
 
 ## Step 5 - Calling the isochrones API and ploting the result on our map
