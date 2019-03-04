@@ -356,8 +356,7 @@ Then, get the adapted HERE TileLayers file from our repository:
 
 ```bash
 cd Map
-curl -H 'Accept: application/vnd.github.v3.raw' -o hereTileLayers.js https://api.github.com/repos/gis-ops/tutorials/contents/react-redux-leaflet/src/Map/hereTileLa
-yers.js
+curl -H 'Accept: application/vnd.github.v3.raw' -o hereTileLayers.js https://api.github.com/repos/gis-ops/tutorials/contents/react-redux-leaflet/src/Map/hereTileLayers.js
 ```
 
 And to help you keep track of things, this is your new file structure:
