@@ -242,7 +242,7 @@ export default App
 As the name suggests this component will create our map and handle all of our interactions on it.
 Step by step we will add some logic to this component but let's start with basics first.
 Looking at the code you will notice quite quickly that it looks quite similar to the `App.jsx` component we built above with the major difference that it makes use of our redux store (remember, we will require state).
-We import all required react and react-redux modules as well as leaflet which we use as our mapping library and a slighty adapted [HERE TileLayer class](https://gitlab.com/IvanSanchez/Leaflet.TileLayer.HERE) to import any kind of map styles [**HERE Maps**](https://developer.here.com/products/maps) offers.
+We import all required react and react-redux modules as well as leaflet which we use as our mapping library and a slighty adapted HERE TileLayer class from [Ivan Sanchez' repository](https://gitlab.com/IvanSanchez/Leaflet.TileLayer.HERE) to import any kind of map styles [**HERE Maps**](https://developer.here.com/products/maps) offers.
 `Map.jsx` lives in the `Map` folder.
 
 To understand the specific code blocks please read the inline comments.
@@ -352,11 +352,12 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps)(Map)
 ```
 
-Then, get the adapted HERE TileLayers file:
+Then, get the adapted HERE TileLayers file from our repository:
 
 ```bash
 cd Map
-curl 'https://gitlab.com/api/v4/projects/1345047/repository/files/leaflet-tilelayer-here.js/raw?ref=master' >> hereTileLayers.js
+curl -H 'Accept: application/vnd.github.v3.raw' -o hereTileLayers.js https://api.github.com/repos/gis-ops/tutorials/contents/react-redux-leaflet/src/Map/hereTileLa
+yers.js
 ```
 
 And to help you keep track of things, this is your new file structure:
@@ -376,7 +377,7 @@ And to help you keep track of things, this is your new file structure:
 │   ├── Controls
 │   ├── Map
 │   │   ├── Map.jsx
-│   │   └── hereTileLayers.js (don\'t forget to copy this file here)
+│   │   └── hereTileLayers.js
 │   ├── actions
 │   ├── index.css
 │   ├── index.js
