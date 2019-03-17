@@ -35,8 +35,7 @@ We will make use of the handy [create-react-app](https://github.com/facebook/cre
 Go ahead and run this command within our working directory:
 
 ```sh
-npx create-react-app app
-cd app
+npx create-react-app app && cd $_
 ```
 
 This will create a new folder named `app`.
@@ -44,7 +43,7 @@ Within you will find a folder `src` holding the source files created for the `cr
 No need for them, so for now please delete all source files as we will replace them with our own step by step.
 
 ```sh
-rm -rf src/*
+rm -rf src/
 ```
 
 ### Dependencies
@@ -329,7 +328,7 @@ class Map extends React.Component {
     brand.onAdd = function(map) {
       var div = L.DomUtil.create('div', 'brand')
       div.innerHTML =
-        '<a href="https://gis.ops.com" target="_blank"><img src="http://104.199.51.11:8083/wp-content/uploads/2018/11/gisops.png" width="150px"></img></a>'
+        '<a href="https://gis-ops.com" target="_blank"><img src="http://104.199.51.11:8083/wp-content/uploads/2018/11/gisops.png" width="150px"></img></a>'
       return div
     }
     this.map.addControl(brand)
@@ -454,7 +453,13 @@ And guess what: they are talking to each other through our redux store!
 
 Before we go ahead though with creating our controls, let's fire up the map with `npm start`; the following screenshot is what you should see (if you are experiencing an error in your shell then please carefully go through the steps again as you may have missed something crucial).
 
-By the way, if you have installed the `redux-devtools plugin` in your browser you will be able to access the state object.
+You can safely ignore the warning about the unused variable:
+
+`Line 8:  'createLogger' is defined but never used  no-unused-vars`
+
+In case our app starts perfectly but your browser doesn't redirect you to the map, head over to [localhost:3000](localhost:3000) on your own.
+
+By the way, if you have installed the redux-devtools plugin in your browser you will be able to access the state object.
 
 ![The leaflet map](https://user-images.githubusercontent.com/10322094/53686550-d0a57000-3d28-11e9-99c7-20055b815cac.png "The leaflet map")
 
@@ -491,7 +496,7 @@ import {
   Button
 } from "semantic-ui-react"
 
-// here are our first two actions, we will be adding them in the next step, bare with me!
+// here are our first two actions, we will be adding them in the next step, bear with me!
 import {
   updateTextInput,
   fetchHereGeocode,
@@ -579,7 +584,7 @@ class Control extends React.Component {
       isFetching,
       userTextInput,
       results
-    } = this.props
+    } = this.props;
 
     return (
       <div>
@@ -756,7 +761,7 @@ import {
 ...
 ```
 
-And please add the the following cases to our switch clause in order for the reducer to know what to reduce for which action:
+And please add the the following cases to our `switch clause` under `isochroneControls` in the same file to let the the reducer know what to reduce for which action:
 
 
 ```javascript
@@ -794,12 +799,12 @@ case UPDATE_CENTER:
 ...
 ```
 
-To complete this step we have to import the controls to our application.
+To complete this step we have to import the controls to our application in `App.jsx`.
 
 ### App.jsx
 
 - import the controls with `import Controls from './Controls/Control'`
-- and render them with `<Controls />` inside our `<div>...</div>`
+- and render them by adding `<Controls />` inside the `<div>...</div>` section.
 
 With all the changes in place you browser should update itself automatically.
 If it doesn't happen then run `npm start` again.
@@ -812,7 +817,7 @@ It should look something like this:
 ## Step 4 - Settings for the user
 
 We now want to provide a rich set of options for the user to control the input parameters for the isochrones.
-Let's define some requirements:
+Let's define some requirements in the now to be created `Settings.jsx` under `Controls`:
 
 1. Select mode pedestrian or car
 2. Turn HERE Maps traffic settings on & off for the car profile
@@ -870,7 +875,7 @@ class Settings extends React.Component {
 
     if (
       controls.settings.range.value < controls.settings.interval.value ||
-      controls.settings.interval.value == ""
+      controls.settings.interval.value === ""
     ) {
       controls.settings.interval.value = controls.settings.range.value
     }
@@ -1113,7 +1118,7 @@ We will handle this logic in our control component:
 
 ### Control.jsx
 
-We first of all we should add some new `propTypes` to our component.
+First of all we should add some new `propTypes` to our component.
 
 ```javascript
 //class Control extends React.Component {
@@ -1124,7 +1129,7 @@ We first of all we should add some new `propTypes` to our component.
 
 ```
 
-Additionally we need an to import a new action `fetchHereIsochrones` which yet has to be defined:
+Additionally we need to import a new action `fetchHereIsochrones` which yet has to be defined:
 
 ```javascript
 ...
@@ -1140,7 +1145,7 @@ import {
 ```
 
 Obviously this action has to be called from a button, which has to be inserted directly beneath our Search component with a click listener bound to it.
-Hence our render function of our controls will look something like this:
+Hence the render function of our controls will look something like this:
 
 ```javascript
 ...
@@ -1195,7 +1200,7 @@ render() {
             onClick={this.handleFetchIsochrones}
           />
         </div>
-        <Container className="mt2"><Settings /></Container>
+        <div className="mt2"><Settings /></div>
       </Segment>
     </div>
   );
@@ -1328,8 +1333,7 @@ const processIsolineSettings = (settings) => {
   let isolineParameters = {}
 
   // we prepare the GET parameters according to the HERE Maps Isochrones API docs
-  isolineParameters.mode =
-    'fastest;' + settings.mode + ';' + 'traffic:' + settings.traffic + ';'
+  isolineParameters.mode = `fastest;${settings.mode};traffic:${settings.traffic};`
   isolineParameters.rangetype = settings.rangetype
 
   isolineParameters.start = settings.isochronesCenter.lat + ',' + settings.isochronesCenter.lng
