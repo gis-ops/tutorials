@@ -43,7 +43,7 @@ Within you will find a folder `src` holding the source files created for the `cr
 No need for them, so for now please delete all source files as we will replace them with our own step by step.
 
 ```sh
-rm -rf src/
+rm -rf src/*
 ```
 
 ### Dependencies
