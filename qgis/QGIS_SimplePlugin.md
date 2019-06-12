@@ -12,7 +12,7 @@ This tutorial is part of our QGIS tutorial series:
 
 This tutorial follows you through the development process of a simple QGIS 3 Python plugin using the amazing [Plugin Builder 3](http://g-sherman.github.io/Qgis-Plugin-Builder/).
 
-The final plugin can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quickapi).
+The final plugin can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api).
 
 **Goals**:
 
@@ -149,6 +149,8 @@ Now, your GUI should look similar to this:
 
 ![Final GUI](https://github.com/gis-ops/tutorials/raw/master/qgis/static/img/quick_api_img4.png)
 
+**Don't forget to save the UI file!** That can be a significant source of frustration.
+
 ## Code
 
 **You'll only work in `quick_api.py`.**
@@ -197,14 +199,23 @@ Note, in other plugin tutorials people often use star imports, i.e. `from qgis.c
 
 ### Set dialog attributes
 
-You included a CRS picker in your plugin. However, there's no option to set a default CRS from Qt Designer. Since you want this to be WGS84 (most coordinates are copied from online map providers such as Google Maps), you have to deal with this in the code. Add the following line to the first `if` statement in `run(self)`:
+You included a CRS picker in your plugin. However, there's no option to set a default CRS from Qt Designer. Since you want this to be WGS84 (most coordinates are copied from online map providers such as Google Maps), you have to deal with this in the code. Add the following line to the end in the first `if` statement in `run(self)`:
 
 ```python
 if self.first_start == True:
-    dlg.crs_input.setCrs(QgsCoordinateReferenceSystem(4326))
+		...
+    self.dlg.crs_input.setCrs(QgsCoordinateReferenceSystem(4326))
 ```
 
 `crs_input` is the CRS picker GUI object, an instance of `QgsProjectionSelectionWidget`. In its [documentation](https://qgis.org/api/classQgsProjectionSelectionWidget.html#a2af9a2e3aaf29ddbe9a6a9121d9bf505), you'll find all info on its methods, like `setCrs()`. Which expects a `QgsCoordinateReferenceSystem`, which again can be built from a valid EPSG code as integer.
+
+### Save reference to current project
+
+All throughout the following code we'll need a reference to a `QgisProject` instance, which refers to the QGIS project which is currently active for a user. As that, it deals with all project properties (in `read` and `write` mode), e.g. the file path, the map CRS and also the map layers present in the project. Add the following line above `self.dlg.show()`:
+
+```python
+project = QgsProject.instance()
+```
 
 ### 1. Process user input
 
@@ -212,8 +223,8 @@ Once the GUI is correctly built, it's shown to the user and it'll be open until 
 
 ```python
 if result:
-    lineedit_text = dlg.lineedit_xy.value()
-    crs_input = dlg.crs_input.crs()
+    lineedit_text = self.dlg.lineedit_xy.value()
+    crs_input = self.dlg.crs_input.crs()
     crs_out = QgsCoordinateReferenceSystem(4326)
 ```
 
@@ -256,8 +267,8 @@ If the coordinate input was in a CRS differenct from WGS84, we need to transform
 # if result:
 if crs_input.authid() != 'EPSG:4326':
     xform = QgsCoordinateTransform(crs_input,
-                                   self.crs_out,
-                                   self.project)
+                                   crs_out,
+                                   project)
     point_transform = xform.transform(point)
     point = point_transform
 ```
@@ -296,7 +307,9 @@ if response.status_code == 200:
     if response_json.get('error'):
         QMessageBox.critical(self.iface.mainWindow(),
 			                       "Quick API error",
-	                                       "The request was not processed succesfully!\n\n"								               "Message:\n"													       "{}".format(response.json()))
+	                           "The request was not processed succesfully!\n\n"
+														 "Message:\n"
+														 "{}".format(response.json()))
         return
 ```
 
@@ -368,11 +381,11 @@ bbox_geom = QgsGeometry.fromPolygonXY([[QgsPointXY(min_x, min_y),
                                        ]])
 
 # Transform bbox if map canvas has a different CRS
-if self.project.crs().authid() != 'EPSG:4326':
+if project.crs().authid() != 'EPSG:4326':
     xform = QgsCoordinateTransform(crs_out,
-	     		           self.project.crs(),
-			           self.project)
-bbox_geom.transform(xform)
+	     		           							 project.crs(),
+			           			 						 project)
+		bbox_geom.transform(xform)
 self.iface.mapCanvas().zoomToFeatureExtent(QgsRectangle.fromWkt(bbox_geom.asWkt()))
 ```
 

@@ -9,15 +9,15 @@
 [general]
 name=Quick API
 qgisMinimumVersion=3.0
-description=This plugin queries Nominatim's Reverse Geocode API
+description=This plugin balbla
 version=0.1
-author=GIS-OPS UG
-email=nils@gis-ops.org
+author=bla
+email=abl
 
-about=Returning a geocoded point by querying Nominatim Reverse Geocode API.
+about=Provide a brief description of the plugin and its purpose.
 
-tracker=https://github.com/nilsnolde/tutorials/issues
-repository=https://github.com/nilsnolde/tutorials/tree/master/qgis/examples/quickapi
+tracker=http://bugs
+repository=http://repo
 # End of mandatory metadata
 
 # Recommended items:
@@ -26,9 +26,9 @@ repository=https://github.com/nilsnolde/tutorials/tree/master/qgis/examples/quic
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=web, nominatim, reverse geocode, geocode
+tags=python
 
-homepage=http://gis-ops.com
+homepage=http://homepage
 category=Vector
 icon=icon.png
 # experimental flag

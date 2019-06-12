@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>251</width>
+    <width>245</width>
     <height>105</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    <item>
     <widget class="QgsFilterLineEdit" name="lineedit_xy">
      <property name="placeholderText">
-      <string>Y, X (Lat/Lon)</string>
+      <string>Y, X (Lat, Lon)</string>
      </property>
      <property name="qgisRelation" stdset="0">
       <string notr="true"/>
