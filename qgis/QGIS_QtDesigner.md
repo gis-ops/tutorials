@@ -2,13 +2,15 @@
 
 This tutorial is part of our QGIS tutorial series:
 
-- [QGIS 3 - Plugin 101](https://gis-ops.com/qgis-3-plugin-development-reference-guide/)
-- [QGIS 3 - Qt Designer for Plugins](https://gis-ops.com/qgis-3-qt-designer-explained/)
-- [QGIS 3 - Build your first plugin](https://gis-ops.com/qgis-simple-plugin/)
+- [QGIS 3 Plugins - Plugin 101](https://gis-ops.com/qgis-3-plugin-development-reference-guide/)
+- [QGIS 3 Plugins - Qt Designer](https://gis-ops.com/qgis-3-qt-designer-explained/)
+- [QGIS 3 Plugins - Signals and Slots in PyQt](https://gis-ops.com/qgis-3-plugins-pyqt-signals-slots/)
+- [QGIS 3 Plugins - Plugin Development Part 1](https://gis-ops.com/qgis-simple-plugin/)
+- [QGIS 3 Plugins - Plugin Development Part 2](https://gis-ops.com/qgis-3-use-interactive-mapping/)
 
 ---
 
-# QGIS 3 - Qt Designer for Plugins
+# QGIS 3 Plugins - Qt Designer for Plugins
 
 Qt Designer is an easy-to-use program to build UI's for Qt frameworks. Luckily, QGIS ships the program with its core on all operating systems and should be available as an executable on your computer.
 

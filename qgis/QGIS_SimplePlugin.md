@@ -2,13 +2,15 @@
 
 This tutorial is part of our QGIS tutorial series:
 
-- [QGIS 3 - Plugin 101](https://gis-ops.com/qgis-3-plugin-development-reference-guide/)
-- [QGIS 3 - Qt Designer for Plugins](https://gis-ops.com/qgis-3-qt-designer-explained/)
-- [QGIS 3 - Build your first plugin](https://gis-ops.com/qgis-simple-plugin/)
+- [QGIS 3 Plugins - Plugin 101](https://gis-ops.com/qgis-3-plugin-development-reference-guide/)
+- [QGIS 3 Plugins - Qt Designer](https://gis-ops.com/qgis-3-qt-designer-explained/)
+- [QGIS 3 Plugins - Signals and Slots in PyQt](https://gis-ops.com/qgis-3-plugins-pyqt-signals-slots/)
+- [QGIS 3 Plugins - Plugin Development Part 1](https://gis-ops.com/qgis-simple-plugin/)
+- [QGIS 3 Plugins - Plugin Development Part 2](https://gis-ops.com/qgis-3-use-interactive-mapping/)
 
 ---
 
-# QGIS 3 - Build your first plugin
+# QGIS 3 Plugins - Build your first plugin
 
 This tutorial follows you through the development process of a simple QGIS 3 Python plugin using the amazing [Plugin Builder 3](http://g-sherman.github.io/Qgis-Plugin-Builder/).
 
@@ -30,7 +32,7 @@ The final plugin can be found in our [tutorial repository](https://github.com/gi
 
 > **Disclaimer**
 >
-> Validity only confirmed for **Ubuntu 18.04** and **QGIS v3.4**
+> Validity only confirmed for **Ubuntu 18.04** and **QGIS <= v3.6.3**
 > Occassionally, the author might choose to give hints on Windows-specific setups. `Ctrl+F` for WINDOWS flags. Mac OS users should find the instructions reasonably familiar.
 
 ## Prerequisites
