@@ -1,0 +1,25 @@
+@import "~semantic-ui-css/semantic.css";
+@import "~leaflet/dist/leaflet.css";
+@import "~tachyons/css/tachyons.css";
+@import "~react-semantic-toasts/styles/react-semantic-alert.css";
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.gis-ops-logo {
+  background-image: url("images/gisops.png");
+  height: 31px; /* You must set a specified height */
+  width: 150px;
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+}
+
+.here-logo {
+  background-image: url("images/here.png");
+  height: 150px; /* You must set a specified height */
+  width: 150px;
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+}

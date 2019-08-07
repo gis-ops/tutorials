@@ -1,3 +1,5 @@
 **/__pycache__/
 **/.idea/
 test/
+.DS_Store
+node_modules
