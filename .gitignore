@@ -3,3 +3,5 @@
 test/
 .DS_Store
 node_modules
+yarn-error.log
+yarn.lock
