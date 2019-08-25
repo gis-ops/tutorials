@@ -68,12 +68,12 @@ The **prerequisites** section is **made for you** to give you an overview of wha
 -   That's it (and remember: a red printed terminal line doesn't necessarily mean, it's an error ;))
 
 ### Recommendations
--   If you haven't setup Valhalla on Ubuntu 18.04 yet, head over to the tutorial on [How to build and install Valhalla 3.0.1 on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_Install_Ubuntu1804.md).
--   For a more easy approach to setup and run Valhalla, you can alternatively have a look at our [How to setup and run Valhalla on Ubuntu 18.04 in Docker](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_setup_run_docker.md).  
+-   If you haven't setup Valhalla on Ubuntu 18.04 yet, head over to the tutorial on [How to build and install Valhalla 3.0.1 on Ubuntu 18.04](https://gis-ops.com/valhalla-how-to-build-and-install-on-ubuntu-18-04/).
+-   For a more easy approach to setup and run Valhalla, you can alternatively have a look at our [How to setup and run Valhalla on Ubuntu 18.04 in Docker](https://gis-ops.com/valhalla-how-to-run-with-docker/).  
 
 ---
 
-This tutorial will guide you through the process of how to configure and run Valhalla. This tutorial is the direct successor of the tutorial on [How to build and install Valhalla on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_Install_Ubuntu1804.md). You can follow this tutorial analogous on any Ubuntu 18.04 in a docker or another Virtual Environment with a built and installed version of Valhalla.  
+This tutorial will guide you through the process of how to configure and run Valhalla. This tutorial is the direct successor of the tutorial on [How to build and install Valhalla on Ubuntu 18.04](https://gis-ops.com/valhalla-how-to-build-and-install-on-ubuntu-18-04/). You can follow this tutorial analogous on any Ubuntu 18.04 in a docker or another Virtual Environment with a built and installed version of Valhalla.  
 So let's go, `open your terminal!`
 
 ## 1. Preparations
