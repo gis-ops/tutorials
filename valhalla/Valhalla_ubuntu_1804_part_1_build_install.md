@@ -66,10 +66,10 @@ The Valhalla code and more details can be found at their [GitHub repository](htt
 ### Recommendations
 
 **Build virtually**: If you're new to building software, **don't try this tutorial on a setup you depend on**. Every system is unique and even if you follow each step correctly in this tutorial, building software from scratch is always bonded to system sensitive tasks and can easily mess around with your live system.  
-Alternatively we recommend you to directly use our [How to setup and run Valhalla on Ubuntu 18.04 in Docker](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_setup_run_docker.md) or run this tutorial in a freshly installed [Ubuntu 18.04 with Virtual Box](https://linuxhint.com/install_ubuntu_18-04_virtualbox/).
+Alternatively we recommend you to directly use our [How to setup and run Valhalla on Ubuntu 18.04 in Docker](https://gis-ops.com/valhalla-how-to-run-with-docker/) or run this tutorial in a freshly installed [Ubuntu 18.04 with Virtual Box](https://linuxhint.com/install_ubuntu_18-04_virtualbox/).
 
 ### After the tutorial:
-If you already have a running version of Valhalla and want to learn more, head over to our tutorial on [How to configure and run Valhalla on Ubuntu 18.04](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_configure_use_local.md).
+If you already have a running version of Valhalla and want to learn more, head over to our tutorial on [How to configure and run Valhalla on Ubuntu 18.04](https://gis-ops.com/valhalla-how-to-build-and-install-on-ubuntu-18-04/).
 
 ---
 
@@ -287,7 +287,7 @@ make install
 ---
 
 # Next steps:
-Now that Valhalla is successfully running in Ubuntu 18.04, head over to our Tutorial [*How to configure and run Valhalla on Ubuntu 18.04*](https://github.com/gis-ops/tutorials/blob/master/valhalla/Valhalla_configure_use_local.md).
+Now that Valhalla is successfully running in Ubuntu 18.04, head over to our Tutorial [*How to configure and run Valhalla on Ubuntu 18.04*](https://gis-ops.com/valhalla-how-to-run-on-ubuntu-18-04/).
 
 # Troubleshooting
 The release of Ubuntu 18.04 has changed a few system side things. Thankfully Valhalla is a well programmed and designed piece of software and will deal with the most differences and will keep the user informed.

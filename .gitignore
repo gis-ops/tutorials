@@ -2,3 +2,7 @@
 **/.idea/
 test/
 **/wp-content/
+.DS_Store
+node_modules
+yarn-error.log
+yarn.lock
