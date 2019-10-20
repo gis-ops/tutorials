@@ -109,7 +109,7 @@ So, this hypothetical plugin would capture the point clicked by a user upon rele
 
 ### Overloaded signal example
 
-Let's get a little fancier and say we want to print the distance of that point to our location when we click the mouse, but the WKT representation when we release the mouse button.
+Let's get a little fancier and say we want to print the distance of that point to our location when we **click** the mouse, but the WKT representation when we **release** the mouse button.
 
 We can achieve this with the exact same `signal` if we define it with an overloaded signature. Yep, finally seeing how a Schrödinger's signal can work:
 

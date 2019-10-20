@@ -1,0 +1,27 @@
+version: '3.1'
+networks:
+  back:
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: metageo_plugin_db_2
+    environment:
+      - MYSQL_ROOT_PASSWORD=VIX42qwM*91a
+      - MYSQL_DATABASE=wordpress
+    networks:
+      - back
+    restart: unless-stopped
+  wordpress:
+    depends_on:
+      - db
+    container_name: metageo_plugin_wp_2
+    image: wordpress
+    restart: unless-stopped
+    ports:
+      - 8090:80
+    volumes:
+      - ./wp-content:/var/www/html/wp-content
+      - ./wp-config.php:/var/www/html/wp-config.php
+    networks:
+      - back
