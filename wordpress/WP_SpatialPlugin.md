@@ -2,11 +2,11 @@
 
 This tutorial will give an introduction into enabling WordPress with spatial capabilities via a custom plugin and expose those functionalities via the built-in REST API.
 
-It will make use of the excellent WP GeoMeta plugin by [Michael Moore](https://twitter.com/stuporglue). It hasn't been maintained for a while, however it's still running strong with the newest WordPress version (5.2.x at the time of writing). It will serve as the basis for the plugin you'll develop.
+It will make use of the excellent [WP GeoMeta plugin](https://github.com/BrilliantPlugins/wp-geometa) by [Michael Moore](https://twitter.com/stuporglue). It hasn't been maintained for a while, however it's still running strong with the newest WordPress version (5.2.x at the time of writing). It will serve as the basis for the plugin you'll develop.
 
 **Note**, that the final result of this tutorial is only useful if you deploy WordPress as a backend and use a frontend framework (e.g. React, AngularJS) to access WordPress via its REST API, see also [Motivation](#Motivation). However, the steps included to get to the final result can also be helpful when using WordPress as frontend.
 
-The final plugin can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api_interactive).
+The final plugin can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/wordpress/examples/metageo_plugin/gisops_wp_spatial).
 
 ### Motivation
 
@@ -14,11 +14,11 @@ WordPress is powerful. Very powerful. Most people only know it for its fool-proo
 
 Its real power lies in its backend. WordPress core provides complete user management out-of-the-box and mighty plugins like WooCommerce make very complex web shop setups a breeze. And the best thing: it all comes with a well-documented and reeeaaally easily extendable **REST API**. You start to see its real merits?
 
-However, we're immediately missing spatial capabilities and likely you are too, if you landed here. What if you want to query the geographical location of users (provided you have their locations)? Or what if you set up a web shop for vector print maps and want to query my WooCommerce store by bounding box to intersect the map products available within the lateral extent of a web map app (*Spoiler*: that's how we actually got here!)? Fear not, read on and learn how to do just that. All contained within your very own WordPress installation, no PostGIS server and even fully functional on shared hosts.
+However, we're immediately missing spatial capabilities and likely you are too, if you landed here. What if you want to query the geographical location of users (provided you have their locations)? Or what if you set up a web shop for vector print maps and want to query your WooCommerce store by bounding box to intersect the map products available within the lateral extent of a web map app (*Spoiler*: that's how we actually got here!)? Fear not, read on and learn how to do just that. All contained within your very own WordPress installation, no PostGIS server and even fully functional on shared hosts.
 
 **Goals**:
 
-- Get familiar with the WP GeoMeta Plugin by [Michael Moore](https://twitter.com/stuporglue)
+- Get familiar with the [WP GeoMeta Plugin](https://github.com/BrilliantPlugins/wp-geometa) by [Michael Moore](https://twitter.com/stuporglue)
 - Create a WordPress plugin from scratch
 - Extend existing WordPress REST API routes with new fields
 - Extend WordPress REST API with custom routes
@@ -46,7 +46,7 @@ For convenience, we include a `docker-compose.yml` which you can run to setup a 
 
 ## 2 WP GeoMeta Plugin
 
-[Michael Moore](https://update.link) developed this plugin back in 2017 when he presented it on the FOSSGIS conference. Since then it's unfortunately been fairly quiet on the project. However, it's still alive and kicking on WordPress v5.2.x. So, let's get started.
+[Michael Moore](https://twitter.com/stuporglue) developed this plugin back in 2017 when he presented it on the Boston 2017 FOSS4G conference. Since then it's unfortunately been fairly quiet on the project. However, it's still alive and kicking on WordPress v5.2.x. So, let's get started.
 
 ### Details
 
@@ -75,9 +75,9 @@ First, clone the plugin repository to `./wp-content/plugins` and change the owne
 ```bash
 cd wp-content/plugins
 
-git clone https://github.com/BrilliantPlugins/wp-geometa-lib
+git clone https://github.com/BrilliantPlugins/wp-geometa
 
-sudo chown -R www-data:www-data wp-geometa-lib
+sudo chown -R www-data:www-data wp-geometa
 ```
 
 Now you can go into your WordPress admin site and activate the plugin. Upon successful activation, you'll see a *WP-GeoMeta* entry in the *Tools* menu:
@@ -144,7 +144,7 @@ After you saved the file you can go back to your Admin are in WordPress and acti
 
 ## 4 Add location to users
 
-Let's dive into adding a new REST API route. After this section, you'll have spatial data in your MySQL `WordPress` database that you can view in the GeoMeta plugin dashboard. This is one of the sections that only makes sense if you access the WordPress backend from a frontend technology.
+Let's dive into adding a new REST API route. After this section, you'll have spatial data in your MySQL `wordpress` database that you can view in the GeoMeta plugin dashboard. This is one of the sections that only makes sense if you access the WordPress backend from a frontend technology.
 
 Here's the catch though: if you want a painless way to insert data to the `user` table to quickly show results, you need to do things a little differently from what you'd actually do in a production scenario. Those standard WordPress tables are protected against unauthenticated API calls to update or insert records. For quite obvious reasons. Since you don't want to do deal with WordPress authentication at this point, we'll show you both ways: a bad and hacky way and the way you'd normally go about this.
 
@@ -561,7 +561,18 @@ To additionally confirm that it's working as intended, try to add a bounding box
 
 ## 7 Final plugin
 
-You can find the code for the final plugin in our [repository](https://github.com/gis-ops/tutorials/tree/master/examples/metageo_plugin/gisops_wp_spatial).
+Your final plugin structure should look like this:
+
+```bash
+├── gisops_wp_spatial
+│   ├── gis_ops.php
+│   └── includes
+│       └── spatial
+│           ├── gis_ops-spatial-data-wp-api.php
+│           └── spatial-events-listener.php
+```
+
+If you want to verify your results, you can find the code for the final plugin in our [repository](https://github.com/gis-ops/tutorials/tree/master/examples/metageo_plugin/gisops_wp_spatial).
 
 To get you started right away, we have included a `docker-compose.yml`. Just do `docker-compose up -d` and you'll find a `./wp-content` directory. Wordpress is now available on http://localhost:8090. Don't forget to make it accessible for Apache: `sudo chmod -R 777 wp-content` (or `chown` to `www-data:www-data`).
 
