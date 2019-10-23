@@ -8,7 +8,7 @@ It will make use of the excellent [WP GeoMeta plugin](https://github.com/Brillia
 
 The final plugin can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/wordpress/examples/metageo_plugin/gisops_wp_spatial).
 
-![GeoMeta Plugin example](img/wp_geometa_example.png)
+![GeoMeta Plugin example](https://github.com/gis-ops/tutorials/raw/master/wordpress/img/wp_geometa_example.png)
 *WP GeoMeta Plugin example with a bunch of polygons*
 
 ### Motivation
@@ -45,7 +45,11 @@ You will create a custom route with the WordPress REST API, which will be able t
 
 Your WordPress installation can be remote on a server or local and natively on the host or in a Docker container. That's entirely up to you. However, we do recommend doing it locally with Docker, as you'll need to do quite a bit of PHP programming in the `wp-content/plugins` folder. So you'll need the files offline, plus you don't want to litter your precious environment with the likes of PHP ;)
 
-For convenience, we include a `docker-compose.yml` which you can run to setup a bare-metal WordPress installation and exposes the `wp-content` directory, so you can start developing instantly with the IDE of your choice. See [*7 Final plugin*](#7-final-plugin) for details on installation via `docker-compose`.
+For convenience, we include a `docker-compose.yml` which you can run to setup a bare-metal WordPress installation and exposes the `wp-content` directory, so you can start developing instantly with the IDE of your choice. Upon `docker-compose up -d`, a new directory `./wp-content` will be available, which contains most WordPress files and most importantly the `plugins` directory.
+
+To be able to develop in this directory, you'll need to change the permissions of `wp-content`: `sudo chmod -R 777 wp-content` (no worries, it's just localhost!).
+
+WordPress is now available on http://localhost:8090. If you haven't done so already, go through the installation process now. Once installed, you need to **change the permalinks settings** to enable "normal" access to the REST API. In *Settings* ► *Permalinks*, switch to the *Post name* URL structure. Just to see if it works, call http://localhost:8090/wp-json, which should give you the full API specifications.
 
 ## 2 WP GeoMeta Plugin
 
@@ -83,9 +87,9 @@ git clone https://github.com/BrilliantPlugins/wp-geometa
 sudo chown -R www-data:www-data wp-geometa
 ```
 
-Now you can go into your WordPress admin site and activate the plugin. Upon successful activation, you'll see a *WP-GeoMeta* entry in the *Tools* menu:
+Now you can go into your WordPress Administration page and activate the plugin. Upon successful activation, you'll see a *WP-GeoMeta* entry in the *Tools* menu:
 
-![Plugin activate](img/wp_geometa_activate.png)
+![Plugin activate](https://github.com/gis-ops/tutorials/raw/master/wordpress/img/wp_geometa_activate.png)
 
 ### Usage
 
@@ -143,13 +147,13 @@ $baseNamespace = 'gisops/v1';
 
 The header in this file is how you let WordPress know of its existence. It has to comply with the [WordPress header requirements](https://developer.wordpress.org/plugins/the-basics/header-requirements/) and at the very minimum contain the entry `* Plugin Name: xxx`.  
 
-After you saved the file you can go back to your Admin are in WordPress and activate the (still functionless) plugin. In the next sections you'll add functionality.
+After you saved the file you can go back to the WordPress Administration site and activate the (still unfunctional) plugin. In the next sections you'll add functionality.
 
 ## 4 Add location to users
 
 Let's dive into adding a new REST API route. After this section, you'll have spatial data in your MySQL `wordpress` database that you can view in the GeoMeta plugin dashboard. This is one of the sections that only makes sense if you access the WordPress backend from a frontend technology.
 
-Here's the catch though: if you want a painless way to insert data to the `user` table to quickly show results, you need to do things a little differently from what you'd actually do in a production scenario. Those standard WordPress tables are protected against unauthenticated API calls to update or insert records. For quite obvious reasons. Since you don't want to do deal with WordPress authentication at this point, we'll show you both ways: a bad and hacky way and the way you'd normally go about this.
+Here's the catch though: if you want a painless way to insert data to the `user` table to quickly show results, you need to do things a little differently from what you'd actually do (or we'd recommend) in a production scenario. Those standard WordPress tables are protected against unauthenticated API calls to update or insert records. For quite obvious reasons. Since you don't want to do deal with WordPress authentication at this point, we'll show you both ways: a bad and hacky way and the way you'd normally go about this.
 
 ### Add a new API route - hacky workaround
 
@@ -244,7 +248,7 @@ $gisopsSpatialData = new GisOpsSpatialData($baseNamespace);
 
 ### Try it out - hacky workaround
 
-Finally you can see all this actually worked. If you didn't do so yet, activate now your plugin on the WordPress Admin site. Then flip over to your favorite HTTP handler (we recommend [Postman](https://www.getpostman.com), but `curl` will also do) and fire against your new endpoint. For convenience, this should work from your terminal:
+Finally you can see all this actually worked. If you didn't do so yet, activate now your plugin on the WordPress Administration site. Then flip over to your favorite HTTP handler (we recommend [Postman](https://www.getpostman.com), but `curl` will also do) and fire against your new endpoint. For convenience, this should work from your terminal:
 
 ```bash
 curl -X POST \
@@ -550,7 +554,7 @@ The new GET endpoint to filter users by bounding box is available on `http://loc
 
 In the example above you used our office location at [Friedrichstraße 123, 10117 Berlin](https://www.openstreetmap.org/node/1552051608). Just search for the address in Klokantech's UI, zoom there and use the bounding box drawer in the upper left to draw a bbox around your address. In the lower left, you can choose `CSV` format and copy the CSV-style bounding box:
 
-![Plugin activate](img/wp_geometa_bbox_selector.png)
+![Plugin activate](https://github.com/gis-ops/tutorials/raw/master/wordpress/img/wp_geometa_bbox_selector.png)
 
 Then use that bounding box value to add to your GET request:
 
@@ -575,6 +579,6 @@ Your final plugin structure should look like this:
 
 If you want to verify your results, you can find the code for the final plugin in our [repository](https://github.com/gis-ops/tutorials/tree/master/examples/metageo_plugin/gisops_wp_spatial).
 
-To get you started right away, we have included a `docker-compose.yml`. Just do `docker-compose up -d` and you'll find a `./wp-content` directory. Wordpress is now available on http://localhost:8090. Don't forget to make it accessible for Apache: `sudo chmod -R 777 wp-content` (or `chown` to `www-data:www-data`).
+To get you started right away, we have included a `docker-compose.yml`. Go through the [General Setup](#1-general-setup) if you're having trouble with `docker-compose`.
 
 To include the full plugin to WordPress, just copy the `gisops_wp_spatial` folder to `./wp-content/plugins` and activate it in the WordPress Admin site.
