@@ -84,6 +84,12 @@ cd wp-content/plugins
 
 git clone https://github.com/BrilliantPlugins/wp-geometa
 
+cd wp-geometa
+
+git submodule update --init --recursive
+
+cd ..
+
 sudo chown -R www-data:www-data wp-geometa
 ```
 
