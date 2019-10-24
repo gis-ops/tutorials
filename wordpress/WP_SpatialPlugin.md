@@ -91,6 +91,13 @@ Now you can go into your WordPress Administration page and activate the plugin. 
 
 ![Plugin activate](https://github.com/gis-ops/tutorials/raw/master/wordpress/img/wp_geometa_activate.png)
 
+**Note**, if you're having trouble in WordPress activating WP GeoMeta, you likely have to update its `git` submodules:
+
+```bash
+cd wp-geometa
+git submodule update --init --recursive
+```
+
 ### Usage
 
 If you skip over to the UI of the plugin in *Tools* ► *Wp-GeoMeta*, you'll see quite a few tabs. A few of them are really helpful for sanity checks:
