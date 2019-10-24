@@ -84,18 +84,19 @@ cd wp-content/plugins
 
 git clone https://github.com/BrilliantPlugins/wp-geometa
 
-cd wp-geometa
-
-git submodule update --init --recursive
-
-cd ..
-
 sudo chown -R www-data:www-data wp-geometa
 ```
 
 Now you can go into your WordPress Administration page and activate the plugin. Upon successful activation, you'll see a *WP-GeoMeta* entry in the *Tools* menu:
 
 ![Plugin activate](https://github.com/gis-ops/tutorials/raw/master/wordpress/img/wp_geometa_activate.png)
+
+**Note**, if you're having trouble in WordPress activating WP GeoMeta, you likely have to update its `git` submodules:
+
+```bash
+cd wp-geometa
+git submodule update --init --recursive
+```
 
 ### Usage
 
