@@ -397,7 +397,7 @@ First, construct `QgsPointXY`s from the extent of `boundingbox` and add those to
 
 When you've gone through all the steps above and your plugin works as expected, it's time to prepare for (a hypothetical) upload to the QGIS plugin repository.
 
-The final plugin can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quickapi). Feel free to clone it and compare.
+The final plugin can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api). Feel free to clone it and compare.
 
 **NOTE: do not upload this plugin to the QGIS repository!!**
 
