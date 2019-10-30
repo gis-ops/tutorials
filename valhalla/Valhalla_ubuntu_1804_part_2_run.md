@@ -121,7 +121,7 @@ This will give you access to the latest available Ubuntu packages through apt-ge
 
 ### Install the needed packages
 ```bash
-sudo apt-get install -y curl jq unzip spatial-bin
+sudo apt-get install -y curl jq unzip spatialite-bin
 ```
 
 -   `curl` is a handy tool to download nearly anything from any source through the cli.
