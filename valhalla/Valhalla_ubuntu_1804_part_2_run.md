@@ -95,21 +95,6 @@ valhalla_service
 
 If this is the case, Valhalla seems to be installed. So you can continue.
 
-### Create the needed folders
-Then you will need to create a few folders in your home folder where you are going to store all the files needed to configure and run Valhalla:
-
-```bash
-mkdir ~/valhalla && cd $_
-mkdir valhalla_tiles && mkdir conf
-```
-
--   `mkdir` is the command to create a new folder
--   `mkdir ~/valhalla` creates our workdir folder in your home folder `~/`.
--   `cd $_` changes the terminal path directly to the newly created folder. `$_` is a system variable and holds the output of the last command line call. In this case the path to the newly created folder.
--   `valhalla_tiles` will hold your processed Valhalla files.
--   `conf` will hold your Valhalla config file.
-
-
 ### Update the system  
 First update your systems packages with:
 
@@ -129,18 +114,18 @@ sudo apt-get install -y curl jq unzip spatialite-bin
 -   `unzip` for unzipping files. It is used internally by Valhalla.
 -   `spatialite-bin` for the spatialite support of Valhalla for building timezone and admin areas.
 
-### Download the script files
+### Download the script files and setup your working directory
 Stay in the same folder and run the following commands to download and prepare the needed scripts:
 
 ```bash
-git clone https://github.com/valhalla/valhalla.git ~/valhalla_git/
-cp -r ~/valhalla_git/scripts/ ~/valhalla/scripts
-rm -rf ~/valhalla_git
+git clone https://github.com/valhalla/valhalla.git ~/valhalla/
+cd ~/valhala/scripts/
+mkdir valhalla_tiles && mkdir conf
 ```
-
 -   `git clone` will give you access to the latest Valhalla code.
--   `rp -R` will recursively copy the needed scripts to our script folder.
--   `rm -rf` will recursively delete the valhalla_git. It's not needed anymore.  
+-   `mkdir` is the command to create a new folder.
+-   `valhalla_tiles` will hold your processed Valhalla files.
+-   `conf` will hold your Valhalla config file.
 
 ### Download the desired OSM extract
 In order to build tiles for Valhalla you need an OSM extract. You can download your desired region from [Geofabrik](https://download.geofabrik.de). Just copy the `*.osm.pbf` link to the extract of your choice. To keep things small we will stick to a small extract in the following example:
@@ -156,7 +141,7 @@ curl -O https://download.geofabrik.de/europe/albania-latest.osm.pbf
 The config file is the core part of the Valhalla setup and will hold all necessary file paths, so Valhalla knows where to look for and where to store data. Be sure to follow the instructions strictly:
 
 ```bash
-valhalla_build_config --mjolnir-tile-dir ${PWD}/valhalla_tiles --mjolnir-tile-extract ${PWD}/valhalla_tiles.tar --mjolnir-timezone ${PWD}/valhalla_tiles/timezones.sqlite --mjolnir-admin ${PWD}/valhalla_tiles/admins.sqlite > conf/valhalla.json
+valhalla_build_config --mjolnir-tile-dir ${PWD}/valhalla_tiles --mjolnir-tile-extract ${PWD}/valhalla_tiles.tar --mjolnir-timezone ${PWD}/valhalla_tiles/timezones.sqlite --mjolnir-admin ${PWD}/valhalla_tiles/admins.sqlite > ${PWD}/conf/valhalla.json
 ```
 
 -   `${PWD}` is the system variable for the current working directory.
@@ -165,13 +150,13 @@ valhalla_build_config --mjolnir-tile-dir ${PWD}/valhalla_tiles --mjolnir-tile-ex
 -   `--mjolnir-tile-extract` defines the file where the tarred Valhalla tiles will be stored.
 -   `--mjolnir-timezone` defines the folder where the SQLite file holding the time zone areas will be stored.
 -   `--mjolnir-admin` defines the path where the SQLite file holding the admin areas will be stored.
--   `> conf/valhalla.json` is the output file path for the config file.
+-   `> ${PWD}/conf/valhalla.json` is the output file path for the config file.
 
 ### Optional: Build admin areas
 This step is optional. The admin areas are used by Valhalla to process calculations whenever they cross administrative areas. As long as you're building a single country it is not necessary. Be sure to include them when you use sub-regions with multiple countries in it:
 
 ```bash
-valhalla_build_admins --config conf/valhalla.json albania-latest.osm.pbf
+valhalla_build_admins --config ./conf/valhalla.json albania-latest.osm.pbf
 ```
 
 -   `valhalla_build_admins` is the designated tool to build the admin areas.
@@ -182,21 +167,21 @@ valhalla_build_admins --config conf/valhalla.json albania-latest.osm.pbf
 This step is optional. The time zone areas are used by Valhalla to calculate departure and arrival times:
 
 ```bash
-./scripts/valhalla_build_timezones conf/valhalla.json
+./scripts/valhalla_build_timezones ./conf/valhalla.json
 ```
 
 -   This command will execute the designated script from the downloaded script files. It is important that you run `valhalla_build_timezones` in the `script` folder!
 
 ## 3. Build your tiles
 ```bash
-cd ~/valhalla
-valhalla_build_tiles -c conf/valhalla.json albania-latest.osm.pbf
+cd ~/valhalla/scripts/
+valhalla_build_tiles -c ./conf/valhalla.json albania-latest.osm.pbf
 find valhalla_tiles | sort -n | tar -cf "valhalla_tiles.tar" --no-recursion -T -
 ```
 
--   `cd ~/valhalla` will bring us back to the important folder, in case you accidentally switched to another one ;)...
+-   `cd ~/valhalla/scripts/` will bring us back to the important folder, in case you accidentally switched to another one ;)...
 -   `valhalla_build_tiles` is the needed tool to build the Valhalla tiles.
--   `-c conf/valhalla.json` shows the tool where to find the config file.
+-   `-c ./conf/valhalla.json` shows the tool where to find the config file.
 -   `albania-latest.osm.pbf` shows the tool where to find the used OSM extract.
 -   `find` is a Linux tool from the `findutils` package and is used to find folders and files. In the current example it will find the `valhalla_tiles` folder.
 -   `sort` is part of the `coreutils` package and will sort the files in `-n` a numerical order.
@@ -211,7 +196,7 @@ find valhalla_tiles | sort -n | tar -cf "valhalla_tiles.tar" --no-recursion -T -
 Now we're ready to run Valhalla:
 
 ```bash
-valhalla_service ~/valhalla/conf/valhalla.json 1
+valhalla_service ~/valhalla/scripts/conf/valhalla.json 1
 ```
 
 -   `valhalla_service` will start Valhalla with the correct config file `valhalla.json`.
