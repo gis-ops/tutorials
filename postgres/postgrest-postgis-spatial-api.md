@@ -2,6 +2,9 @@
 
 ![GeoJSONs over New York](https://user-images.githubusercontent.com/10322094/69978653-219efa80-152d-11ea-80d8-710b087ff12c.png "GeoJSONs over New York")
 
+**Disclaimer**: This tutorial was developed on Mac OSX 10.14.6 and tested on Ubuntu 18.04. 
+Windows compatibility cannot be guaranteed.
+
 In this tutorial you will learn how to build a spatial REST API with the powerful PostgREST library utilizing PostGIS under its hood - in mere minutes!
 
 We will implement a range of different API endpoints with the following functionality
@@ -115,6 +118,13 @@ CREATE ROLE authenticator NOINHERIT LOGIN PASSWORD 'gisops';
 GRANT web_anon TO authenticator;
 ```
 
+To make sure we use a suitable projection for our spatial calculations, we will use World Robinson's [EPSG:54030](https://epsg.io/54030).
+Please add it to your database with:
+
+```sh
+INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values ( 54030, 'ESRI', 54030, '+proj=robin +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs ', 'PROJCS["World_Robinson",GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Robinson"],PARAMETER["False_Easting",0],PARAMETER["False_Northing",0],PARAMETER["Central_Meridian",0],UNIT["Meter",1],AUTHORITY["EPSG","54030"]]');
+``` 
+
 Optionally, PostgREST can read a configuration file, e.g. to specify the database connection. Go ahead and create a file named `gisops-tutorial.conf` with the following information (remember to adapt the port and password if you have changed it in the earlier steps).
 
 ```sh
@@ -186,8 +196,8 @@ CREATE OR REPLACE FUNCTION api.calc_length(linestring json) RETURNS numeric AS $
       CAST(
         ST_Length(
           ST_Transform(
-            ST_GeomFromGeoJSON(LineString)
-          , 3857)
+            ST_GeomFromGeoJSON(LineString), 54030
+          )
         )/1000 AS numeric
       ),2
     )
@@ -208,11 +218,7 @@ curl -X POST \
 Voila! For our route through Kansas, USA it returns:
 
 ```sh
-[
-    {
-        "calc_length": 485.39
-    }
-]
+367.15
 ```
 
 kilometers!
@@ -232,8 +238,7 @@ CREATE OR REPLACE FUNCTION api.calc_area(featurecollection json) RETURNS numeric
           ST_Transform(
             ST_GeomFromGeoJSON(
               featurecollection->'features'->0->'geometry'
-            ),
-            3857
+            ), 54030
           )
         )/1000000 AS numeric
       ),2
@@ -254,12 +259,8 @@ curl -X POST \
 
 Our polygon covering part of New York is of size
 
-```
-[
-    {
-        "calc_area": 10723.31
-    }
-]
+```sh
+6017.49
 ```
 
 square kilometers. Easy.
@@ -301,49 +302,45 @@ curl -X POST \
 Which will respond with the GeoJSON intersection.
 
 ```sh
-[
-    {
-        "calc_intersection": {
-            "type": "Polygon",
-            "coordinates": [
-                [
-                    [
-                        -74.3926939034368,
-                        40.944056911669
-                    ],
-                    [
-                        -74.168701171875,
-                        41.2075889818102
-                    ],
-                    [
-                        -73.8446044921875,
-                        41.2530324406532
-                    ],
-                    [
-                        -73.6962890625,
-                        41.021355108666
-                    ],
-                    [
-                        -73.4662745356238,
-                        41.0053998532882
-                    ],
-                    [
-                        -73.4326171875,
-                        40.9176636245811
-                    ],
-                    [
-                        -74.2950439453125,
-                        40.8761414114137
-                    ],
-                    [
-                        -74.3926939034368,
-                        40.944056911669
-                    ]
-                ]
-            ]
-        }
-    }
-]
+{
+  "type": "Polygon",
+  "coordinates": [
+      [
+          [
+              -74.3926939034368,
+              40.944056911669
+          ],
+          [
+              -74.168701171875,
+              41.2075889818102
+          ],
+          [
+              -73.8446044921875,
+              41.2530324406532
+          ],
+          [
+              -73.6962890625,
+              41.021355108666
+          ],
+          [
+              -73.4662745356238,
+              41.0053998532882
+          ],
+          [
+              -73.4326171875,
+              40.9176636245811
+          ],
+          [
+              -74.2950439453125,
+              40.8761414114137
+          ],
+          [
+              -74.3926939034368,
+              40.944056911669
+          ]
+      ]
+  ]
+}
 ```
 
 ### Wrap-up
