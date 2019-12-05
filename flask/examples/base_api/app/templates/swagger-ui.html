@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    {% include 'swagger-ui-css.html' %}
+    {% include 'swagger-ui-libs.html' %}
+    <script type="text/javascript">
+        $(function () {
+            window.swaggerUi = new SwaggerUi({
+                url: "/api/swagger.json",
+                validatorUrl: "/" || null,
+                dom_id: "swagger-ui-container",
+                supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch', 'options'],
+                onComplete: function (swaggerApi, swaggerUi) {
+                    if (typeof initOAuth == "function") {
+                        {% if config.SWAGGER_UI_OAUTH_CLIENT_ID -%}
+                            initOAuth({
+                                clientId: "{{ config.SWAGGER_UI_OAUTH_CLIENT_ID }}",
+                                realm: "{{ config.SWAGGER_UI_OAUTH_REALM }}",
+                                appName: "{{ config.SWAGGER_UI_OAUTH_APP_NAME }}"
+                            });
+                        {%- endif %}
+                    }
+                    $('pre code').each(function (i, e) {
+                        hljs.highlightBlock(e)
+                    });
+                },
+                onFailure: function (data) {
+                    log("Unable to Load SwaggerUI");
+                },
+                jsonEditor: {{ config.SWAGGER_UI_JSONEDITOR | default(False) | string | lower }},
+                docExpansion: "{{ config.SWAGGER_UI_DOC_EXPANSION | default('none') }}"
+            });
+            window.swaggerUi.load();
+        });
+    </script>
+    <script>
+        function Start() {
+            OPIC = document.getElementById('PIC')
+            var x = OPIC.width, y = x = OPIC.height, pct = .3 // = 70%
+            OPIC.height = pct * y;
+            OPIC.width = pct * x;
+        }
+    </script>
+</head>
+
+<body class="swagger-section">
+<div id='header'>
+    <div class="swagger-ui-wrap">
+        <a id="logo" href="https://gis-ops.com"><img class="logo__img" alt="GIS • OPS" height="30" width="30"
+                                                     src="https://gis-ops.com/wp-content/uploads/2019/05/GO_Bildmarke_final_small_white_bg.png"/><span
+                class="logo__title">Swagger-UI | powered by GIS • OPS</span></a>
+        <form id='api_selector'>
+        </form>
+    </div>
+</div>
+
+<div id="message-bar" class="swagger-ui-wrap" data-sw-translate>&nbsp;</div>
+<div id="swagger-ui-container" class="swagger-ui-wrap"></div>
+</body>
+</html>
