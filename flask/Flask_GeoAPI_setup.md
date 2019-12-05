@@ -483,3 +483,9 @@ Access the API at:
 ```bash
 http://127.0.0.1:4000/api/
 ```
+
+### References:
+-   [FLASK](https://www.palletsprojects.com/p/flask/)   
+-   [FLASK-RESTPlus](https://flask-restplus.readthedocs.io/en/stable/)   
+-   [Swagger-UI](https://swagger.io/tools/swagger-ui/)   
+-   [Swagger-UI Themes](https://github.com/ostranme/swagger-ui-themes)   
