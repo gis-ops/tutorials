@@ -7,7 +7,7 @@ This tutorial will give an introduction on how to setup Flask, enable it with sp
 
 The final example can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/flask/examples/simple_flask_setup).
 
-#![Flask GeoAPI](https://raw.githubusercontent.com/gis-ops/tutorials/flask_tutorial/flask/static/img/overview_geoapi.png)
+![Flask GeoAPI](https://raw.githubusercontent.com/gis-ops/tutorials/flask_tutorial/flask/static/img/overview_geoapi_complete.png)
 
 
 ### Motivation
