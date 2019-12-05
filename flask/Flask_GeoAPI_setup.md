@@ -1,40 +1,21 @@
 # Flask GeoAPI — Flask with geospatial super powers
 
-This tutorial will give an introduction on how to setup Flask, enable it with spatial capabilities and expose those functionalities via a REST API delivered by a customized Flask-RESTPlus.
+This tutorial will give you an introduction on how to setup Flask as a lightweight WSGI web application framework, enable it with spatial capabilities and expose those functionalities via a REST API delivered by a customized Flask-RESTPlus.
 
-
-**Note**, this tutorial is addressing developers with a basic understanding on Python and what spatial data is. Knowledge in Flask is not required as we're going to learn exactly that together ;).
+**Note**, this tutorial is addressing developers with a basic understanding on Python and what spatial data is. 
+Knowledge in Flask is not required as we're going to learn exactly that together.
 
 The final example can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/flask/examples/simple_flask_setup).
 
 ![Flask GeoAPI](https://raw.githubusercontent.com/gis-ops/tutorials/flask_tutorial/flask/static/img/overview_geoapi_complete.png)
 
+In this tutorial you'll explore how easy it is with Flask to:
 
-### Motivation
-Spatial and geotagged data has become an important form data is stored and processed. The variety in which those data occurs is really great,
-it can be tracked routes from self-driving cars, locations of your favourite POIs or just the spatial shape of your house.  
-The cool thing about spatial data is, that more or less everything on the surface of this world can be tracked, stored and visualized,
-the not so cool thing about all these possibilities is, programmers dealing with it have to handle a vast amount of data formats, structures, transmission protocols...
-
-In this tutorial you'll explore how nice and easy it is with Flask to:
- -   setup your own spatially enabled REST API,
- -   structure the API logically,
- -   write three API endpoints that will retrieve and process spatial data
- -   make it accessible via an API,
- -   document your API, so it's understandable and
- -   give users the possibility to actually use it.
-
-Why do we use Flask?
-- Flask is a so called `microframework`. A piece of software that scores with its slim and lightweight core. There is nothing clunky in Flask, no big libraries that make it slow or inflexible.
-Just a web server with tons of additions, that expand the functionality how you like.
-
-
-**Goals**:
-
-- Get familiar with the [Flask framework](https://palletsprojects.com/p/flask/)
-- Create a Flask server from scratch
-- Write and document your own REST API with Flask-RESTPlus
-- Extend your API with (for now) three basic geospatial capabilities
+- setup your own spatially enabled REST API
+- structure the API logically
+- implement 3 API endpoints that will retrieve and process spatial data
+- make it accessible via an API
+- documentation of the API endpoints
 
 > **Disclaimer**
 >
@@ -45,37 +26,47 @@ Just a web server with tons of additions, that expand the functionality how you 
 - Python >= 3.6
 - virtualenv >= v16.7.7
 - pip >= 19.2.3
-- Basic understanding of Linux and Python
+- basic understanding of Linux and Python
 
-## 1 General setup
-First checkout our latest tutorial git from github:
-```bash
+## Step 1 - The general setup
+
+First checkout our latest tutorial git from github with:
+
+```sh
 git clone https://github.com/gis-ops/tutorials.git gis-ops_tutorials
 cd gis-ops_tutorials/flask/custom
 ```
-This is going to be our working directory for this tutorial, so stay in there ;)…   
+This is going to be our working directory for this tutorial.
 
-The first thing we're going to do now, is to create a new virtual environment. This way we ensure that we're starting on the same level:
-```bash
+The first thing we're going to do is to create a new virtual environment. 
+This way we ensure that we're starting with the same setup:
+
+```sh
 virtualenv -p python3 ./venv
 source ./venv/bin/activate
 which python
 ```
-You should now have a newly created virtual environment in your working directory with python3 as the base interpreter.
-If the last command shows you that the basic python interpreter is like `/gis_ops_tutorials/flask/venv/bin/python`, then you're good to go.
 
-To be able to set up Flask and your API, we need some basic dependencies for python. Everything you need, is collected already in `requirements.txt`. So just run:
-```bash
+You should now have a newly created virtual environment in your working directory with python3 as the base interpreter.
+If the last command yields the basic python interpreter as something similar to `/gis_ops_tutorials/flask/venv/bin/python`, then we are good to go.
+
+To be able to set up Flask and your API, we need some basic dependencies for python. 
+Everything you need, is collected already in `requirements.txt` which is consumed by pip.
+
+To this end, simply run:
+
+```sh
 pip install-r requirements.txt
 ```
--   Flask==1.1.1: This installs Flask with the version 1.1.1.   
 
+## Step 2 - Setup the Flask structure
 
-## 2 Setup the Flask structure
-We're going to set up the basic Flask structure now. During the setup it'll hopefully become clear, why we do it the way we do it.
-The modular App structure will allow you to easily extend the API with new endpoints.
+We're going to set up the basic Flask structure.
+During the setup it'll hopefully become clear, why we do it the way we do it.
+The modular app structure will allow you to easily extend the API with new endpoints.
 The first thing you should do is, to ensure the structure in /custom is as followed:
-```
+
+```sh
 ├──custom
    ├──config.py
    ├──run.py
@@ -88,11 +79,16 @@ The first thing you should do is, to ensure the structure in /custom is as follo
    ├──app/modules/geoapi/resources.py
    └──app/modules/__init__.py
 ```
-As you can see the custom folder already contains some basic folders: `static` `app/extensions`, and `app/templates`. 
-Those files are needed as a base for your API and to correctly serve the customized Swagger-UI. Feel free to explore them, but it won't be part of this tutorial.
+
+As you can see the custom folder already contains some basic folders: `static`, `app/extensions` as well as `app/templates`. 
+The files contained within are needed as a base for your API and to correctly serve the customized Swagger-UI. 
+Feel free to explore them, but it won't be part of this tutorial.
 
 ### Create the Flask App
-The base of every Flask Serer App is the `create_app` function. Without it, nothing will work. So go on and paste the following code into `app/__init__.py`:
+
+The base of every Flask Server App is the `create_app` function. 
+So go on and paste the following code into `app/__init__.py`:
+
 ```python
 # encoding: utf-8
 """
@@ -106,7 +102,7 @@ def create_app(flask_config_name=None, **kwargs):
     Entry point to the Flask RESTful Server application.
     """
 
-    # Initialize the Flas-App
+    # Initialize the Flask-App
     app: Flask = Flask(__name__, **kwargs)
 
     # Load the config file
@@ -121,17 +117,24 @@ def create_app(flask_config_name=None, **kwargs):
     modules.init_app(app)
 
     return app
+
 ```
+
 This is going to be our Flask App.This is the entry point to the API we're going to create in the next steps.
-If you study the code, you'll quickly understand what's going on from the comments. First the basic Flask App is initialized.
+If you study the code, you'll quickly understand what's going on from the comments. 
+First the basic Flask App is initialized.
 Then the local config is loaded, the API extensions get implemented and the actual routes added to the app.
 The loaded extensions are making sure, that we can actually load our custom Swagger-UI from `static` and `app/templates` but are not
-part of this tutorial. Just use them and be happy ;).  
+part of this tutorial.
+
 
 ### Integrate your custom Flask-RESTPlus API
-The core part of the API is Flask-RESTPlus. It'll give your server the possibility to not only automatically generate a swagger-ui for us,
-that is generated from the annotations and data models in our code but also to serialize and de-serialize data objects.
-So, please paste the following into `app/modules/api/__init__.py`:
+
+The core part of the API is [Flask-RESTPlus](https://flask-restplus.readthedocs.io/en/stable/) which is an extension for Flask that adds support for quickly building REST APIs and encourages best practices with minimal setup.
+It'll give your server the possibility to not only automatically generate a swagger-ui for us, that is generated from the annotations and data models in our code but also to serialize and de-serialize data objects.
+
+Please paste the following into `app/modules/api/__init__.py`:
+
 ```python
 # encoding: utf-8
 """
@@ -154,17 +157,20 @@ def init_app(app, **kwargs):
     app.register_blueprint(api_v1_blueprint)
 
 ```
+
 This defines the basic API with Flask-RESTPlus at the `/api` API route and will be the url we later use, to access the Swagger-UI.
-With `from app.extensions.api import api_v1` we're loading a customized version of the Swagger-UI. Just follow into the code if you're
-interested in what is behind.
-As you might have noticed, this file contains a `init_app` function, that gives us the possibility to load it with our Flask App.
+With `from app.extensions.api import api_v1` we're loading a customized version of the Swagger-UI. 
+Just follow into the code if you're interested in what is behind.
+As you might have noticed, this file contains an `init_app` function which gives us the possibility to load it with our Flask App.
 The function itself integrates our API blueprint that we can later access to reach the Swagger-UI.
 
 
 ### Module importer
+
 Now let's integrate the actual module importer, that gets called from our Application at `app/__init__.py`.
 This will iterate over all modules that are located inside `app/modules/__init__.py` and are activated in the `ENABLED_MODULES` in the `config.py`.
-So you already start seeing the modularity, right? :). If you don't want to spin up a certain endpoint, just deactivate it and it won't be accessible or shown in Swagger-UI.
+By now you most likely are already starting to understand the modularity.
+If you don't want to spin up a certain endpoint, just disable it and it won't be accessible or shown in the Swagger-UI.
 For the import routine paste into `app/modules/__init__.py` the following code:
 
 ```python
@@ -177,9 +183,10 @@ def init_app(app, **kwargs):
 
 
 ### Set the config file
-So, we just heard about the `config.py` and obviously our Flask App needs one. 
-Let's set it up!    
+
+We just touched the `config.py` and obviously our Flask App needs one. 
 Please create the `config.py` file in the base folder and paste the following content:
+
 ```python
 class BaseConfig(object):
     ENABLED_MODULES = {
@@ -195,14 +202,17 @@ class DevelopmentConfig(BaseConfig):
     DEVELOPMENT = True
 
 ```
-You have a BaseConfig that serves as the basic object, holding all the information that's getting reused in every config.
-The actual one used will be the DevelopmentConfig. You easily can add your custom Config here.
-The `enabled_modules` is the place where you can activate and deactivate the API endpoints. For now only the `api` is present and 
-that is the only endpoint that always needs to be loaded within the config file.
+
+You have a `BaseConfig` that serves as the basic object, holding all the information that's getting reused in every config.
+The actual one used will be the `DevelopmentConfig`. 
+You easily can also add your custom Config here.
+The `enabled_modules` is the place where you can activate and deactivate the API endpoints. 
+For now only the `api` is present and  that is the only endpoint that always needs to be loaded within the config file.
 
 ### Create the run file
-In order to actually start the app we created in `app/__init__.py`, we need a runner routine names `run.py`. 
-You should create that file in your base folder, next your `config.py`. So, paste the following into `run.py`:
+
+In order to actually start the app we created in `app/__init__.py`, we need a runner routine named `run.py`. 
+Next, please create that file in your base folder, alongside your `config.py`.
 
 ```python
 from app.__init__ import create_app
@@ -227,26 +237,35 @@ if __name__ == '__main__':
     run()
 ```
 
-From reading the comments you might already guess what's happening here. Creating the app and running it on `127.0.0.1:4000`
+From reading the comments you might already guess what's happening here. 
+It is creating the app and running it on `127.0.0.1:4000`
 
 ###  Test the basic API
-If you followed the instructions you should now be able to spin up the API. It won't show you much besides the bare Swagger-UI frontend.
+
+If you followed the instructions you should now be able to spin up the API. 
+It won't show you much besides the bare Swagger-UI frontend.
 
 ```bash
 python run.py
 ```
-Then call `http://127.0.0.1:4000/api/` to get to the actual Swagger-UI. If this works for you, good, if not, please go back a few steps and check you added everything correctly.
+
+Then call `http://127.0.0.1:4000/api/` to get to the actual Swagger-UI. 
+If this works for you, good, if not, please go back a few steps and check you followed all steps correctly.
 
 
-## 3. GeoAPI
-Now, that our basic API is ready, let's fill it with life. First we're going to implement functionality with three simple geospatial capable api routes.
+## Step 3 - GeoAPI
+
+Now, that our basic API is ready, let's fill it with life. 
+First we're going to implement functionality with 3 simple geospatial capable api routes.
 One will calculate the length of a GeoJSON LineString that is posted to the API, another the distance between two Points that we paste with the URL and 
 the third the area of a GeoJSON Polygon that gets posted to the API like the LineString.   
 The goal is to give you a broader example and insight on as much possible variances of how to get geospatial data into your server, parse it, process it and return the results back to the user.   
 
-Mind for the following: No matter what new endpoint you will add on your own after this tutorial, the process will always be the same from here on.
-And that is the beauty of that setup. You'll be able to just add as many modules as you like and initialize it automatically through the module loader. 
+Mind for the following: no matter what new endpoint you will add on your own after this tutorial, the process will always be the same from here on.
+You'll be able to just add as many modules as you like and initialize it automatically through the module loader. 
+
 Please add the following content to `app/modules/geoapi/__init__.py`:
+
 ```python
 # encoding: utf-8
 
@@ -268,6 +287,7 @@ def init_app(app, **kwargs):
 
     api_v1.add_namespace(resources.api)
 ```
+
 This will initialize our new GeoAPI and load our API routes from `resources` into the namespace of the API.
 
 In order to create the first routes, add the namespace to `app/modules/geoapi/resources.py` to the top of the file:
@@ -294,10 +314,12 @@ from shapely.ops import transform
 api = Namespace('geoapi', description=GeoApiNamespace.description)
 
 ```
-The `api =` part adds our GeoAPI as a namespace object. This is called by `modules/geoapi/__init__.py` which is loaded by `app/modules/__init__.py`. 
-Sounds complicated first, but will make sense the more you will understand the basic modular structure of this project.
 
-In order to work with geospatial GeoJSON Objects, we need to add new data models to the api namespace. In order to do so, add the following below the `api = ` part.
+The `api =` part adds our GeoAPI as a namespace object. This is called by `modules/geoapi/__init__.py` which is loaded by `app/modules/__init__.py`. 
+Sounds complicated at first but it will make sense the more you will understand the basic modular structure of this project.
+
+In order to work with GeoJSON Objects, we need to add new data models to the api namespace. 
+In order to do so, add the following below the `api = ` part.
 
 ```python
 bounding_box = api.model('BoundingBox', {
@@ -345,12 +367,14 @@ point_feature = api.model('PointFeature', {
     'geometry': fields.Nested(point, required=True)
 })
 ```
-You should take a moment and try to understand what is done with the api models. We'll use the polygon and linestring features in this tutorial,
-the remaining models are just exemplaric and should provide you a base you can later continue (hopefully) your own implementations with.
 
-### PolygonArea
+You should take a moment to understand what is done with the api models. 
+We'll use the polygon and linestring features in this tutorial, the remaining models are just exemplaric and should provide you a base you can later continue (hopefully) your own implementations with.
+
+### Calculate the area of a polygon
+
 As the first GeoAPI endpoint we'll implement a simple calculation to get the area of a Polygon provided by a POST request into `app/modules/geoapi/resources.py`.  
-We're going to process GeoJSON data, that will get deserialized automatically by Flask-RESTPlus with the help of the namespace models.
+We're going to process GeoJSON data which will be deserialized by Flask-RESTPlus with the help of the namespace models.
 Now let's integrate the actual first endpoint function and paste this code below the api models:
 
 ```python
@@ -373,22 +397,30 @@ class PolygonArea(Resource):
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, message="The GeoJSON polygon couldn't be processed.", error=err)
 
 ```
-Add this directly below the models. `@api.route` makes the endpoint accessible via `/polygon/area/` and provides a POST request method. 
+
+Add this directly below the models. 
+`@api.route` makes the endpoint accessible via `/polygon/area/` and provides a POST request method. 
 `@api.expect` gives RESTPlus the information against what data model the incoming data should be serialized against, in this case the `polygon_feature`. 
-The `validate=True` forces Flask-RESTPlus to check that the post Input is actually the same as the Api model.
-Inside the try|catch routine the POST input GeoJSON is transformed with `EPSG:3857` before the area can be calculated.
+The `validate=True` forces Flask-RESTPlus to check that the post Input is actually the same as the api model.
+Inside the try/catch routine the POST input GeoJSON is transformed with `EPSG:3857` before the area can be calculated.
 The reason for that EPSG is, that the example geojson coordinates are taken from a projected coordinate system. 
-`Transform`, together with the coordinates, constructs a valid Polygon for us. The `area` function called in the end just returns the area of that polygon in m² back to the client that made the request to the endpoint.   
+`Transform`, together with the coordinates, constructs a valid Polygon for us.
+The `area` function called in the end returns the area of that polygon in squaremeters to the client.
 
-Enough of the code. Let's try it out. Start the server and go to `http://127.0.0.1:4000/api`. There you should see the new API by the name of `GeoAPI`. If you open it you'll see the POST function.
+Let's try it out. 
+Start the server and browse to `http://127.0.0.1:4000/api`. 
+There you should see the new API by the name of `GeoAPI` and if you open it you'll see the POST function.
 
-In order to test it, expand the POST function and hit `TRY IT OUT!`. The result should be ~ `22689812`.
-Besides the functionality the Swagger-UI serves you with all the information and tools you need to make valid API calls. 
+In order to test it, expand the POST function and hit `TRY IT OUT!`. 
+The result should be ~ `22689812`.
+Besides the functionality the Swagger-UI provides you with all the information and tools you need to make valid API calls. 
 A sophisticated JSON-Editor and an automatically constructed cURL query below as well as Example values on the right side.
 
-### PointToPointDistance
+### Euclidean distance from point to point
+
 Our second API endpoint will take two coordinates as query parameters, convert them to valid python constructs and calculate the distance between them.
 So please go ahead and paste this content below our last ednpoint to the bottom of the file:
+
 ```python
 @api.route('/point/distance/')
 @api.param('start_lat', 'Latitude of the start point e.g. 52.52624809700062', _in="query")
@@ -419,15 +451,18 @@ class PointToPointDistance(Resource):
               message="Please provide a valid query e.g. with the following url arguments: "
                       "http://127.0.0.1:4000/api/geoapi/point/distance/?start_lng=8.83546&start_lat=53.071124&end_lng=10.006168&end_lat=53.549926")
 ```
-The `@api.param` is new here and is part of the documentation. With them Flask-RESTPlus will be able to show the query parameters in the Swagger-UI.
-In the actual try|catch the arguments are accessed via `request.args.get()` and then converted to Geopy Points with which the distance is calculated in km.   
 
-(Re)-Start your Server now and start playing around with the new endpoint. You'll see very nicely, 
-how the Swagger-UI is adapting to the new input variant and how nicely it's usable through the web App.
+The `@api.param` is new and is part of the documentation. 
+With them Flask-RESTPlus will be able to show the query parameters in the Swagger-UI.
+In the actual try/catch the arguments are accessed via `request.args.get()` and then converted to GeoPy points with which the distance is calculated in km.   
 
-### LinestringLength
-Our third and last API endpoint for this tutorial will take a GeoJSON LineString object and return the length of it.
-This is straight forward and similar to the first endpoint, just expecting a LineString object instead of a Polygon:
+(Re)-Start your Server now and start playing around with the new endpoint. 
+You'll notice how the Swagger-UI is adapting to the new input variant and how nicely it's usable through the web app.
+
+### Length of a linestring
+
+Our last API endpoint will consume a GeoJSON LineString object and return the length of it.
+This is straight forward and similar to the first endpoint, just expecting a linestring object instead of a polygon:
 
 ```python
 @api.route('/linestring/length/')
@@ -465,10 +500,11 @@ This time the result will be wrapped in a JSON construct:
 }
 ```
 
-
 ## tl;dr
 
-You can find a working solution in `/examples/base_api/`. Just go into that folder,  create a venv and install the requirements:
+You can find a working solution in `/examples/base_api/`. 
+Once you have entered the folder create a venv and install the requirements with:
+
 ```bash
 virtualenv -p python3 ./venv
 source ./venv/bin/activate
@@ -476,7 +512,7 @@ pip -r requirements.txt
 ```
 You should be able to run the api now with:
 ```python
-pytho run.py
+python run.py
 ```
 
 Access the API at:
