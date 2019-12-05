@@ -77,10 +77,8 @@ class PolygonArea(Resource):
          Return the area of a polygon in m²
         """
 
-        proj = partial(pyproj.transform, pyproj.Proj(init='epsg:4326'),
-                       pyproj.Proj(init='epsg:3857'))
         try:
-            return transform(proj, Polygon(request.json['geometry']['coordinates'])).area
+            return transform(pyproj.Proj(init='epsg:3857'), Polygon(request.json['geometry']['coordinates'])).area
         except Exception as err:
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, message="The GeoJSON polygon couldn't be processed.", error=err)
 
@@ -118,19 +116,19 @@ class PointToPointDistance(Resource):
 @api.route('/linestring/length/')
 class LinestringLength(Resource):
     """
-    Return if the length of a given GeoJSON LineString
+    Return if the length in meter of a given GeoJSON LineString
     """
 
     @api.expect(linestring_feature, validate=True)
     @api.doc(id='linestring_length')
     def post(self):
         """
-        Return if the length of a given GeoJSON LineString
+        Return if the length in meter of a given GeoJSON LineString
         """
         try:
             distance.VincentyDistance.ELLIPSOID = 'WGS-84'
             linestring = LineString(request.json['geometry']['coordinates'])
-            return distance.distance(linestring.xy[0], linestring.xy[1]).meters
+            return {"distance_in_m": distance.distance(linestring.xy[0], linestring.xy[1]).meters}
         except Exception as err:
             pass
         abort(HTTPStatus.BAD_REQUEST,
