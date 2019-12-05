@@ -5,9 +5,9 @@ from flask_restplus import Api
 
 api_v1 = Api(
     version='1.0',
-    title="GIS-OPS Test API",
+    title="FLASK | FLASK-RESTPlus GeoAPI",
     description=(
-        "This is a GIS-OPS tutorial live API.\n\n"
+        "This is a FLASK-RESPlus powered API with geospatial super power.\n\n"
         "Checkout more at https://gis-ops.com or https://github.com/gis-ops\n"
     ),
 )
