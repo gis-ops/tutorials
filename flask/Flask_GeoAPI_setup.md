@@ -1,4 +1,4 @@
-# GeoAPI Flask API - Give Flask geospatial super powers
+# Flask GeoAPI - Give Flask geospatial super powers
 
 This tutorial will give an introduction on how to setup Flask, enable it with spatial capabilities and expose those functionalities via a REST API delivered by Flask-RESTPlus.
 
