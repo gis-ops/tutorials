@@ -1,6 +1,6 @@
 # Flask GeoAPI — Flask with geospatial super powers
 
-This tutorial will give an introduction on how to setup Flask, enable it with spatial capabilities and expose those functionalities via a REST API delivered by Flask-RESTPlus.
+This tutorial will give an introduction on how to setup Flask, enable it with spatial capabilities and expose those functionalities via a REST API delivered by a customized Flask-RESTPlus.
 
 
 **Note**, this tutorial is addressing developers with a basic understanding on Python and what spatial data is. Knowledge in Flask is not required as we're going to learn exactly that together ;).
@@ -8,7 +8,7 @@ This tutorial will give an introduction on how to setup Flask, enable it with sp
 The final example can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/flask/examples/simple_flask_setup).
 
 #![Flask GeoAPI](https://raw.githubusercontent.com/gis-ops/tutorials/flask_tutorial/flask/static/img/overview_geoapi.png)
-#*Flask GeoAPI Overview*
+
 
 ### Motivation
 Spatial and geotagged data has become an important form data is stored and processed. The variety in which those data occurs is really great,
