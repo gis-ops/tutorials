@@ -47,7 +47,7 @@ Inside the container first of all install an editor, e.g. nano, and then navigat
 ```sh
 apt-get update && apt-get install nano
 
-cd /etc/postgresql/11/main/
+cd /etc/postgresql/12/main/
 ```
 
 In `pg_hba.conf` you will have to make a small change to the settings under `Database administrative login by Unix domain socket` (should be on line 85) from `peer` to `trust` and restart the Docker container afterwards.
@@ -137,8 +137,8 @@ server-port = 3000
 Now we are ready to start PostgREST.
 
 ```sh
-postgrest tutorial.conf
-# or ./postgrest tutorial.conf
+postgrest gisops-tutorial.conf
+# or ./postgrest gisops-tutorial.conf
 ```
 
 You should be able to see something like this:
@@ -158,7 +158,7 @@ As mentioned earlier, we will implement stored procedures which will calculate s
 Let's bring back our `psql` prompt:
 
 ```sh
-sudo docker exec -it tutorial psql -U postgres
+sudo docker exec -it postgrest_tut psql -U postgres
 ```
 
 We will add a simple function to the `api` schema. It takes a single `JSON` argument and just returns it again as-is.
@@ -177,7 +177,7 @@ Hit enter... That's it, let's try it out!
 
 ```sh
 curl -X POST \
-  http://localhost:3000/rpc/singlejsonparam \
+  http://localhost:3000/rpc/singlegeojsonparam \
   -H 'Content-Type: application/json' \
   -H 'Prefer: params=single-object' \
   -d '{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[100.0,0.0],[101.0,0.0],[101.0,1.0],[100.0,1.0],[100.0,0.0]]]},"properties":{"prop0":"value1","prop1":{"this":"that"}}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[100.0,0.0],[101.0,0.0],[101.0,1.0],[100.0,1.0],[100.0,0.0]]]},"properties":{"prop0":"value2","prop1":{"this":"that"}}}]}'
@@ -187,7 +187,7 @@ If you're not too familiar with POST requests sending JSON data, this might be a
 
 ## Step 3 - Calculating the Length of a LineString
 
-Now we can start with some more fun stuff. Let's go ahead and write a function which is able to calculate the length of a LineString provided in [EPSG:4326](https://spatialreference.org/ref/epsg/wgs-84/). Note, that the GeoJSON we are providing is in degrees, so we will have to transform to pseudo-mercator (or something similar). Additionally, we will cast it to `numeric` and after dividing it by 1.000 (to obtain a result in `kilometers`) we will round it to 2 decimals.
+Now we can start with some more fun stuff. Let's go ahead and write a function that is able to calculate the length of a LineString provided in [EPSG:4326](https://spatialreference.org/ref/epsg/wgs-84/). Note, that the GeoJSON we are providing is in degrees, so we will have to transform to pseudo-mercator (or something similar). Additionally, we will cast it to `numeric` and after dividing it by 1.000 (to obtain a result in `kilometers`) we will round it to 2 decimals.
 
 ```sh
 CREATE OR REPLACE FUNCTION api.calc_length(linestring json) RETURNS numeric AS $$
