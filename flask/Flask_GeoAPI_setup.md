@@ -642,12 +642,16 @@ This time the result will be wrapped in a JSON construct:
 ```
 
 ## tl;dr
+In case you skipped the tutorial but still want to test the API locally, get it from the GIS-OPS [tutorials repository](https://github.com/gis-ops/tutorials/tree/master/flask/examples/base_api):
 
-You can find a working solution in `/examples/base_api/`.
+```shell script
+git clone https://github.com/gis-ops/tutorials.git
+cd tutorials/flask/examples/base_api/
+```
 It's covering the basic functionality of the tutorial, but the Swagger-UI is highly customized.
-You like it? Stay tuned, this topic of `how to customize Swagger-UI` together with FLASK-RESTPlus will be covered in the next tutorials.   
+You like it and want to do it by yourself? Stay tuned, this topic of `how to customize Swagger-UI` together with FLASK-RESTPlus will be covered in the next tutorials.   
 
-Once you have entered the `examples/base_api/` folder, create a `venv` and install the requirements with:
+Once you have entered the `base_api/` folder, create a `venv` and install the requirements with:
 
 ```bash
 virtualenv -p python3 ./venv
