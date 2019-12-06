@@ -30,37 +30,6 @@ In this tutorial you'll explore how easy it is with Flask to:
 
 In case you don't have python or virtualenv installed, head over to this nice and short [tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-programming-environment-on-ubuntu-18-04-quickstart) and do the steps 1-5.
 
-## Minimal working environment
-The Flask | FLASK-RESTPlus needs to have the following working strucure, to work as expected by the end of this tutorial:
-```
-.
-├── app
-│   ├── __init__.py
-│   └── modules
-│       ├── api
-│       │   └── __init__.py
-│       ├── geoapi
-│       │   ├── __init__.py
-│       │   └── resources.py
-│       └── __init__.py
-├── config.py
-├── requirements.txt
-└── run.py
-```
--   `app` will be the folder in which the Flask app and all of its functions are created. 
--   `app/__init__.py` holds the actual Flask app initialization.
--   `app/modules/__init__.py` will be the module loader that is going to dynamically load all the modules inside it at startup.
--   `app/modules/api/__init__.py` hosts the Blueprint for your API. In this case apiv1. Here you can version your API.
--   `app/modules/geoapi/` will hold your first actual API endpoint that can consume and process spatial data as a module.
--   `app/modules/geoapi/__init__.py` is the initializer for the `geoapi` module.
--   `app/modules/geoapi/resources.py` will be the place to create your API resources that will form up into your API request routes.
--   `config.py` will hold the configuration information that the app needs to perform correctly.
--   `requirements.txt` is used by `pip` to install the needed dependencies.
--   `run.py` is the actual server startup script that loads everything in `app`.
-
-Don't worry if it looks much, this is just for your orientation. You'll easily create all this throughout the tutorial.
-
-
 ## Step 1 — The general setup
 
 Please create a working directory first, where your tutorials code can safely live.
