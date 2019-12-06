@@ -10,7 +10,7 @@ from app.extensions.api import api_v1
 
 
 class ApiPaths(object):
-    APIPath = "/api"
+    APIPath = "/api/v1"
 
 # API endpoint initializer
 def init_app(app, **kwargs):

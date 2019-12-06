@@ -3,7 +3,6 @@ attrs==19.3.0
 Click==7.0
 Flask==1.1.1
 Flask-CLI==0.4.0
-Flask-Cors==3.0.8
 flask-marshmallow==0.10.1
 flask-restplus==0.13.0
 geographiclib==1.50

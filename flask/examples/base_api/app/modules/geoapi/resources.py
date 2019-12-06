@@ -4,17 +4,19 @@
 RESTful API GeoAPI resources
 --------------------------
 """
+from functools import partial
+from http import HTTPStatus
+
 import geopy.distance
 import pyproj
-from app.modules.geoapi import GeoApiNamespace
 from flask import request
 from flask_restplus import Namespace, Resource, abort
 from flask_restplus import fields
-from functools import partial
 from geopy import Point as GeopyPoint, distance
-from http import HTTPStatus
 from shapely.geometry import Polygon, LineString
 from shapely.ops import transform
+
+from app.modules.geoapi import GeoApiNamespace
 
 api = Namespace('geoapi', description=GeoApiNamespace.description)
 
@@ -78,7 +80,13 @@ class PolygonArea(Resource):
         """
 
         try:
-            return transform(pyproj.Proj(init='epsg:3857'), Polygon(request.json['geometry']['coordinates'])).area
+            projection = partial(
+                pyproj.transform,
+                pyproj.Proj(init='epsg:4326'),
+                pyproj.Proj('+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs')
+            )
+
+            return transform(projection, Polygon(request.json['geometry']['coordinates'])).area
         except Exception as err:
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, message="The GeoJSON polygon couldn't be processed.", error=err)
 
