@@ -19,7 +19,7 @@ In this tutorial you'll explore how easy it is with Flask to:
 
 > **Disclaimer**
 >
-> Validity only confirmed for **Ubuntu 18.04** and **Flask <= v1.1.1**
+> Validity only confirmed for **Ubuntu 18.04** and **Flask <= v1.1.1**. Map projections might need adjustments, depending on your targeted location(s).
 
 ## Prerequisites
 
@@ -453,7 +453,7 @@ class PolygonArea(Resource):
             projection = partial(
                 pyproj.transform,
                 pyproj.Proj(init='epsg:4326'),
-                pyproj.Proj('+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs')
+                pyproj.Proj(init='epsg:3035')
             )
 
             return transform(
@@ -465,7 +465,7 @@ class PolygonArea(Resource):
 ```
 - `@api.route` decorator makes the endpoint accessible via `/polygon/area/` and provides a POST request method
 - `@api.expect` gives RESTPlus the information against what data model the incoming data should be serialized against, in this case the `polygon_feature` model. `validate=True` forces RESTPlus to check that the post Input is actually the same as the api model.
-- `transform` transforms the input WGS84 coordinates of the GeoJSON to the more appropriate `World Robinson` projection (EPSG 54030). It takes a `pyproj` transformation definition and applies it on all coordintates via shapely's `transform` function
+- `transform` transforms the input WGS84 coordinates of the GeoJSON to the more appropriate `ETRS89 / LAEA Europe` projection (EPSG 3035). It takes a `pyproj` transformation definition and applies it on all coordintates via shapely's `transform` function
 - the final return value is the transformed polygon's `area` in square meters
 
 Go ahead, try it out! (Re-)-Start the server and browse to `http://127.0.0.1:4000/api/v1`. There you should see the new API by the name of `GeoAPI` and if you open it you'll see the first POST function.
@@ -568,17 +568,20 @@ class LinestringLength(Resource):
         Return if the length in meter of a given GeoJSON LineString
         """
         try:
-            distance.VincentyDistance.ELLIPSOID = 'WGS-84'
-            linestring = LineString(request.json['geometry']['coordinates'])
-            return {"distance_in_m": distance.distance(linestring.xy[0], linestring.xy[1]).meters}
+            line_coordinates = request.json['geometry']['coordinates']
+            length = 0
+            for idx in range(len(line_coordinates) - 1):
+                length += distance.distance(
+                    line_coordinates[idx], line_coordinates[idx + 1]
+                ).meters
+            return meters
         except Exception as err:
             pass
         abort(HTTPStatus.BAD_REQUEST,
               message="Please provide a valid POST GeoJSON and valid query with the following url arguments.")
-
 ```
 
-As you can see, this function expects the `linestring_feature` model this time. The function converts the parsed LineString to a Shapely LineString and calculates the distance by using an Ellipsoidal projection for the calculation.
+As you can see, this function expects the `linestring_feature` model this time. The function calculates the geodesic distance between all points in the LineString and sums them up to return the overall length of the LineString.
 
 Again, restart the server and head over to the Swagger UI and test the function by pasting the following GeoJSON:
 ```json
