@@ -574,7 +574,7 @@ class LinestringLength(Resource):
                 length += distance.distance(
                     line_coordinates[idx], line_coordinates[idx + 1]
                 ).meters
-            return meters
+            return length
         except Exception as err:
             pass
         abort(HTTPStatus.BAD_REQUEST,
