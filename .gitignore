@@ -6,3 +6,7 @@ test/
 node_modules
 yarn-error.log
 yarn.lock
+env/
+venv/
+.env
+.venv
