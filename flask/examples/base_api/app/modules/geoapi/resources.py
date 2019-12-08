@@ -65,7 +65,6 @@ point_feature = api.model('PointFeature', {
     'geometry': fields.Nested(point, required=True)
 })
 
-
 @api.route('/polygon/area/')
 class PolygonArea(Resource):
     """
@@ -83,13 +82,15 @@ class PolygonArea(Resource):
             projection = partial(
                 pyproj.transform,
                 pyproj.Proj(init='epsg:4326'),
-                pyproj.Proj('+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs')
+                pyproj.Proj(init='epsg:3035')
             )
 
-            return transform(projection, Polygon(request.json['geometry']['coordinates'])).area
+            return transform(
+              projection,
+              Polygon(request.json['geometry']['coordinates'])
+            ).area
         except Exception as err:
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, message="The GeoJSON polygon couldn't be processed.", error=err)
-
 
 @api.route('/point/distance/')
 @api.param('start_lat', 'Latitude of the start point e.g. 52.52624809700062', _in="query")
@@ -109,17 +110,22 @@ class PointToPointDistance(Resource):
         if request.args.get('start_lat', '') and request.args.get('start_lng', '') and \
                 request.args.get('end_lat', '') and request.args.get('end_lng', ''):
             try:
-                return geopy.distance.distance(GeopyPoint(longitude=request.args.get('start_lng', type=float),
-                                                          latitude=request.args.get('start_lat', type=float)),
-                                               GeopyPoint(longitude=request.args.get('end_lng', type=float),
-                                                          latitude=request.args.get('end_lat', type=float))).km
+                return geopy.distance.distance(
+                    GeopyPoint(
+                        longitude=request.args.get('start_lng', type=float),
+                        latitude=request.args.get('start_lat', type=float)
+                    ),
+                    GeopyPoint(
+                        longitude=request.args.get('end_lng', type=float),
+                        latitude=request.args.get('end_lat', type=float)
+                    )
+                 ).km
             except Exception:
                 pass
 
         abort(HTTPStatus.BAD_REQUEST,
               message="Please provide a valid query e.g. with the following url arguments: "
                       "http://127.0.0.1:4000/api/geoapi/point/distance/?start_lng=8.83546&start_lat=53.071124&end_lng=10.006168&end_lat=53.549926")
-
 
 @api.route('/linestring/length/')
 class LinestringLength(Resource):
@@ -134,10 +140,14 @@ class LinestringLength(Resource):
         Return if the length in meter of a given GeoJSON LineString
         """
         try:
-            distance.VincentyDistance.ELLIPSOID = 'WGS-84'
-            linestring = LineString(request.json['geometry']['coordinates'])
-            return {"distance_in_m": distance.distance(linestring.xy[0], linestring.xy[1]).meters}
+            line_coordinates = request.json['geometry']['coordinates']
+            length = 0
+            for idx in range(len(line_coordinates) - 1):
+                length += distance.distance(
+                    line_coordinates[idx], line_coordinates[idx + 1]
+                ).meters
+            return length
         except Exception as err:
             pass
         abort(HTTPStatus.BAD_REQUEST,
-              message="Please provide a valid post GeoJSON and valid query with the following url arguments.")
+              message="Please provide a valid POST GeoJSON and valid query with the following url arguments.")
