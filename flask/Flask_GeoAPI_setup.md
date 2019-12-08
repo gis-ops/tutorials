@@ -289,7 +289,7 @@ Then call `http://127.0.0.1:4000/api/v1` to get to the actual Swagger UI. If thi
 Now, that your basic API is ready, you can fill it with life. So, you're going to implement functionality with 3 simple geospatial capable api routes with the following capabilities, respectively:
 
 - calculate the length of a GeoJSON LineString that is POSTed to the API
-- calculate the distance between two Points which will be passed in the query string
+- calculate the distance between two Points, which will be passed in the query string
 - calculate the area of a GeoJSON Polygon that gets POSTed to the API
 
 The goal is to give you a broader example and insight on a few variances of how to get geospatial data into your server, parse it, process it and return the results back to the user.   
