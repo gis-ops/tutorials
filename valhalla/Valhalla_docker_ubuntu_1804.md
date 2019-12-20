@@ -118,7 +118,8 @@ If the output is similar to this:
 ```
 command not found: ...
 ```
-You should `install docker first`. For a good tutorial have a look at the [How To Install and Use Docker on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04) and change the tutorial to the desired Ubuntu version.
+You should `install docker first`. For a good tutorial have a look at the [How To Install and Use Docker on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04).
+For installing `docker-compose` have a look at [How To Install and Use Docker on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04).
 
 ### Create a temporary folder
 First you should create a temporary folder in your home folder to clone the needed docker files to:
@@ -129,28 +130,61 @@ mkdir ~/gisops_docker && cd $_
 -   `mkdir ~/gisops_docker` creates our workdir folder in your home folder `~/`.
 -   `cd $_` changes the terminal path directly to the newly created folder. `$_` is a system variable and holds the output of the last command line call. In this case the path to the newly created folder.   
 
-### Clone the docker files
-Now we're going to clone the `GIS • OPS docker files` to the temporary folder:
+### Create the docker-compose.yml
+In order to run Valhalla you need to create a `docker-compose.yml` file in your current directory and pass the following content:
 ```bash
-git clone https://github.com/gis-ops/docker.git ~/gisops_docker
-cd ~/gisops_docker/Ubuntu/18.04/Valhalla
+version: '3.0'
+services:
+  valhalla:
+    image: gisops/valhalla:latest
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./custom_files/:/custom_files
+    environment:
+      # The tile_file must be located in the `custom_files` folder.
+      # The tile_file has priority and is used when valid.
+      # If the tile_file doesn't exist, the url is used instead.
+      # Don't blank out tile_url when you use tile_file and vice versa.
+      - tile_urls=https://download.geofabrik.de/europe/andorra-latest.osm.pbf https://download.geofabrik.de/europe/albania-latest.osm.pbf
+      # Get correct bounding box from e.g. https://boundingbox.klokantech.com/
+      - min_x=18 # -> Albania | -180 -> World
+      - min_y=38 # -> Albania | -90  -> World
+      - max_x=22 # -> Albania |  180 -> World
+      - max_y=43 # -> Albania |  90  -> World
+      - use_tiles_ignore_pbf=True
+      - force_rebuild=False
+      - force_rebuild_elevation=False
+      - build_elevation=True
+      - build_admins=True
+      - build_time_zones=True
 ```
--   `cd` will change the directory in the correct folder for Valhalla.
+-   `volumes` is mounting a local folder called `custom_files` into the docker container. This is the place where the Valhalla container shares its data and also the place where changes to the running instance can be made.
+-   `tile_urls` will be downloaded by Valhalla and build if their file hashes don't match with the existing build tiles. It's possible to add as many urls as desired with a space delimeter. 
+-   `min_*` defines the bounding box so Valhalla can download the correct elevation tiles. This is only required if `build_elevation` is set to `True`.
+-   `use_tiles_ignore_pbf` will let Valhalla know, that it should prioritize tiles that were already built and not overwrite it.
+-   `force_rebuild` will force Valhalla to rebuild the tiles in all cases except for `force_rebuild_elevation`.
+-   `force_rebuild_elevation` will always skip rebuilding the elevation data if `False`. That way downloading and processing huge amounts of elevation data can be omitted.
+-   `build_*` will let Valhalla know what to build in detail. All of them are optional for a functioning Valhalla instance.
 
-## 2. Run docker-compose
+
+## 2. Run docker-compose.yml
+
+
 Now let `docker-compose` build Valhalla by typing:
 ```bash
- docker-compose up -d
+docker-compose up --build
 ```
--   `up` will create and start the Valhalla docker container
--   `-d` runs the container in the background without binding the terminal on it.  
+Docker will now pull the latest Valhalla image from the [GIS • OPS Dockerhub](https://hub.docker.com/repository/docker/gisops/valhalla) and build it with the osm file of Albania and Andorra.   
 
+If you check the content of your folder you will notice a new folder named `custom_files`. In there you'll find all the files Valhalla requires to properly run or rebuild any of its data. You can copy, compress, move the folder even to a different system and as long as you use the same `docker-compose.yml`, Valhalla will be able to immediately start with your data.
 
-The `build time` can be `more than 15 minutes`, depending on your hardware. To decrease the build time, be aware that `the build process will use all of your available cores`, so don't do anything CPU consuming while building Valhalla. Watching a movie should be fine though ;)...  
+**Note**: The `build time` can be `more than 15 minutes`, depending on your hardware. To decrease the build time, be aware that `the build process will use all of your available cores`. 
 For error messages or warnings see the `Important Notes` section at the end of the tutorial.
 
-## 3. Run and test Valhalla
-After Valhalla has build and started, it should be directly ready to be used. Let's try.
+## 3. Test Valhalla
+### Check the Valhalla docker instance
+After Valhalla has been built and started, it should be directly ready to be used. Let's try.
 First we're going to verify that Valhalla is running by typing:
 ```bash
 docker ps -a
@@ -166,16 +200,17 @@ CONTAINER ID   IMAGE              COMMAND                  CREATED        STATUS
 If your output includes Valhalla like the example, `you're good to go` to test Valhalla.
 
 ### Test Valhalla
-Valhalla should be running correctly now and we're going to test that.  
-If you used the example OSM extract you can just use the following command:
+Valhalla should be running correctly now, and we're going to test that.  
+Open a new terminal and paste the following command:
 ```bash
-curl http://localhost:8002/route --data `curl http://localhost:8002/route --data '{"locations":[{"lat":41.318818,"lon":19.461336},{"lat":41.321001,"lon":19.459598}],"costing":"auto","directions_options":{"units":"miles"}}' | jq '.'`
+curl http://localhost:8002/route --data '{"locations":[{"lat":41.318818,"lon":19.461336},{"lat":41.321001,"lon":19.459598}],"costing":"auto","directions_options":{"units":"miles"}}' | jq '.'
 ```
 -   `curl` will call to the server running at the `localhost` with the port `8002`.
 -   `--data` is the switch to present the request data with `curl`.
 -   `{"locations":...}` holds the data the Valhalla server will be queried with.
 -   `jq '.'` will take the returned JSON response and print it nicely in the console.  
 -   If you used another OSM extract replace the `lat` and `lon` variables from the curl command with ones inside your extract.
+
 
 ### Assess the response
 The response of your Valhalla server should return something like the following JSON structure, depending on your OSM extract and the used coordinates.
