@@ -119,7 +119,7 @@ If the output is similar to this:
 command not found: ...
 ```
 You should `install docker first`. For a good tutorial have a look at the [How To Install and Use Docker on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04).
-For installing `docker-compose`. Have a look at [How To Install and Use Docker on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04).
+For installing `docker-compose` have a look at [How To Install and Use Docker on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04).
 
 ### Create a temporary folder
 First you should create a temporary folder in your home folder to clone the needed docker files to:
@@ -131,7 +131,7 @@ mkdir ~/gisops_docker && cd $_
 -   `cd $_` changes the terminal path directly to the newly created folder. `$_` is a system variable and holds the output of the last command line call. In this case the path to the newly created folder.   
 
 ### Create the docker-compose.yml
-In order to run Valhalla you just need to create a `docker-compose.yml` file in your current directory and pass the following content:
+In order to run Valhalla you need to create a `docker-compose.yml` file in your current directory and pass the following content:
 ```bash
 version: '3.0'
 services:
@@ -159,13 +159,13 @@ services:
       - build_admins=True
       - build_time_zones=True
 ```
--   `volumes` is mounting a local folder called `custom_files` into the docker container. This is the place where the Valhalla container shares its data and also the place where changes to the running Instance can be made.
+-   `volumes` is mounting a local folder called `custom_files` into the docker container. This is the place where the Valhalla container shares its data and also the place where changes to the running instance can be made.
 -   `tile_urls` will be downloaded by Valhalla and build if their file hashes don't match with the existing build tiles. It's possible to add as many urls as desired with a space delimeter. 
--   `min_*` defines the bounding box so Valhalla can download the correct elevation tiles. This is only needed if `build_elevation` is set to `True`.
--   `use_tiles_ignore_pbf` will show Valhalla, that it should prioritize tiles that were already build and not overwrite it.
+-   `min_*` defines the bounding box so Valhalla can download the correct elevation tiles. This is only required if `build_elevation` is set to `True`.
+-   `use_tiles_ignore_pbf` will let Valhalla know, that it should prioritize tiles that were already built and not overwrite it.
 -   `force_rebuild` will force Valhalla to rebuild the tiles in all cases except for `force_rebuild_elevation`.
--   `force_rebuild_elevation` will always skip rebuilding the elevation data if `False`. That way downloading and processing huge amount of elevation data can be omitted.
--   `build_*` will tell Valhalla what to build in detail. All of them are optional for a functioning Valhalla instance.
+-   `force_rebuild_elevation` will always skip rebuilding the elevation data if `False`. That way downloading and processing huge amounts of elevation data can be omitted.
+-   `build_*` will let Valhalla know what to build in detail. All of them are optional for a functioning Valhalla instance.
 
 
 ## 2. Run docker-compose.yml
@@ -175,16 +175,16 @@ Now let `docker-compose` build Valhalla by typing:
 ```bash
 docker-compose up --build
 ```
-Docker will now get the latest Valhalla image from the [GIS • OPS Dockerhub](https://hub.docker.com/repository/docker/gisops/valhalla) and build it with the osm file of Albania and Andorra.   
+Docker will now pull the latest Valhalla image from the [GIS • OPS Dockerhub](https://hub.docker.com/repository/docker/gisops/valhalla) and build it with the osm file of Albania and Andorra.   
 
-If you check the content of your folder you will notice a new folder named `custom_files`. In there you'll find all the files Valhalla needs to properly run or rebuild any of its data. You can copy, compress, move the folder even to a different system and as long as you use the same `docker-compose.yml`, Valhalla will be able to immediately start up with your data.
+If you check the content of your folder you will notice a new folder named `custom_files`. In there you'll find all the files Valhalla requires to properly run or rebuild any of its data. You can copy, compress, move the folder even to a different system and as long as you use the same `docker-compose.yml`, Valhalla will be able to immediately start with your data.
 
-**Note**: The `build time` can be `more than 15 minutes`, depending on your hardware. To decrease the build time, be aware that `the build process will use all of your available cores`, so don't do anything CPU consuming while building Valhalla. Watching a movie should be fine though ;)...  
+**Note**: The `build time` can be `more than 15 minutes`, depending on your hardware. To decrease the build time, be aware that `the build process will use all of your available cores`. 
 For error messages or warnings see the `Important Notes` section at the end of the tutorial.
 
 ## 3. Test Valhalla
 ### Check the Valhalla docker instance
-After Valhalla has been build and started, it should be directly ready to be used. Let's try.
+After Valhalla has been built and started, it should be directly ready to be used. Let's try.
 First we're going to verify that Valhalla is running by typing:
 ```bash
 docker ps -a
