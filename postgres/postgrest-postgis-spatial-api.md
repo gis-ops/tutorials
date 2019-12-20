@@ -266,7 +266,7 @@ Our polygon covering part of New York is of size
 square kilometers. Easy.
 
 
-## Step 4 - Calculating the Intersection of 2 Polygons
+## Step 5 - Calculating the Intersection of 2 Polygons
 
 Last but not least let's implement one more function which will calculate the intersection of 2 polygons. The function by now should be self-explanatory. We just have to make sure we are returning a `GeoJSON` instead of a numeric value.
 
