@@ -13,7 +13,7 @@ We will implement a range of different API endpoints with the following function
 - Calculate the area of a polygon
 - Derive the intersection of two polygons
 
-In case you have never heard of PostgREST before, let's have a look what look what the authors say:
+In case you have never heard of PostgREST before, let's have a look at what the authors say:
 
 *PostgREST is a standalone web server that turns your PostgreSQL database directly into a RESTful API. The structural constraints and permissions in the database determine the API endpoints and operations.*
 
@@ -125,7 +125,7 @@ Please add it to your database with:
 INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values ( 54030, 'ESRI', 54030, '+proj=robin +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs ', 'PROJCS["World_Robinson",GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Robinson"],PARAMETER["False_Easting",0],PARAMETER["False_Northing",0],PARAMETER["Central_Meridian",0],UNIT["Meter",1],AUTHORITY["EPSG","54030"]]');
 ``` 
 
-Optionally, PostgREST can read a configuration file, e.g. to specify the database connection. Go ahead and create a file named `gisops-tutorial.conf` with the following information (remember to adapt the port and password if you have changed it in the earlier steps).
+PostgREST needs a configuration file to specify the database connection. Go ahead and create a file named `gisops-tutorial.conf` with the following information (remember to adapt the port and password if you have changed it in the earlier steps).
 
 ```sh
 db-uri = "postgres://authenticator:gisops@localhost:5432/postgres"
