@@ -20,13 +20,13 @@ If you are willing to run PostgreSQL via Docker we recommend to use [Kartoza's d
 
 We will keep it simple and guide you through this tutorial using this image but the general steps are almost identical for a host installation.
 
-Let's start our Docker Postgres container which we will name `postgrest_elevation` on port 5432 (or whichever port you prefer).
+Create your Docker Postgres container named `postgrest_elevation` on port 5432 (or whichever port you prefer).
 
 ```sh
 sudo docker run --name "postgrest_elevation" -p 5432:5432 -e POSTGRES_MULTIPLE_EXTENSIONS=postgis -d -t kartoza/postgis
 ```
 
-We will have to configure Postgres to make sure it trusts our connections (this is merely for the tutorial and shouldn't be used in production this way).
+You will have to configure Postgres to make sure it trusts connections (this is merely for the tutorial and shouldn't be used in production this way).
 
 ```sh
 sudo docker exec -it postgrest_elevation bash
@@ -80,7 +80,7 @@ And if everything is working correctly it will print out its version and informa
 
 ## Step 1 - Creating our API Schema
 
-We will require a schema, so let's bring up the `psql` prompt of our Docker container again (alternatively `psql -U postgres` if it's running on your host OS).
+Postgrest will require its own API schema, so bring up the `psql` prompt of our Docker container again (alternatively `psql -U postgres` if it's running on your host OS).
 
 ```sh
 sudo docker exec -it postgrest_elevation psql -U postgres
@@ -91,16 +91,16 @@ Type "help" for help.
 postgres=#
 ```
 
-The first thing to do is to create an arbitrarily named schema for the database objects which will be exposed via the API.
+Create an arbitrarily named schema for your database objects which will be exposed via the PostgREST API.
 Execute the following SQL statements inside the `psql` prompt:
 
-```sh
+```sql
 CREATE SCHEMA api;
 ```
 
-Next we should add a role to use for anonymous web requests. When a request hits the API, PostgREST will switch into this database role to run the queries.
+Next, you should add a role to use for anonymous web requests. When a request hits the API, PostgREST will switch into this database role to run the queries.
 
-```sh
+```sql
 CREATE ROLE web_anon NOLOGIN;
 
 GRANT USAGE ON SCHEMA api TO web_anon;
@@ -108,9 +108,10 @@ GRANT USAGE ON SCHEMA api TO web_anon;
 
 Now, the `web_anon` role has permission to access functions in the api schema.
 
-As the authors of PostgREST point out, it's actually good practice to create a dedicated role for connecting to the database, instead of using the highly privileged `postgres` role. To do that, name the role `authenticator` and also grant him the ability to switch to the `web_anon` role:
+As the authors of PostgREST point out, it's actually good practice to create a dedicated role for connecting to the database, instead of using the highly privileged `postgres` role. 
+To do that, name the role `authenticator` and also grant this user the ability to switch to the `web_anon` role:
 
-```sh
+```sql
 CREATE ROLE authenticator NOINHERIT LOGIN PASSWORD 'gisops';
 GRANT web_anon TO authenticator;
 ```
@@ -156,14 +157,15 @@ sudo docker cp dolomites.tif postgrest_elevation:/
 Next, you will have to use `raster2pgsql` which you installed earlier via its CLI to import the DEM to the PostgreSQL database.
 Depending on the size of the tif file you are importing this may take a while.
 
-```
+```sh
 sudo docker exec -it postgrest_elevation bash -c "raster2pgsql -s 3035 -I -C -M -t "auto" dolomites.tif -F api.demelevation | psql -U postgres -d postgres"
-
+```
 
 Last but not least enter your `psql` prompt again to grant the `web_anon` user access to this table:
 
 ```sh
 sudo docker exec -it postgrest_elevation psql -U postgres
+
 postgres=# GRANT SELECT ON api.demelevation TO web_anon;
 ```
 
@@ -177,10 +179,10 @@ Let's bring back our `psql` prompt:
 sudo docker exec -it postgrest_tut psql -U postgres
 ```
 
-We will add a simple function to the `api` schema which consumes a single `GeoJSON Point` and returns a height value from the raster table in meters.
+This simple function consumes a single `GeoJSON Point` and returns a height value from the raster table in meters.
 
 
-```sh
+```sql
 CREATE OR REPLACE FUNCTION api.get_height(Point json) 
 RETURNS numeric AS $$
 DECLARE Transformed_Point GEOMETRY;
@@ -205,10 +207,10 @@ $$ LANGUAGE PLPGSQL;
 ```
 
 This function `get_height` consumes a coordinate reference system specified (Geo-)JSON object which is named `Point` which in the first step is transformed into the same projection of the raster, namely `EPSG:3035`.
-Afterwards this point (`the_point`) is cross joined with the digital elevation model where they both intersect.
+Afterwards this point (`the_point`) is cross joined with the digital elevation model where they intersect.
 To retrieve the value at this given intersection of the raster it makes use of the function `ST_Value()` which is casted to a numeric and rounded to 2 decimals. 
 
-Hit enter to store the function in the schema. That's it, go ahead an give it a shot.
+Hit enter to store the function in the schema. That's it, go ahead an give it a shot:
 
 ```sh
 curl -X POST \
@@ -218,14 +220,14 @@ curl -X POST \
   -d '{"type": "Point","coordinates":[11.6438, 46.9381],"crs":{"type":"name","properties":{"name":"EPSG:4326"}}}'
 ```
 
-By specifying the request header `Prefer: params=single-object`, we can let PostgREST know to intepret the entire POST body as the value of a single parameter. Quite handy for endpoints only expecting one single JSON object.
-The GeoJSON has a crs specified (4326) which could basically be any projection of your choice.
+By specifying the request header `Prefer: params=single-object`, you let PostgREST know to interpret the entire POST body as the value of a single parameter. Quite handy for endpoints only expecting one single JSON object.
+The GeoJSON has a crs specified (= EPSG:4326) which could basically be any projection of your choice.
 
-The response will be a height value in meters.
+**The response will be a height value in meters.**
 
 
 ### Wrap-up
 
 Congratulations for completing this tutorial. By now you will have learnt how to set up and use the PostgREST web API to return height values from a digital elevation model.
 
-Please feel free to get in touch with us if you have any further questions, need support or have ideas for other tutorials on PostgREST!
+Please feel free to get in touch with us at **enquiry[at]gis-ops.com** if you have any further questions, need support or have ideas for other tutorials on PostgREST!
