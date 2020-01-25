@@ -14,8 +14,7 @@ If you are interested in reading some further information on DEM's in general, w
 To implement all steps of this tutorial it's required to install PostgreSQL, PostGIS and PostgREST.
 You can use the following installation guide which will help you get a docker container up and running which PostgREST will use in the subsequent steps.
 
-### [Install PostgreSQL, PostGIS and PostgREST](https://github.com/gis-ops/tutorials/blob/master/postgres/install_postgrest-postgis.md)
-
+### [Installing and Setting up PostgreSQL, PostGIS and PostgREST](https://github.com/gis-ops/tutorials/blob/postgrest-elevation-api/postgres/postgres_postgis_postgrest_installation.md)
 
 ## Step 1 - Importing the Digital Elevation Model to our Database
 

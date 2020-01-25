@@ -24,7 +24,7 @@ It couldn't be easier.
 To implement all steps of this tutorial it's required to install PostgreSQL, PostGIS and PostgREST.
 You can use the following installation guide which will help you get a docker container up and running which PostgREST will use in the subsequent steps.
 
-### [Install PostgreSQL, PostGIS and PostgREST](https://github.com/gis-ops/tutorials/blob/master/postgres/install_postgrest-postgis.md)
+### [Installing and Setting up PostgreSQL, PostGIS and PostgREST](https://github.com/gis-ops/tutorials/blob/postgrest-elevation-api/postgres/postgres_postgis_postgrest_installation.md)
 
 
 ## Step 1 - Let's return a simple GeoJSON Object
@@ -39,7 +39,7 @@ sudo docker exec -it postgrest_tut psql -U postgres
 
 We will add a simple function to the `api` schema. It takes a single `JSON` argument and just returns it again as-is.
 
-```sh
+```sql
 CREATE OR REPLACE FUNCTION api.singlegeojsonparam(single_param json) RETURNS json
 
     LANGUAGE sql
@@ -65,7 +65,7 @@ If you're not too familiar with POST requests sending JSON data, this might be a
 
 Now we can start with some more fun stuff. Let's go ahead and write a function that is able to calculate the length of a LineString provided in [EPSG:4326](https://spatialreference.org/ref/epsg/wgs-84/). Note, that the GeoJSON we are providing is in degrees, so we will have to transform to pseudo-mercator (or something similar). Additionally, we will cast it to `numeric` and after dividing it by 1.000 (to obtain a result in `kilometers`) we will round it to 2 decimals.
 
-```sh
+```sql
 CREATE OR REPLACE FUNCTION api.calc_length(linestring json) RETURNS numeric AS $$
 
     SELECT ROUND(
@@ -105,7 +105,7 @@ kilometers!
 By now you have most likely picked up the gist of how easy it is to implement custom functions. Similary to the LineString example we could also calculate the area of a polygon. Let's make this a little trickier and let the user send a `GeoJSON FeatureCollection`. To keep it a little simpler, the endpoint can only process the first feature of the `FeatureCollection`, so only one polygon.
 
 
-```sh
+```sql
 CREATE OR REPLACE FUNCTION api.calc_area(featurecollection json) RETURNS numeric AS $$
 
     SELECT ROUND(
@@ -147,7 +147,7 @@ square kilometers. Easy.
 Last but not least let's implement one more function which will calculate the intersection of 2 polygons. The function by now should be self-explanatory. We just have to make sure we are returning a `GeoJSON` instead of a numeric value.
 
 
-```sh
+```sql
 CREATE OR REPLACE FUNCTION api.calc_intersection(featurecollection json) RETURNS json AS $$
 
       SELECT ST_AsGeoJSON(
