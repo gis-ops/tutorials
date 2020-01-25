@@ -1,8 +1,16 @@
+### PostgREST tutorials
+
+This tutorial is part of our PostgREST tutorial series:
+
+- [PostgREST - Installation and Setup](https://gis-ops.com/postgrest-tutorial-installation-and-setup/)
+- [PostgREST - Spatial API](https://gis-ops.com/postgrest-postgis-api-tutorial-in-5-minutes/)
+- [PostgREST - DEM API](https://gis-ops.com/postgrest-postgis-api-serve-digital-elevation-models)
+
 # How to Build a Powerful Spatial REST API with PostgREST, PostgreSQL and PostGIS
 
 ![GeoJSONs over New York](https://user-images.githubusercontent.com/10322094/69978653-219efa80-152d-11ea-80d8-710b087ff12c.png "GeoJSONs over New York")
 
-**Disclaimer**: This tutorial was developed on Mac OSX 10.14.6 and tested on Ubuntu 18.04. 
+**Disclaimer**: This tutorial was developed on Mac OSX 10.14.6 and tested on Ubuntu 18.04.
 Windows compatibility cannot be guaranteed.
 
 In this tutorial you will learn how to build a spatial REST API with the powerful PostgREST library utilizing PostGIS under its hood - in mere minutes!
@@ -21,137 +29,12 @@ It couldn't be easier.
 
 ## Prerequisites
 
-To follow this tutorial, you will need to install the following:
+To implement all steps of this tutorial it's required to install PostgreSQL, PostGIS and PostgREST. You can use our installation tutorial which will help you get a docker container up and running which PostgREST will use in the subsequent steps.
 
-### Install PostgreSQL + PostGIS
-###### 9.3/2.4 or greater, either as a Docker container or within your host OS directly
+### [Installing and setting up PostgreSQL, PostGIS and PostgREST](https://github.com/gis-ops/tutorials/blob/postgrest-elevation-api/postgres/postgres_postgis_postgrest_installation.md)
 
-If you are willing to run PostgreSQL with Docker we recommend you to use [Kartoza's docker recipe](https://hub.docker.com/r/kartoza/postgis/) which comes bundled with PostGIS as an extension.
 
-We will keep it simple and guide you through this tutorial using this image but the general steps are almost identical for a host installation, no worries.
-
-Let's start our docker Postgres container on port 5432 (or whichever port you prefer).
-
-```sh
-sudo docker run --name "postgrest_tut" -p 5432:5432 -e POSTGRES_MULTIPLE_EXTENSIONS=postgis -d -t kartoza/postgis
-```
-
-We will quickly have to configure Postgres to make sure it trusts our connections (this is merely for the tutorial and shouldn't be used in production this way).
-
-```sh
-sudo docker exec -it postgrest_tut bash
-```
-
-Inside the container first of all install an editor, e.g. nano, and then navigate to the folder where the Postgres config is living.
-
-```sh
-apt-get update && apt-get install nano
-
-cd /etc/postgresql/12/main/
-```
-
-In `pg_hba.conf` you will have to make a small change to the settings under `Database administrative login by Unix domain socket` (should be on line 85) from `peer` to `trust` and restart the Docker container afterwards.
-
-```sh
-sudo docker restart postgrest_tut
-```
-
-Afterwards you should be able to execute the following command which will bring up the `psql` prompt.
-
-```sh
-sudo docker exec -it postgrest_tut psql -U postgres
-```
-
-Finally we will have to enable the PostGIS extension.
-
-```sh
-postgres=# CREATE EXTENSION postgis;
-```
-
-### Install PostgREST
-
-To keep it simple, we suggest you follow the installation instructions on [postgrest.org](http://postgrest.org/en/v6.0/tutorials/tut0.html) which will depend on your operating system.
-
-Once everything is installed properly you will be able to simply run PostgREST with
-
-```sh
-postgrest
-```
-
-And if everything is working correctly it will print out its version and information about configuration.
-
-## Step 1 - Creating our Schema
-
-For this tutorial we don't necessarily require a database because we will be implementing logic in Postgres as functions which will spatially compute information on the fly.
-However we will require a schema, so let's bring up the `psql` prompt of our Docker container (alternatively `psql -U postgres` if it's running on your host OS).
-
-```sh
-sudo docker exec -it tutorial psql -U postgres
-
-psql (9.6.3)
-Type "help" for help.
-
-postgres=#
-```
-
-The first thing to do is to create an arbitrary named schema for the database objects which will be exposed in the API.
-Execute all SQL statements inside the `psql` prompt you started.
-
-```sh
-CREATE SCHEMA api;
-```
-
-Next we should add a role to use for anonymous web requests. When a request comes in, PostgREST will switch into this database role to run queries.
-
-```sh
-CREATE ROLE web_anon NOLOGIN;
-
-GRANT USAGE ON SCHEMA api TO web_anon;
-```
-
-Now, the `web_anon` role has permission to access functions in the api schema!
-
-As the authors of PostgREST point out, it's actually good practice to create a dedicated role for connecting to the database, instead of using the highly privileged `postgres` role. To do that, name the role `authenticator` and also grant him the ability to switch to the `web_anon` role:
-
-```sh
-CREATE ROLE authenticator NOINHERIT LOGIN PASSWORD 'gisops';
-GRANT web_anon TO authenticator;
-```
-
-To make sure we use a suitable projection for our spatial calculations, we will use World Robinson's [EPSG:54030](https://epsg.io/54030).
-Please add it to your database with:
-
-```sh
-INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values ( 54030, 'ESRI', 54030, '+proj=robin +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs ', 'PROJCS["World_Robinson",GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Robinson"],PARAMETER["False_Easting",0],PARAMETER["False_Northing",0],PARAMETER["Central_Meridian",0],UNIT["Meter",1],AUTHORITY["EPSG","54030"]]');
-``` 
-
-PostgREST needs a configuration file to specify the database connection. Go ahead and create a file named `gisops-tutorial.conf` with the following information (remember to adapt the port and password if you have changed it in the earlier steps).
-
-```sh
-db-uri = "postgres://authenticator:gisops@localhost:5432/postgres"
-db-schema = "api"
-db-anon-role = "web_anon"
-server-port = 3000
-```
-
-Now we are ready to start PostgREST.
-
-```sh
-postgrest gisops-tutorial.conf
-# or ./postgrest gisops-tutorial.conf
-```
-
-You should be able to see something like this:
-
-```sh
-Listening on port 3000
-Attempting to connect to the database...
-Connection successful
-```
-
-The PostgREST server is now ready to serve web requests. But, guess what, there is nothing to serve yet. So let's move on and implement some spatial API endpoints!
-
-## Step 2 - Let's return a simple GeoJSON Object
+## Step 1 - Let's return a simple GeoJSON Object
 
 As mentioned earlier, we will implement stored procedures which will calculate spatial information on the fly. You as a user will have the ability to post `GeoJSON` objects as the payload to the API. For the sake of demonstration, we will start with a simple procedure which will return the payload without changing it.
 
@@ -163,7 +46,7 @@ sudo docker exec -it postgrest_tut psql -U postgres
 
 We will add a simple function to the `api` schema. It takes a single `JSON` argument and just returns it again as-is.
 
-```sh
+```sql
 CREATE OR REPLACE FUNCTION api.singlegeojsonparam(single_param json) RETURNS json
 
     LANGUAGE sql
@@ -185,11 +68,11 @@ curl -X POST \
 
 If you're not too familiar with POST requests sending JSON data, this might be a little unfamiliar to you. The body is just one JSON object, and usually its keys would be interpreted as body parameters. However, by specifying the request header `Prefer: params=single-object`, we can let the backend know to intepret the entire POST body as the value of a single parameter. Quite handy for endpoints only expecting one single JSON object.
 
-## Step 3 - Calculating the Length of a LineString
+## Step 2 - Calculating the Length of a LineString
 
 Now we can start with some more fun stuff. Let's go ahead and write a function that is able to calculate the length of a LineString provided in [EPSG:4326](https://spatialreference.org/ref/epsg/wgs-84/). Note, that the GeoJSON we are providing is in degrees, so we will have to transform to pseudo-mercator (or something similar). Additionally, we will cast it to `numeric` and after dividing it by 1.000 (to obtain a result in `kilometers`) we will round it to 2 decimals.
 
-```sh
+```sql
 CREATE OR REPLACE FUNCTION api.calc_length(linestring json) RETURNS numeric AS $$
 
     SELECT ROUND(
@@ -224,12 +107,12 @@ Voila! For our route through Kansas, USA it returns:
 kilometers!
 
 
-## Step 4 - Calculating the Area of a Polygon
+## Step 3 - Calculating the Area of a Polygon
 
 By now you have most likely picked up the gist of how easy it is to implement custom functions. Similary to the LineString example we could also calculate the area of a polygon. Let's make this a little trickier and let the user send a `GeoJSON FeatureCollection`. To keep it a little simpler, the endpoint can only process the first feature of the `FeatureCollection`, so only one polygon.
 
 
-```sh
+```sql
 CREATE OR REPLACE FUNCTION api.calc_area(featurecollection json) RETURNS numeric AS $$
 
     SELECT ROUND(
@@ -266,12 +149,12 @@ Our polygon covering part of New York is of size
 square kilometers. Easy.
 
 
-## Step 5 - Calculating the Intersection of 2 Polygons
+## Step 4 - Calculating the Intersection of 2 Polygons
 
 Last but not least let's implement one more function which will calculate the intersection of 2 polygons. The function by now should be self-explanatory. We just have to make sure we are returning a `GeoJSON` instead of a numeric value.
 
 
-```sh
+```sql
 CREATE OR REPLACE FUNCTION api.calc_intersection(featurecollection json) RETURNS json AS $$
 
       SELECT ST_AsGeoJSON(
