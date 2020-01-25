@@ -26,24 +26,24 @@ You can use the following installation guide which will help you get a docker co
 
 ## Step 1 - Importing the Digital Elevation Model to our Database
 
-In this tutorial you will be using a clipped region of the [EU DEM 1.1 Copernicus Dataset](https://land.copernicus.eu/imagery-in-situ/eu-dem) of the beautiful Dolomites in the Alps.
-You can obviously download whatever data you are interested in and (optionally clip it with QGIS)[https://www.youtube.com/watch?v=XZBlYq6Fg4M].
-This DEM is projected in [ETRS89-extended / LAEA Europe](https://epsg.io/3035) at 25 meters resolution with a vertical accuracy of +/- 7 meters RMSE and was published in 2016. You can find further metadata [here](https://land.copernicus.eu/imagery-in-situ/eu-dem/eu-dem-v1.1?tab=metadata).
+In this tutorial you will be using a clipped region of the [EU DEM 1.1 Copernicus Dataset](https://land.copernicus.eu/imagery-in-situ/eu-dem) of the beautiful Dolomites in the Alps. You can obviously download whatever data you are interested in and [optionally clip it with QGIS](https://www.youtube.com/watch?v=XZBlYq6Fg4M).
+This DEM is projected in [ETRS89-extended / LAEA Europe](https://epsg.io/3035) at 25 meters resolution with a vertical accuracy of +/- 7 meters RMSE and was published in 2016. You can find further metadata on the [Copernicus pages](https://land.copernicus.eu/imagery-in-situ/eu-dem/eu-dem-v1.1?tab=metadata).
 
-Copy the TIF file into the root of your container first:
+First you'll have to download the appropriate GeoTIFF file from the [Copernicus Download site](https://land.copernicus.eu/imagery-in-situ/eu-dem/eu-dem-v1.1?tab=download). Note, that downloading data requires a registration at the Copernicus system.
+
+After downloading a DEM, copy the GeoTIFF into the root of your PostGIS container first:
 
 ```sh
 sudo docker cp dolomites.tif postgrest_tut:/
 ```
 
-Next, you will have to use `raster2pgsql` which you installed earlier via its CLI to import the DEM to the PostgreSQL database.
-Depending on the size of the tif file you are importing this may take a while.
+Next, you will have to use `raster2pgsql` (ships with Kartoza's Docker image) to import the DEM to the PostgreSQL database. Depending on the size of the GeoTIFF file you are importing this may take a while.
 
 ```sh
-sudo docker exec -it postgrest_tut bash -c "raster2pgsql -s 3035 -I -C -M -t "auto" dolomites.tif -F api.demelevation | psql -U postgres -d postgres"
+sudo docker exec -it postgrest_tut bash -c 'raster2pgsql -s 3035 -I -C -M -t "auto" dolomites.tif -F api.demelevation | psql -U postgres -d postgres'
 ```
 
-Last but not least enter your `psql` prompt again to grant the `web_anon` user access to this table:
+Finally enter your `psql` prompt again to grant the `web_anon` user access to this table:
 
 ```sh
 sudo docker exec -it postgrest_tut psql -U postgres
@@ -51,9 +51,22 @@ sudo docker exec -it postgrest_tut psql -U postgres
 postgres=# GRANT SELECT ON api.demelevation TO web_anon;
 ```
 
+In case you encounter an error while importing the raster file à la
+
+```bash
+type raster does not exist
+```
+
+you can try to execute some of the scripts located in `/usr/share/postgresql/12/contrib/postgis-3.0/`. As far as we know, executing `rtpostgis.sql` should be enough:
+
+```sql
+sudo docker exec -it postgrest_tut bash
+psql -f rtpostgis.sql -d postgres -U postgres
+```
+
 ## Step 2 -  Returning Height Values via the API
 
-Up next you will implement a simple [PL/pgSQL](https://en.wikipedia.org/wiki/PL/pgSQL) stored function which will return a height value on the fly. To keep it geospatial, the input payload will be modeled as a `GeoJSON` object.
+Up next you will implement a simple [PL/pgSQL](https://en.wikipedia.org/wiki/PL/pgSQL) stored function which will return a height value on the fly. The input payload will be modeled as a `GeoJSON` object.
 
 Let's bring back our `psql` prompt:
 
@@ -61,8 +74,7 @@ Let's bring back our `psql` prompt:
 sudo docker exec -it postgrest_tut psql -U postgres
 ```
 
-This simple function consumes a single `GeoJSON Point` and returns a height value from the raster table in meters.
-
+This simple function consumes a single GeoJSON `Point` and returns a height value from the raster table in meters. Paste the following snippet into the `psql` prompt:
 
 ```sql
 CREATE OR REPLACE FUNCTION api.get_height(Point json)
@@ -88,9 +100,7 @@ END;
 $$ LANGUAGE PLPGSQL;
 ```
 
-This function `get_height` consumes a coordinate reference system specified (Geo-)JSON object which is named `Point` which in the first step is transformed into the same projection of the raster, namely `EPSG:3035`.
-Afterwards this point (`the_point`) is cross joined with the digital elevation model where they intersect.
-To retrieve the value at this given intersection of the raster it makes use of the function `ST_Value()` which is casted to a numeric and rounded to 2 decimals.
+This function `get_height` consumes a GeoJSON object named `Point` which initially is transformed into the CRS of the raster, here `EPSG:3035`. Then this point (`the_point`) is cross-joined with the cells it intersects. To retrieve the value at this given intersection of the raster it makes use of the function `ST_Value()` which is cast to a numeric and rounded to 2 decimals.
 
 Hit enter to store the function in the schema. That's it, go ahead an give it a shot:
 
@@ -104,10 +114,7 @@ curl -X POST \
 
 By specifying the request header `Prefer: params=single-object`, you let PostgREST know to interpret the entire POST body as the value of a single parameter. Quite handy for endpoints only expecting one single JSON object.
 
-The GeoJSON has a crs specified (EPSG:4326) which could basically be any projection of your choice which is listed in the table `spatial_ref_sys`.
-PostGIS will read the crs key and know which projection it is in which makes an extra `ST_SetSRID()` call redundant.
-[The official documentation doesn't mention this](https://postgis.net/docs/ST_GeomFromGeoJSON.html), however if you have a quick glimpse at the [PostGIS sources](https://github.com/postgis/postgis/blob/master/liblwgeom/lwin_geojson.c#L432) you can see for yourself.
-We want to point out that the crs specification in the GeoJSON object is removed in [newer versions](https://tools.ietf.org/html/rfc7946#section-4) and eventually could also be deprecated in PostGIS.
+The input GeoJSON has a CRS specified (EPSG:4326) which could be any projection of your choice listed in the PostGIS CRS table `spatial_ref_sys`. The [official documentation](https://postgis.net/docs/ST_GeomFromGeoJSON.html) doesn't mention this, however if you have a quick glimpse at the [PostGIS sources](https://github.com/postgis/postgis/blob/master/liblwgeom/lwin_geojson.c#L432) you can see for yourself. Note, the GeoJSON CRS specification is not officially supported anymore in [newer GeoJSON versions](https://tools.ietf.org/html/rfc7946#section-4) due to interoperability issues. However it is still tolerated, but could potentially be deprecated in a future PostGIS release.
 
 **The response will be a height value in meters.**
 

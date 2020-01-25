@@ -40,15 +40,17 @@ apt-get update && apt-get install nano
 cd /etc/postgresql/12/main/
 ```
 
-In `pg_hba.conf` you will have to make a small change to the settings under `Database administrative login by Unix domain socket` (should be on line 85) from `peer` to `trust` and restart the Docker container afterwards.
+In `pg_hba.conf` you will have to make a small change to the settings under `Database administrative login by Unix domain socket` from `peer` to `trust`. On lines 84 & 85, it should look like this:
+
+```sh
+# Database administrative login by Unix domain socket
+local   all             postgres                                trust
+```
+
+Then restart the Docker container and bring up the `psql` prompt:
 
 ```sh
 sudo docker restart postgrest_tut
-```
-
-Afterwards you should be able to execute the following command which will bring up the `psql` prompt.
-
-```sh
 sudo docker exec -it postgrest_tut psql -U postgres
 ```
 
@@ -59,13 +61,13 @@ postgres=# CREATE EXTENSION postgis;
 postgres=# \q
 ```
 
-If you are using Docker you will unfortunately have to install PostGIS in the again to be able to use `raster2pgsql` in a later stage:
+In some tutorials we make use of the `raster2pgsql` utility provided by PostGIS. However, that's not available in Kartoza's Docker image and only available in the PostGIS `apt-get` package. So you'll have to install it manually inside the Docker container:
 
 ```sh
 sudo docker exec -it postgrest_tut bash -c "apt-get update && apt-get install postgis"
 ```
 
-### Installing PostgREST
+## Step 2 - PostgREST installation
 
 To keep it simple, we suggest you follow the installation instructions on [postgrest.org](http://postgrest.org/en/v6.0/tutorials/tut0.html) which will depend on your operating system.
 
@@ -77,7 +79,7 @@ postgrest
 
 And if everything is working correctly it will print out its version and information about configuration.
 
-### PostgREST - Creating our API Schema
+## Step 3 - Create API Schema
 
 Postgrest will require its own API schema, so bring up the `psql` prompt of our Docker container again (alternatively `psql -U postgres` if it's running on your host OS).
 
@@ -90,8 +92,7 @@ Type "help" for help.
 postgres=#
 ```
 
-Create an arbitrarily named schema for your database objects which will be exposed via the PostgREST API.
-Execute the following SQL statements inside the `psql` prompt:
+Create an arbitrarily named schema for your database objects which will be exposed via the PostgREST API. Execute the following SQL statements inside the `psql` prompt:
 
 ```sql
 CREATE SCHEMA api;
@@ -105,18 +106,16 @@ CREATE ROLE web_anon NOLOGIN;
 GRANT USAGE ON SCHEMA api TO web_anon;
 ```
 
-Now, the `web_anon` role has permission to access functions in the api schema.
+Now, the `web_anon` role has permission to access functions in the API schema.
 
-As the authors of PostgREST point out, it's actually good practice to create a dedicated role for connecting to the database, instead of using the highly privileged `postgres` role.
-To do that, name the role `authenticator` and also grant this user the ability to switch to the `web_anon` role:
+As the authors of PostgREST point out, it's actually good practice to create a dedicated role for connecting to the database, instead of using the highly privileged `postgres` role. To do that, name the role `authenticator` and also grant this user the ability to switch to the `web_anon` role:
 
 ```sql
 CREATE ROLE authenticator NOINHERIT LOGIN PASSWORD 'gisops';
 GRANT web_anon TO authenticator;
 ```
 
-To make sure we use a suitable projection for our spatial calculations, we will use World Robinson's [EPSG:54030](https://epsg.io/54030) in case needed.
-Please add it to your database with:
+We'll regularly use the World Robinson's [EPSG:54030](https://epsg.io/54030) projection to make sure we use a suitable projection for our spatial calculations. However, PostGIS misses that projections in its CRS table, so please add it to your database:
 
 ```sh
 INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values ( 54030, 'ESRI', 54030, '+proj=robin +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs ', 'PROJCS["World_Robinson",GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Robinson"],PARAMETER["False_Easting",0],PARAMETER["False_Northing",0],PARAMETER["Central_Meridian",0],UNIT["Meter",1],AUTHORITY["EPSG","54030"]]');
