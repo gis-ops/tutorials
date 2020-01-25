@@ -1,5 +1,4 @@
-### Installing PostgreSQL + PostGIS
-###### 9.3/2.4 or greater, either as a Docker container or within your host OS directly
+### Setting up PostgreSQL + PostGIS in Docker
 
 If you are willing to run PostgreSQL via Docker we recommend to use [Kartoza's docker recipe](https://hub.docker.com/r/kartoza/postgis/) which comes bundled with PostGIS as an extension.
 
@@ -132,4 +131,4 @@ Attempting to connect to the database...
 Connection successful
 ```
 
-The PostgREST server is now ready to serve web requests. Surprise, there is nothing to serve yet. So let's move on and import the elevation data.
+The PostgREST server is now ready to serve web requests.
