@@ -1,8 +1,16 @@
+### PostgREST tutorials
+
+This tutorial is part of our PostgREST tutorial series:
+
+- [PostgREST - Installation and Setup](https://gis-ops.com/postgrest-tutorial-installation-and-setup/)
+- [PostgREST - Spatial API](https://gis-ops.com/postgrest-postgis-api-tutorial-in-5-minutes/)
+- [PostgREST - DEM API](https://gis-ops.com/postgrest-postgis-api-serve-digital-elevation-models)
+
 # How to Build a Powerful Spatial REST API with PostgREST, PostgreSQL and PostGIS
 
 ![GeoJSONs over New York](https://user-images.githubusercontent.com/10322094/69978653-219efa80-152d-11ea-80d8-710b087ff12c.png "GeoJSONs over New York")
 
-**Disclaimer**: This tutorial was developed on Mac OSX 10.14.6 and tested on Ubuntu 18.04. 
+**Disclaimer**: This tutorial was developed on Mac OSX 10.14.6 and tested on Ubuntu 18.04.
 Windows compatibility cannot be guaranteed.
 
 In this tutorial you will learn how to build a spatial REST API with the powerful PostgREST library utilizing PostGIS under its hood - in mere minutes!
@@ -21,10 +29,9 @@ It couldn't be easier.
 
 ## Prerequisites
 
-To implement all steps of this tutorial it's required to install PostgreSQL, PostGIS and PostgREST.
-You can use the following installation guide which will help you get a docker container up and running which PostgREST will use in the subsequent steps.
+To implement all steps of this tutorial it's required to install PostgreSQL, PostGIS and PostgREST. You can use our installation tutorial which will help you get a docker container up and running which PostgREST will use in the subsequent steps.
 
-### [Installing and Setting up PostgreSQL, PostGIS and PostgREST](https://github.com/gis-ops/tutorials/blob/postgrest-elevation-api/postgres/postgres_postgis_postgrest_installation.md)
+### [Installing and setting up PostgreSQL, PostGIS and PostgREST](https://github.com/gis-ops/tutorials/blob/postgrest-elevation-api/postgres/postgres_postgis_postgrest_installation.md)
 
 
 ## Step 1 - Let's return a simple GeoJSON Object

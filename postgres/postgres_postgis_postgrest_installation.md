@@ -1,4 +1,19 @@
-### Setting up PostgreSQL + PostGIS in Docker
+### PostgREST tutorials
+
+This tutorial is part of our PostgREST tutorial series:
+
+- [PostgREST - Installation and Setup](https://gis-ops.com/postgrest-tutorial-installation-and-setup/)
+- [PostgREST - Spatial API](https://gis-ops.com/postgrest-postgis-api-tutorial-in-5-minutes/)
+- [PostgREST - DEM API](https://gis-ops.com/postgrest-postgis-api-serve-digital-elevation-models)
+
+# PostgREST installation and setup
+
+**Disclaimer**: This tutorial was developed on Mac OSX 10.14.6 and tested on Ubuntu 18.04.
+Windows compatibility cannot be guaranteed.
+
+In this tutorial you'll learn how to install and setup [PostgREST](https://github.com/PostgREST/postgrest), the RESTful API framework for any existing PostgreSQL database.
+
+## Step 1 - Docker PostgreSQL & PostGIS setup
 
 If you are willing to run PostgreSQL via Docker we recommend to use [Kartoza's docker recipe](https://hub.docker.com/r/kartoza/postgis/) which comes bundled with PostGIS as an extension.
 
@@ -92,7 +107,7 @@ GRANT USAGE ON SCHEMA api TO web_anon;
 
 Now, the `web_anon` role has permission to access functions in the api schema.
 
-As the authors of PostgREST point out, it's actually good practice to create a dedicated role for connecting to the database, instead of using the highly privileged `postgres` role. 
+As the authors of PostgREST point out, it's actually good practice to create a dedicated role for connecting to the database, instead of using the highly privileged `postgres` role.
 To do that, name the role `authenticator` and also grant this user the ability to switch to the `web_anon` role:
 
 ```sql
@@ -105,7 +120,7 @@ Please add it to your database with:
 
 ```sh
 INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values ( 54030, 'ESRI', 54030, '+proj=robin +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs ', 'PROJCS["World_Robinson",GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Robinson"],PARAMETER["False_Easting",0],PARAMETER["False_Northing",0],PARAMETER["Central_Meridian",0],UNIT["Meter",1],AUTHORITY["EPSG","54030"]]');
-``` 
+```
 
 PostgREST requires a configuration file to specify the database connection. Go ahead and create a file named `gisops-tutorial.conf` with the following information (remember to adapt the port and password if you have changed it in the earlier steps).
 
