@@ -173,7 +173,6 @@ Inside `nano` paste the following configuration (and obviously adjust for your d
 <VirtualHost *:80>
     ServerAdmin info@gis-ops.com
     ServerName qgis.example.com
-    ServerAlias www.qgis.example.com
 
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
