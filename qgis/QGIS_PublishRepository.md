@@ -21,23 +21,23 @@ In this tutorial you will learn how to set up your own QGIS plugin repository an
 
 **Goals**:
 
-- set up a QGIS repository, either directly on the host machine **or** via `docker-compose`
+- set up a QGIS repository, either directly on the host machine **or** via docker-compose
 - set up Apache to serve the repository, optionally protected with [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication)
 - register private repository with QGIS
 
 > **Disclaimer**
 >
-> Validity confirmed for **Ubuntu 18.04** and **QGIS <= v3.10.2**. The usage of `docker-compose` _should_ make this tutorial platform-independent.
+> Validity confirmed for **Ubuntu 18.04** and **QGIS <= v3.10.2**. The usage of docker-compose _should_ make this tutorial platform-independent.
 
 ## Introduction
 
-Sometimes you simply can't (or want) to adhere to QGIS [hard](https://plugins.qgis.org/publish/) or soft requirements for its hosted public plugin repository, including (but not limited to):
+Sometimes you simply can't adhere to QGIS [hard](https://plugins.qgis.org/publish/) requirements for its hosted public plugin repository. There are also some softer etiquette rules or project requirements like
 
 - branding of plugins with company logos, links to paid content etc.
 - intentionally restricted user base
 - commercial client restrictions
 
-Instead of distributing zipped packages to your clients making it harder for them, why not use QGIS amazing flexibility and offer your users/clients the comfort of installing and updating plugins directly though QGIS? Exactly, sounds great and you'll see shortly how trivial that is.
+And instead of distributing zipped packages to your clients, why not use QGIS amazing flexibility and offer your users/clients the comfort of installing and updating plugins directly though QGIS? Exactly, sounds great and you'll see shortly how trivial that is.
 
 **Be sure to review the license requirements for your QGIS plugins in the case of a private plugin repository, included in [Conclusions](#conclusions).**
 
@@ -73,10 +73,10 @@ git clone https://gitlab.com/GIS-projects/phpQGISrepository.git
 
 From here on you'll have two options to bring up the project:
 
-1. `docker-compose`
+1. docker-compose
 2. point the host-native (Apache) web server to the `phpQGISrepository` directory
 
-**Advantage `docker-compose` option**
+**Advantage docker-compose option**
 
 - No installation of external dependencies (Apache or PHP)
 - Pre-configured Apache server with PHP support
@@ -88,7 +88,7 @@ From here on you'll have two options to bring up the project:
 - No virtualization of an entire OS via Docker, saving resources
 - Also works for [shared hosts](https://www.hostgator.com/blog/what-is-shared-hosting/)
 
-Which one you prefer and choose is entirely up to you. Needless to say that shared hosting is by far the cheapest option. We contributed a `docker-compose.yml` a while ago, to avoid installing PHP and configuring a web server on the host machine (also great for just trying it out). However, we'll show you both, the `docker-compose` and host-native web server and naturally we'll start with the harder one :wink:.
+Which one you prefer and choose is entirely up to you. Needless to say that shared hosting is by far the cheapest option. We contributed a `docker-compose.yml` a while ago, to avoid installing PHP and configuring a web server on the host machine (also great for just trying it out). However, we'll show you both, the docker-compose and host-native web server and naturally we'll start with the harder one :wink:.
 
 ## Step 2a - Install using Apache on host machine
 
@@ -183,7 +183,7 @@ Inside `nano` paste the following configuration (and obviously adjust for your d
 </VirtualHost>
 ```
 
-Once you saved this configuration you'll have to verify the configuration, copy the phpQGISrepository directory to `/var/www/`, change the permissions to Apache's `www-data` Linux user, enable the site and restart Apache:
+Once you saved this configuration you'll have to verify the configuration, copy the `phpQGISrepository` directory to `/var/www/`, change the permissions to Apache's `www-data` Linux user, enable the site and restart Apache:
 
 ```bash
 sudo apache2ctl configtest  # should say "Syntax OK"
@@ -201,7 +201,7 @@ This option is not only cheaper but also much simpler, since your hosting provid
 
 As soon as you did that, you should instantly see the QGIS repository on your registered (sub-)domain.
 
-## Step 2b - Install using `docker-compose`
+## Step 2b - Install using docker-compose
 
 This couldn't possibly be simpler:
 
@@ -271,7 +271,7 @@ If you now visit http://qgis.example.com again, you should be asked for your cre
 
 On a **shared host** you'll have to consult your provider if it's possible to override authentication with a `.htaccess` file. By default, Apache doesn't allow `.htaccess` overrides of any kind, but since most shared host sites are running Wordpress, which highly depends on overridable server configuration, it might even be possible. If you consult your provider, ask them which option is used in the `AllowOverride` directive. It should be `All` or at least `AuthConfig`.
 
-With **`docker-compose`** you'll have to `docker exec -it qgis-repo bash` into the container and add the same block to `/opt/docker/etc/httpd/conf.d/10-server.conf` inside the `<Directory "/app">` block.
+With **docker-compose** you'll have to `docker exec -it qgis-repo bash` into the container and add the same block to `/opt/docker/etc/httpd/conf.d/10-server.conf` inside the `<Directory "/app">` block.
 
 ### QGIS adjustments
 
@@ -283,7 +283,7 @@ In the Plugin Manager's repository settings _Edit_ your previously defined repos
 
 ## Conclusions
 
-Our recommendation is to use the host-native option if you need more than one private QGIS repository (e.g. for multiple clients) and/or have Apache and PHP installed anyways. `docker-compose` is great to give it a try and for one single repository on a server.
+Our recommendation is to use the host-native option if you need more than one private QGIS repository (e.g. for multiple clients) and/or have Apache and PHP installed anyways. docker-compose is great to give it a try and for one single repository on a server.
 
 Whether or not you need a private QGIS plugin repository in the first place is of course up to you to decide. We strongly encourage you to publish your work on the [public QGIS plugin repository](https://plugins.qgis.org) so everyone has access to the functionalities and code, but at the same time we respect if there are circumstances prohibiting that. And in any case, we think it's good fun to try this out.
 
