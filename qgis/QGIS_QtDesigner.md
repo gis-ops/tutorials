@@ -7,6 +7,7 @@ This tutorial is part of our QGIS tutorial series:
 - [QGIS 3 Plugins - Signals and Slots in PyQt](https://gis-ops.com/qgis-3-plugins-pyqt-signals-slots/)
 - [QGIS 3 Plugins - Plugin Development Part 1](https://gis-ops.com/qgis-simple-plugin/)
 - [QGIS 3 Plugins - Plugin Development Part 2](https://gis-ops.com/qgis-3-use-interactive-mapping/)
+- [QGIS 3 Plugins - Set up Plugin Repository](https://gis-ops.com/qgis-3-plugin-tutorial-set-up-a-plugin-repository-explained/)
 
 ---
 
