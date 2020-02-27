@@ -13,30 +13,11 @@ This Tutorial is part of our Valhalla tutorial series:
 ## Introduction
 
 [Valhalla](https://github.com/valhalla) is a high-performance open source routing software (MIT license) written in C++ and mainly designed to consume OpenStreetMap data.
+The core engineers work for [Mapbox](https://www.mapbox.com/) and one of the most prestigious companies using Valhalla is [Tesla](https://tesla.com) (Electric cars). 
+It offers different scalable and highly customizable API services such as turn-by-turn directions, optimised routes, detailed isochrones to determine reachability, time-distance matrices and map matching. 
 
-Through its hardware near design, Valhalla offers a wide range of scalable and stable features, e.g.:
-
--   **Turn-by-turn directions**: Routes from point to point for a given profile with a wide range of options.
--   **Time/distance matrices**: Rapidly calculate many-to-many / one-to-many or many-to-one distances and times between locations.
--   **Optimized routes**: What is the shortest route to visit a set of locations (traveling salesman).
--   **Isochrones/isolines to determine reachability**: Compute the reachability of how far one can travel in a given time from a given location.
--   **Map matching**: Match noisy GPS data to the street network.
-
-There are some noteworthy & considerable advantages why to use Valhalla:
-
--   *The street network as tiled data structure*: Similarly to digital web maps and their specific zoom levels, Valhalla generates and exposes its routing graph as street network tiles which have a relationship to each other.  
--   *OpenStreetMap*: Valhalla consumes OpenStreetMap data and its huge range of tags into a consistent roadway hierarchy (tiles!) and is able to consider country-specific driving rules and speed limits.
--   *Narrative guidance*: Turn-by-turn routes comprise rich narrative guidance which are available in multiple languages and ready for output as text-to-speech (TTS) on a smartphone.
--   *Different traveling profiles*: Car, bicycle, pedestrian, heavy vehicle and much more..
--   *Dynamic costing*: One can influence the routing costs on the fly by changing costing parameters in each query.
-
-The following list of companies using Valhalla in their productive systems emphasizes the quality of this well-established routing engine:
-
--   [Scoot](https://scoot.co/#splash-modal) (Electric vehicles)
--   [Mapillary](https://www.mapillary.com/) (Street imagery)
--   [Mapbox](https://www.mapbox.com/)(Directions, isochrones, time-distance matrices APIs)
--   [Tesla](https://tesla.com) (Electric cars)
--   [Sidewalk Labs](https://sidewalklabs.com/) (Urban real-estate development and operations)
+Similarly to digital web maps and their specific zoom levels, Valhalla generates and exposes its routing graph as street network tiles which have a relationship to each other in different hierarchies which makes it very resource friendly compared to other routing frameworks. 
+Using [OpenStreetMap](https://openstreetmap.org) data as its source Valhalla provides different traveling profiles to route with and gives enough flexibility to add additional custom profiles with the generic dynamic costing modules within the framework.
 
 The Valhalla code and more details can be found at their [GitHub repository](https://github.com/valhalla) which is maintained by [many contributors](https://github.com/valhalla/valhalla/graphs/contributors).
 
@@ -45,13 +26,9 @@ The Valhalla code and more details can be found at their [GitHub repository](htt
 -   Learn how to set up Valhalla with elevation support on Ubuntu
 -   And as usual some new things about how to use Ubuntu and Linux ;)...  
 
-
  > **Disclaimer**  
  > Validity only confirmed for **Ubuntu 18.04** and **Valhalla 3.0.2**.  
  > Building and installing software from scratch is always a difficult and unforeseeable task that may render your running system or the software unusable. You may continue this tutorial at your own responsibility.
-
-**Basic vocabulary**
--   `bounding box` is the smallest enclosing box around a geographical feature e.g. the digital representation of a country.
 
 ---
 
