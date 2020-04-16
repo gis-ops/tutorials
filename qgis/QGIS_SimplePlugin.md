@@ -357,7 +357,7 @@ feature.setAttributes([address, license])
 
 layer_out.dataProvider().addFeature(feature)
 layer_out.updateExtents()
-self.project.addMapLayer(layer_out)
+project.addMapLayer(layer_out)
 ```
 
 First, you build a Point object from the response X & Y. A `QgsFeature` is how QGIS understands a single feature entity. It holds information on geometry and attributes, which you'll have to set. Remember, `QgsPointXY` is not a geometry, only a Point object (confusing, really, since `QgsPoint` **is** a geometry), so we'll have to create a geometry from it first.
