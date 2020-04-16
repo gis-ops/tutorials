@@ -3,8 +3,8 @@
 This tutorial is part of our PostgREST tutorial series:
 
 - [PostgREST - Installation and Setup](https://gis-ops.com/postgrest-tutorial-installation-and-setup/)
-- [PostgREST - Spatial API](https://gis-ops.com/postgrest-postgis-api-tutorial-in-5-minutes/)
-- [PostgREST - DEM API](https://gis-ops.com/postgrest-postgis-api-serve-digital-elevation-models)
+- [PostgREST - Spatial API](https://gis-ops.com/postgrest-postgis-api-tutorial-geospatial-api-in-5-minutes/)
+- [PostgREST - DEM API](https://gis-ops.com/postgrest-postgis-api-tutorial-serve-digital-elevation-models/)
 
 # PostgREST installation and setup
 
