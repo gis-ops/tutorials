@@ -2,11 +2,11 @@
 
 This tutorial is part of our QGIS tutorial series:
 
-- [QGIS 3 Plugins - Plugin 101](https://gis-ops.com/qgis-3-plugin-development-reference-guide/)
-- [QGIS 3 Plugins - Qt Designer](https://gis-ops.com/qgis-3-qt-designer-explained/)
-- [QGIS 3 Plugins - Signals and Slots in PyQt](https://gis-ops.com/qgis-3-plugins-pyqt-signals-slots/)
-- [QGIS 3 Plugins - Plugin Development Part 1](https://gis-ops.com/qgis-simple-plugin/)
-- [QGIS 3 Plugins - Plugin Development Part 2](https://gis-ops.com/qgis-3-use-interactive-mapping/)
+- [QGIS 3 Plugins - Plugin 101](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-reference-guide/)
+- [QGIS 3 Plugins - Qt Designer](https://gis-ops.com/qgis-3-plugin-tutorial-qt-designer-explained/)
+- [QGIS 3 Plugins - Signals and Slots in PyQt](https://gis-ops.com/qgis-3-plugin-tutorial-pyqt-signal-slot-explained/)
+- [QGIS 3 Plugins - Plugin Development Part 1](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-1/)
+- [QGIS 3 Plugins - Plugin Development Part 2](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/)
 - [QGIS 3 Plugins - Set up Plugin Repository](https://gis-ops.com/qgis-3-plugin-tutorial-set-up-a-plugin-repository-explained/)
 
 ---
