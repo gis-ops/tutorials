@@ -236,6 +236,10 @@ from PyQt5.QtGui import QCursor, QPixmap
 from PyQt5.QtWidgets import QApplication
 
 from qgis.gui import QgsMapToolEmitPoint, QgsVertexMarker
+from qgis.core import (QgsCoordinateReferenceSystem,
+                       QgsCoordinateTransform,
+                       QgsProject
+                       )
 ```
 
 Then build a class `PointTool` based on [`QgsMapToolEmitPoint`](https://qgis.org/pyqgis/3.0/gui/Map/QgsMapToolEmitPoint.html):
@@ -271,7 +275,7 @@ def canvasReleaseEvent(self, event):
     self.canvasClicked.emit(point_wgs)
 ```
 
-This might be the first time you come across `pyqtSignal`, so we recommend to go through our [short primer on PyQt Signal/Slots concept](https://gis-ops.com/qgis-3-plugins-pyqt-signals-slots).
+This might be the first time you come across `pyqtSignal`, so we recommend to go through our [short primer on PyQt Signal/Slots concept](https://gis-ops.com/qgis-3-plugin-tutorial-pyqt-signal-slot-explained).
 
 Above you define a custom signal `canvasClicked`, which can emit a `QgsPointXY` variable type. It will only emit in the above case when a `canvasReleaseEvent` was triggered and after the point was transformed to WGS84. This emitted `signal` however needs a `slot` to connect to, i.e. a function which does something useful with the emitted point. As you will see shortly, that slot will be the function adding the emitted WGS84 coordinates the user clicked to the `QgsFilterLineEdit` widget in your GUI, which a user had to fill manually before.
 
@@ -377,7 +381,7 @@ This will:
 
 ## 6 Final plugin functionality
 
-The last thing to do is to give the plugin an icon. This is really quick, just change the `icon_path` value in `quick_api.py:QuickApi`'s `initGui()` method to `':/plugins/quick_api/icons/icon_reverse.png'`.
+The last thing to do is to give the plugin an icon. This is really quick, just change the `icon_path` value in `quick_api.py:QuickApi`'s `initGui()` method to `':/plugins/quick_api/img/icon_reverse.png'`.
 
 Finally the plugin is ready to be fully tested. Perform another
 
@@ -419,7 +423,7 @@ The icon is already in your resource store, remember? If not, go back to the [re
 Open `./maptool.py` and add the following to the `PointTool`'s `__init__()`:
 
 ```python
-self.cursor = QCursor(QPixmap(':/plugins/quick_api/icons/icon_locate.png').scaledToWidth(48))
+self.cursor = QCursor(QPixmap(':/plugins/quick_api/img/icon_locate.png').scaledToWidth(48))
 ```
 
 This will define the cursor with the `icon_locate.png` as image and a width of 48 pixels.
@@ -441,13 +445,15 @@ First, let's save a reference to the last map tool the user used before he initi
 def run(self):
 		...
     self.last_maptool = self.iface.mapCanvas().mapTool()
-		#self.dlg.open()
+    #self.dlg.open()
 ```
 
 To revert to the properties the user had before he executed your tool, you best set the old properties in the last `slot`, i.e. `_writeLineWidget()`:
 
 ```python
 #class QuickApi:
+from PyQt5.QtWidgets import QApplication
+
 def _writeLineWidget(self, point):
     QApplication.restoreOverrideCursor()
     self.iface.mapCanvas().setMapTool(self.last_maptool)
