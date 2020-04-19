@@ -29,7 +29,7 @@ If you miss documentation of some methods or concepts, please open an [issue on 
 
 ## Development environment
 
-QGIS generally ships with the official [Python distribution](https://www.python.org/downloads/release/python-360/), which is fairly slim with regards to included packages. Additionally, it ships multiple convenience packages, like **`requests`**, **`shapely`**, **`matplotlib`**, **`SciPy`** and **`NumPy`**. Feel free to extend this list in a PR, since there doesn't seem to be extensive documentation.
+QGIS generally ships with the official [Python distribution](https://www.python.org/downloads/release/python-360/), which is fairly slim with regards to included packages. Additionally, it ships multiple convenience packages, like **`requests`**, **`matplotlib`**, **`SciPy`** and **`NumPy`**. Feel free to extend this list in a PR, since there doesn't seem to be extensive documentation.
 
 Under Linux (and presumably Mac OS), QGIS 3 utilizes the **system Python3** executable and installs all needed libraries in its `PYTHONPATH`. Usually, it's not practical to use virtual environments for QGIS plugins. **WINDOWS** users are not so lucky: they will have to use the OSGeo4W Python executable or modify their `PYTHONPATH` to reflect QGIS native Python libraries.
 
@@ -49,23 +49,19 @@ QGIS will look for external plugins in these paths :
 
 Since you usually won't work in the native QGIS plugin path, there's a few extra steps to deploy the plugin so that QGIS recognizes it and you see changes you make along the development.
 
-If you altered the `resources.qrc` file, you'll need to compile the `resources.py` before you copy the code from your project folder to the plugin path:
+It's enough to create a symbolic link from your dev environment to the QGIS Python Plugin directory:
 
 ```bash
 pyrcc5 -o resources.py resources.qrc
 
-cp -arf myplugin/ ~/.local/share/QGIS/QGIS3/profiles/default/python/plugins
+ln -s myplugin/ ~/.local/share/QGIS/QGIS3/profiles/default/python/plugins
 ```
 
-You might also just create a link from the plugin path to the project folder.
-
-Then, use the [Plugin Reloader](https://plugins.qgis.org/plugins/plugin_reloader/) plugin to reload your modified code on-the-fly from within QGIS, without restarting QGIS. **Note**, that this only works if you didn't modify any methods which are **only** loaded on QGIS startup, like the root's `__init__.py` or the main module's `__init__(self)` method.
+Then, use the [Plugin Reloader](https://plugins.qgis.org/plugins/plugin_reloader/) plugin to reload your modified code on-the-fly from within QGIS, without restarting QGIS. **Note**, that this only works if you didn't modify any methods which are **only** loaded on QGIS startup, like the root's `__init__.py` or the `initGui()` method.
 
 ## `metadata.txt`
 
-This is the main source for the plugin repository, but also the QGIS Plugin Manager, which both extract information about author, version etc from here. Generally, you can use this file to store all kinds of meta information, like a help URL or collaborators. There's not exactly a standard for this file format, but its structure is similar to that of an INI configuration file in terms of `[sections]` and `key=value` pairs. A useful resource is the [Python implementation](https://docs.python.org/3/library/configparser.html#supported-ini-file-structure).
-
-The metadata file can be parsed in Python with the native `configparser` library. It makes sense to keep `metadata.txt` as the only entry point for meta information and, when needed in the code base, import the configuration from it (like `version`).
+This is the main source for the plugin repository, but also the QGIS Plugin Manager, which both extract information about author, version etc from here. Generally, you can use this file to store all kinds of meta information, like a help URL or collaborators. It's a standard INI structured file with sections and `key=value` pairs. Hence, it can be parsed with Python's native `configparser` library. It makes sense to keep `metadata.txt` as the only entry point for meta information and, when needed in the code base, import the configuration from it (like `version`).
 
 Multiline statements (like in changelogs) must be indented after the first line. Paths are set relatively, e.g. `gui/img/icon.png` if it lives in `<plugin_root>/gui/img`.
 
@@ -142,7 +138,7 @@ The `MyPlugin` class is passed the `iface` parameter, which is a `QgisInterface`
 
 We'll go through the lines in order:
 
-- `self.iface`: arguably the most important instance. It saves a reference to the QGIS GUI interface (`qgis.gui.QgisInterface`)
+- `self.iface`: saves a reference to the QGIS GUI interface (`qgis.gui.QgisInterface`)
 
 - `locale`: all code lines concerning locales, you can (more or less) safely ignore for now. They mostly deal with translations and internationalization.
 
@@ -189,13 +185,13 @@ Really, this function could be called anything you'd like. There's no hidden mea
 
 First thing it does here: check if this is the first time the plugin is called. Remember, this function is called every time the user clicks on the plugin toolbar button/menu entry. Only if it's the first start, it'll build the GUI by instantiating the `QuickApiDialog` class (which calls its `setupUi()` in its `__init__()`) and assigning it to `dlg`. If the GUI would be freshly built every time the user calls the plugin, all previous GUI settings would be lost. `dlg` now holds all plugin GUI objects, which can be accessed by the names you gave them in Qt Designer.
 
-`dlg.show()` shows the GUI modeless (i.e. the user can interact with QGIS main window while the plugin GUI is open) .
+`dlg.show()` shows the GUI modeless, i.e. the user can interact with QGIS main window while the plugin GUI is open.
 
-`dlg.exec_()` is a shortcut method to show the GUI (yes, this is actually duplicate functionality) and returns the option the user chose (0 for pressing Cancel button, 1 for pressing OK button). The internals are a little elaborate and you can read more about it [here](http://doc.qt.io/qt-5/qdialog.html#modal-dialogs). I think the reason why `show()` is implemented on top of `exec_()` is that `exec_()` will return a modal dialog (i.e. user can't interact with parent window), while `show()` makes sure it's modeless. Nevertheless, a little dirty.
+`dlg.exec_()` shows the GUI modal, i.e. the user can't interact with QGIS main window while the plugin is open. When the user presses a button to close the plugin, this function will return a code, which is `1` if the user pressed _OK_ and `0` if the user pressed _Cancel_. Usually one would either use `show()` **or** `exec_()`.
 
-*BTW*: `exec_()` is equivalent to `exec()` and was introduced by `PyQt`, since `exec` was a reserved keyword until Python 3. `exec_()` is still best practice.
+*BTW*: `exec_()` is equivalent to `exec()` and was introduced by `PyQt`, since `exec` was a reserved keyword until Python 3.
 
-So, if `result` is `True` (or 1, which is equivalent in Python), meaning the user clicked OK, we want the plugin to execute its costum code. This is finally where the boiler plate ends and the action starts.
+So, if `result` is `1`, meaning the user clicked OK, we want the plugin to execute its costum code. This is finally where the boiler plate ends and the action starts.
 
 ## Documentation Stores
 
@@ -210,7 +206,6 @@ Unfortunately, the direct code documentation of PyQt5 provided by Riverside is n
 - the main documentation is [here](http://pyqt.sourceforge.net/Docs/PyQt5/QtWidgets.html#PyQt5-QtWidgets). However, it usually only refers you to the C++ documentation of the Qt library, which PyQt5 wraps for Python. That documentation can be slightly overwhelming. You'll get through it though, just consider these few guidelines (taking `QLineEdit` as reference):
 	- in [Functions](https://doc.qt.io/qt-5/qlineedit.html#public-functions) description, the first column tells you which object type is returned. `void` does not return anything. `QString` is implemented as a simple Python `str`. The first few rows let you know how to construct an instance of the widget.
 	- the Properties are implemented as methods, not attributes, i.e. in [`QLineEdit`](https://doc.qt.io/qt-5/qlineedit.html#properties), `text` is implemented in `PyQt5` as `<some QLineEdit widget>.text()`, which will give you the current text of the widget
-	- obviously every widget inherits a plethora of functions, methods and signals of its parent widgets, which is why using the C++ documentation is only good for specific lookups
 	- we will deal with Signals and Slots later
 
 - to lookup properties of a specific widget, use Qt Creator's [Properties](#3-property-editor) panel
