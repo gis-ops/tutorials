@@ -95,7 +95,7 @@ Stay in the same folder and run the following commands to download and prepare t
 
 ```bash
 git clone https://github.com/valhalla/valhalla.git ~/valhalla/
-cd ~/valhala/scripts/
+cd ~/valhalla/scripts/
 mkdir valhalla_tiles && mkdir conf
 ```
 -   `git clone` will give you access to the latest Valhalla code.
