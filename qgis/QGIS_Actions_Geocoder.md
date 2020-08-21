@@ -44,9 +44,9 @@ Note: You obviously could use any other polygon here.
 
 Up next we will need to generate some random points in our polygon which we will use to reverse geocode in our QGIS action later on:
 
-a. Go to Vector / Research Tools / Random Points inside Polygons.
-b. Select your input polygon layer (e.g. the melbourne polygon)
-c. Input your point count (e.g. 200) / you don't have to set the minimum distance between points
+a. Go to Vector / Research Tools / Random Points inside Polygons.<br/>
+b. Select your input polygon layer (e.g. the melbourne polygon)<br/>
+c. Input your point count (e.g. 200) / you don't have to set the minimum distance between points<br/>
 d. We will save the output to a temporary layer
 
 A temporary layer called "Random Points" should have been generated and you will be seeing the amount of points you selected in c. in your polygon on the map.
@@ -54,9 +54,9 @@ Our QGIS action will be created in a way which will consume the point data and s
 The response will be an address at that location which we want to save to our temporary table.
 To this end, we will have to add one additional column to this table:
 
-a. Right click the Random Points layer and select "Properties"
-b. Find the tab "Fields" and add a new field by clicking "toggle editing mode".
-c. Then select "new field" and in the dialogue you will have to give it a name, e.g. "address" and the type which in this case should be "Text, unlimited length". 
+a. Right click the Random Points layer and select "Properties"<br/>
+b. Find the tab "Fields" and add a new field by clicking "toggle editing mode".<br/>
+c. Then select "new field" and in the dialogue you will have to give it a name, e.g. "address" and the type which in this case should be "Text, unlimited length".<br/>
 d. Afterwards hit "toggle editing mode" again and confirm your changes to be saved.
 
 

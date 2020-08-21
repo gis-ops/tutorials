@@ -28,7 +28,7 @@ def handle_response(resp):
     QtWidgets.QMessageBox.information(None, "Success", "Location has been reverse geocoded: {}".format(address))
 
 
-here_api_key = 'x7hsfJ9f6sU6LZMdsR1qX1fIpTPoKV77L4-ncdOY8HQ'
+here_api_key = 'insert_your_here_api_key_here'
 
 our_layer = '[% @layer_id %]'
 QgsMessageLog.logMessage("Selected layer ID is {}".format(str(our_layer)))
