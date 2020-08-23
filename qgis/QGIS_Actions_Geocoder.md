@@ -34,7 +34,7 @@ This tutorial follows you through the development process of a simple QGIS 3 Act
 
 ## 1. Prepare your QGIS3 Environment
 
-![Melbourne Polygon with Random Points](https://raw.githubusercontent.com/gis-ops/tutorials/qgis-actions-geocoder/qgis/static/img/actions_img1.jpg)
+![Melbourne Polygon with Random Points](https://raw.githubusercontent.com/gis-ops/tutorials/master/qgis/static/img/actions_img1.jpg)
 
 Once you have opened your QGIS3 environment add a basemap of your choice (we recommend [QuickMapServices](https://plugins.qgis.org/plugins/quick_map_services/)). 
 Afterwards select `EPSG:4326` as your project coordinate reference system and drag and drop the provided [melbourne.geojson](https://github.com/gis-ops/tutorials/raw/master/qgis/data/melbourne.geojson) file into your map.
@@ -74,7 +74,7 @@ Right click the points layer and select "Properties".
 Once opened, navigate to "Actions" and add a new action of type "Python" with a short description. 
 The scopes of the action to be selected are "Feature Scope" and "Canvas" which define where and how this specific action can be invoked.
 
-![Create the QGIS Action](https://raw.githubusercontent.com/gis-ops/tutorials/qgis-actions-geocoder/qgis/static/img/actions_img2.jpg)
+![Create the QGIS Action](https://raw.githubusercontent.com/gis-ops/tutorials/master/qgis/static/img/actions_img2.jpg)
 
 
 ### Action Text
@@ -206,7 +206,7 @@ Since we declared our action to be scoped for the canvas and single features, th
 
 Once you have gone through all the steps above, you should be able to see something like this:
 
-![The Geocoded Point](https://raw.githubusercontent.com/gis-ops/tutorials/qgis-actions-geocoder/qgis/static/img/actions_img4.jpg)
+![The Geocoded Point](https://raw.githubusercontent.com/gis-ops/tutorials/master/qgis/static/img/actions_img4.jpg)
 
 And your final action code could look like this:
 
