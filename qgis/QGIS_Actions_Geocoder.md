@@ -2,11 +2,11 @@
 
 This tutorial is part of our QGIS tutorial series:
 
-- [QGIS 3 Plugins - Plugin 101](https://gis-ops.com/qgis-3-plugin-development-reference-guide/)
-- [QGIS 3 Plugins - Qt Designer](https://gis-ops.com/qgis-3-qt-designer-explained/)
-- [QGIS 3 Plugins - Signals and Slots in PyQt](https://gis-ops.com/qgis-3-plugins-pyqt-signals-slots/)
-- [QGIS 3 Plugins - Plugin Development Part 1](https://gis-ops.com/qgis-simple-plugin/)
-- [QGIS 3 Plugins - Plugin Development Part 2](https://gis-ops.com/qgis-3-use-interactive-mapping/)
+- [QGIS 3 Plugins - Plugin 101](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-reference-guide/)
+- [QGIS 3 Plugins - Qt Designer Explained](https://gis-ops.com/qgis-3-plugin-tutorial-qt-designer-explained/)
+- [QGIS 3 Plugins - Signals and Slots in PyQt](https://gis-ops.com/qgis-3-plugin-tutorial-pyqt-signal-slot-explained/)
+- [QGIS 3 Plugins - Plugin Development Part 1](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-1/)
+- [QGIS 3 Plugins - Plugin Development Part 2](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/)
 - [QGIS 3 Plugins - Set up Plugin Repository](https://gis-ops.com/qgis-3-plugin-tutorial-set-up-a-plugin-repository-explained/)
 
 ---
@@ -83,7 +83,7 @@ The script consists of multiple code blocks which we will break down for you in 
 
 #### Imports and Programmatically Derive Feature Geometry
 
-The "Action Text" is where we will write our Python code which handle the aforementioned logic.
+The "Action Text" is where we will write our Python code which will handle the aforementioned logic.
 First of all please paste the following into your import statements. 
 
 ```python
@@ -186,7 +186,7 @@ def handle_response(resp):
 ```
 
 A successful response with a coordinate reverse geocoded will yield a json object from HERE containing all different kinds of interesting information corresponding to these coordinates. 
-To keep this tutorial simple, we are only interested in the full text address which HERE Maps provides in the `Label` object of the response.
+To keep this tutorial simple, we are only interested in the full text address which HERE Maps provides in the `Label` object of the response (check the log messages to get a full understanding of the JSON response from HERE Maps).
 The response object holding this information is a `QByteArray` which we have to cast to bytes to make sure we can load it into a json object which we can access.
 
 At long last we would like to save the result in our tempory table in the address column we added in the beginning.
