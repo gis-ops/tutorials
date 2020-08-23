@@ -1,7 +1,7 @@
-from PyQt5.QtNetwork import  QNetworkAccessManager, QNetworkRequest
-from PyQt5.QtCore import QUrl
 from qgis.core import QgsMessageLog
 from qgis.PyQt import QtWidgets
+from qgis.PyQt.QtCore import QUrl
+from qgis.PyQt.QtNetwork import  QNetworkAccessManager, QNetworkRequest
 import json
 
 def do_request(manager, lat, lng, api_key):
@@ -39,8 +39,8 @@ fid = [% $id %]
 QgsMessageLog.logMessage("Selected feature ID is {}".format(str(fid)))
 
 feature = our_layer.getFeature(fid)
-geom = feature.geometry()
-lat, lng = geom.asPoint().y(), geom.asPoint().x()
+point = feature.geometry().asPoint()
+lat, lng = point.y(), point.x()
 QgsMessageLog.logMessage("Selected coordinates are {}, {}".format(lat, lng))
 
 manager = QNetworkAccessManager()
