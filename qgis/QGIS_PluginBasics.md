@@ -140,7 +140,8 @@ We'll go through the lines in order:
 
 - `self.iface`: saves a reference to the QGIS GUI interface (`qgis.gui.QgisInterface`)
 
-- `locale`: all code lines concerning locales, you can (more or less) safely ignore for now. They mostly deal with translations and internationalization.
+- `locale`: all code lines concerning locales, you can (more or less) safely ignore for now. They mostly deal with 
+s and internationalization.
 
 - `self.actions`: a container for `QAction`s, which we'll explain a little later.
 
@@ -148,7 +149,7 @@ We'll go through the lines in order:
 
 #### `def tr(self, message)`
 
-If your plugin makes use of translations, this method will handle it. You can read more about it [here](https://docs.qgis.org/testing/en/docs/pyqgis_developer_cookbook/plugins.html#translation).
+If your plugin makes use of translations, this method will handle it. You can read more about it [here](https://docs.qgis.org/3.10/en/docs/pyqgis_developer_cookbook/plugins/plugins.html#translation).
 
 #### `def add_action(self, ...)`
 
