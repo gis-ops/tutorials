@@ -132,7 +132,7 @@ Starting as a personal project of one of the founders, Graphhopper quickly evolv
 
 ### Valhalla
 
-Originally a [Mapzen](https://www.mapzen.com) [[RIP](https://www.wired.com/story/mapzen-shuts-down/)] project, Mapbox took the chance to hire most of its engineers to evolve Valhalla further (and shortly after it dropped OSRM maintenance). Around the same time Tesla chose Valhalla as their in-car navigation system due to its favorable runtime requirements and its unique flexibility in runtime costing of road segments. The unique property of Valhalla is that **all profiles use the same graph**.
+Originally a [Mapzen](https://www.mapzen.com) [[RIP](https://www.wired.com/story/mapzen-shuts-down/)] project, Mapbox took the chance to hire most of its engineers to evolve Valhalla further (and shortly after it dropped OSRM maintenance). Around the same time Tesla chose Valhalla as their in-car navigation system due to its favorable runtime requirements and its unique flexibility in runtime costing of road segments. One of the main advantages of Valhalla is that **all profiles use the same graph**, which is made possible by its dynamic runtime costing (eeeh?! :D you can influence the route finding with many custom factors/penalties/costs, e.g. avoid highways).
 
 #### Advantages
 
