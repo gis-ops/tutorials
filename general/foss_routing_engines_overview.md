@@ -159,7 +159,7 @@ As one of the earliest open source routing engines, ORS started its journey in t
 #### Disadvantages
 
 - **RAM requirements**: Similar to Graphhopper, but even worse. For preprocessing and for running the graphs with the highest routing performance, the OSM planet needs at least 128 GB RAM servers **per profile**.
-- **Customizability**: Similar to Graphhopper. Additional profiles must be developed in Java source code.
+- **Customizability**: Similar to Graphhopper. Additional profiles must be developed in Java source code. And often you'll have to adjust two projects: openrouteservice **and** Graphhopper.
 
 ### pgRouting
 
