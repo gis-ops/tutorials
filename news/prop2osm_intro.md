@@ -4,7 +4,7 @@ Open-source routing engines offer amazing capabilities, going far beyond what co
 
 However, one limitation which is hard to get around: every each open-source routing engine solely consumes [**OpenStreetMap**](https://openstreetmap.org) data. We're here to remove that limitation and offer a way to convert **any proprietary** street dataset into the [OSM data model](https://wiki.openstreetmap.org/wiki/Elements):
 
-<div style="text-align: center; font-size: 1.4em"><a href="https://github.com/gis-ops/prop2osm">prop2osm</a></div>
+<p style="text-align: center; font-size: 1.4em"><a href="https://github.com/gis-ops/prop2osm">prop2osm</a></p>
 
 If you don't want to read on and just have a quick dive into what we offer exactly, see if any of these links and apps provides some help:
 
@@ -44,7 +44,7 @@ Let's take truck/lorry routing as an example. There's many important properties 
 - maximum height allowed (case "don't shave off the top of your truck")
 - are hazardous materials allowed? (case "don't poison protected areas")
 
-Unfortunately there's no good source of truth to judge whether or not these attributes are well captured in a given road dataset. However, simply comparing the relative amounts <sup> [1](#footnote2) </sup>  between OSM and TomTom gives an ok-ish first indication:
+Unfortunately there's no good source of truth to judge whether or not these attributes are well captured in a given road dataset. However, simply comparing the relative amounts<sup>[1](#footnote2) </sup>  between OSM and TomTom gives an ok-ish first indication:
 
 |              	| TomTom      	| OSM         	|
 |--------------	|-------------	|-------------	|
@@ -57,8 +57,74 @@ Unfortunately there's no good source of truth to judge whether or not these attr
 <div id="footnote1" /><sup>1</sup><sub>Dividing the amount of road segments with these attributes by the total amount of road segments, i.e. also pedestrian-only road segments are captured here, diluting the results somewhat</sub>
 <br/><br/>
 
-The absolute amount of road segments has (almost) no meaning, as TomTom road segments are usually shorter than in OSM; it's just shown for reference. However, the relative abundance of attributes for these few examples is striking: **TomTom has at least one magnitude, of multiple magnitudes, better coverage**.
+The absolute amount of road segments has (almost) no meaning, as TomTom road segments are usually shorter than in OSM; it's just shown for reference. However, the relative abundance of attributes for these few examples is striking: **TomTom has at least one magnitude, or even multiple magnitudes, better coverage** than OSM (in this admittedly very crude analysis).
 
 ## Why not combine them?
 
-Many FOSS routing engines already offer an amazing set of user-definable options to alter the way a route is calculated. 
+Many FOSS routing engines already offer an amazing set of user-definable options to alter the way a route is calculated. A routing algorithm typically tries to minimize the _cost_ of the overall route, while the cost is mostly the time it takes to travel (see [here](https://gis-ops.com/open-source-routing-engines-and-algorithms-an-overview/#user-content-costweight) for details):
+
+- **avoid tolls**: specify if toll roads should be avoided
+- **vehicle dimensions**: specify your vehicle's dimensions to not travel on road segments you're legally not allowed on
+- **slope affinity**: specify whether elevation changes along a road should be favored or avoided (e.g. important for road bike navigation)
+- **road surfaces**: specify whether you want to avoid bad road surfaces
+- **avoid locations/areas**: pass points or polygons to define road segments/areas the route is not allowed to pass through
+- and many more...
+
+This is really impressive! However, as briefly discussed above, the road segments in the router-native OSM dataset often do not contain the appropriate attributes to make the best out of those amazing features.
+
+By enabling FOSS routing engines to work with other data sources one can make full use of these. See for example below a **truck route** with OSM and TomTom in Austria calculated with [Valhalla](https://github.com/valhalla/valhalla), where there's a weight restriction of 7 tons on the road which OSM doesn't have:
+
+![Difference in truck route between OSM and TomTom](https://raw.githubusercontent.com/gis-ops/tutorials/master/news/aux/example_route_7tons.png)
+
+## TomTom and HERE in action with Valhalla
+
+With the software [**prop2osm**](https://github.com/gis-ops/prop2osm), we offer a way to easily make proprietary datasets usable with any routing engine which natively consumes OSM data. By default, we support **TomTom and HERE datasets**, but intentionally left the implementation easily adaptable to other road datasets. Or even to other use cases, such as using open map renderers which mostly only support OSM (e.g. the brilliant [OpenMapTiles](https://github.com/openmaptiles/openmaptiles)) or geocoding engines (such as [Pelias](https://github.com/pelias/pelias) or [Nominatim](https://nominatim.org)).
+
+### Demo app
+
+Enough talking, let's see some action. To showcase the value of **prop2osm** we developed a demo app which contains sample datasets for TomTom (in Austria) and HERE (in Minnesota, USA). In the app you can:
+- view the restrictions which are available in the sample areas, both for OSM and TomTom/HERE
+- route with Valhalla on multiple waypoints for **car and truck**, i.e. from A to D via B and C, **simultaneously for OSM and TomTom/HERE**, so you can compare the outputs easily
+- calculate reachability areas for **car and truck simultaneously for OSM and TomTom/HERE**, so you can compare the outputs easily
+- define dynamic restrictions which influence the routing/reachability, such as truck dimensions, desire to use highways etc
+
+![Demo app screenshot](https://raw.githubusercontent.com/gis-ops/tutorials/master/news/aux/demo_app.png)
+
+You can access the demo app yourself on https://converter.gis-ops.com and play around to your heart's content.
+
+You can even install the whole stack yourself via `docker-compose` by following our instructions on https://github.com/gis-ops/osm-converter-demo. That will give you:
+- 3 Valhalla instances, one for each dataset, with pre-built routing graphs
+- 1 web app listening on http://localhost:3005
+
+Let us know via [Twitter](https://twitter.com/gis_ops) or [email](mailto:enquiry@gis-ops.com) what you think.
+
+## Services
+
+We provide [commercial services](https://gis-ops.com/routing-and-optimisation/#data-services) to make your TomTom/HERE data compatible with any FOSS routing engine.
+
+The way it works:
+
+**Input**: your TomTom/HERE data
+
+&#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595;
+
+`some badass processing`
+`0011101001000110101110`
+`bidibdrrrrdüükkkkirrff`
+
+&#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595;
+
+**Output**: a PBF file compatible with all routing engines
+
+**Note**, optionally you can also license TomTom data through us (in collaboration with [WIGeoGIS](https://www.wigeogis.com/de/home)).
+
+The output file will be converted to the [OSM data model](https://labs.mapbox.com/mapping/osm-data-model/), either in [PBF](https://wiki.openstreetmap.org/wiki/PBF_Format) or XML format. It will have the same properties as you'd find in "real" OSM files with the most relevant objects and attributes for routing applications. No effort has been made so far to adapt the output to other applications, such as map rendering or geocoding.
+
+## Further Information
+
+If you're interest is not satisfied, feel free to get in touch with us: enquiry@gis-ops.com. If you prefer to inform yourself some more, check out these links:
+
+- [Public prop2osm info](https://github.com/gis-ops/prop2osm)
+- Demo app: https://converter.gis-ops.com
+- [Demo app DIY](https://github.com/gis-ops/osm-converter-demo)
+- [FOSS routing engine overview](https://gis-ops.com/open-source-routing-engines-and-algorithms-an-overview/)
