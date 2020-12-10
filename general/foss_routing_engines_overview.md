@@ -206,7 +206,7 @@ However, for more specialized routing applications, OSM road segments often lack
 
 In these special routing applications it's far more reasonable to use proprietary, vetted and guaranteed datasets from commercial vendors. And here's the plug (been waiting for it? :D): GIS • OPS developed a tool to convert proprietary road datasets from HERE and TomTom into the OSM data model, thus allowing our customers to take full advantage of the software & analysis universe built around OpenStreetMap.
 
-You can read more about it [in our blog](FIXME) and play around with our demo app on https://converter.gis-ops.com. You can even try it out locally on your own computer by following the instructions on https://github.com/gis-ops/osm-converter-demo.
+You can read more about it [in our blog](https://gis-ops.com/?p=1885&preview=true) and play around with our demo app on https://converter.gis-ops.com. You can even try it out locally on your own computer by following the instructions on https://github.com/gis-ops/osm-converter-demo.
 
 ## GIS • OPS projects
 

@@ -11,6 +11,20 @@ If you don't want to read on and just have a quick dive into what we offer exact
 - [live demo app](https://converter.gis-ops.com)
 - [demo app](https://github.com/gis-ops/osm-converter-demo) for local installation
 
+## TOC
+
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:0 orderedList:0 -->
+
+- [Why Open Source Routing Engines?](#user-content-why-open-source-routing-engines)
+- [Why proprietary data?](#user-content-why-proprietary-data)
+- [Why not combine them?](#user-content-why-not-combine-them)
+- [TomTom and HERE in action with Valhalla](#user-content-tomtom-and-here-in-action-with-valhalla)
+	- [Demo app](#user-content-demo-app)
+- [Services](#user-content-services)
+- [Further Information](#user-content-further-information)
+
+<!-- /TOC -->
+
 ## Why Open Source Routing Engines?
 
 Open source routing engines have gained massively in popularity, the latest after the shameless price increase of Google Maps in 2018. The clear advantages are
@@ -74,7 +88,7 @@ This is really impressive! However, as briefly discussed above, the road segment
 
 By enabling FOSS routing engines to work with other data sources one can make full use of these. See for example below a **truck route** with OSM and TomTom in Austria calculated with [Valhalla](https://github.com/valhalla/valhalla), where there's a weight restriction of 7 tons on the road which OSM doesn't have:
 
-![Difference in truck route between OSM and TomTom](https://raw.githubusercontent.com/gis-ops/tutorials/master/news/aux/example_route_7tons.png)
+![Difference in truck route between OSM and TomTom](https://github.com/gis-ops/tutorials/blob/e95c43bd7f356604e1937d2eed1abefcec411447/news/aux/example_route_7tons.png)
 
 ## TomTom and HERE in action with Valhalla
 
@@ -88,7 +102,7 @@ Enough talking, let's see some action. To showcase the value of **prop2osm** we 
 - calculate reachability areas for **car and truck simultaneously for OSM and TomTom/HERE**, so you can compare the outputs easily
 - define dynamic restrictions which influence the routing/reachability, such as truck dimensions, desire to use highways etc
 
-![Demo app screenshot](https://raw.githubusercontent.com/gis-ops/tutorials/master/news/aux/demo_app.png)
+![Demo app screenshot](https://github.com/gis-ops/tutorials/blob/e95c43bd7f356604e1937d2eed1abefcec411447/news/aux/demo_app.png)
 
 You can access the demo app yourself on https://converter.gis-ops.com and play around to your heart's content.
 
@@ -108,9 +122,9 @@ The way it works:
 
 &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595;
 
-`some badass processing`
-`0011101001000110101110`
-`bidibdrrrrdüükkkkirrff`
+`some badass processing`<br/>
+`0011101001000110101110`<br/>
+`bidibdrrrrdüükkkkirrff`<br/>
 
 &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595; &#8595;
 
