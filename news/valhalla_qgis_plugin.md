@@ -4,7 +4,7 @@ We're happy to announce the final release of our QGIS Plugin for the amazing rou
 
 If you don't know Valhalla yet, you can read some more about its advantages and disadvantages in [our blog](https://gis-ops.com/open-source-routing-engines-and-algorithms-an-overview/#user-content-valhalla).
 
-![Valhalla plugin demo](aux/valhalla_plugin_front.png)
+![Valhalla plugin demo](https://github.com/gis-ops/tutorials/blob/master/news/aux/valhalla_plugin_front.png?raw=true)
 
 ## TOC
 
@@ -84,7 +84,7 @@ Another optional parameter is a layer which contains locations to avoid. This **
 
 Not much to say that wouldn't be pretty obvious. You can define multiple waypoints, where the exact amount depends on the Valhalla routing engine configuration.
 
-![Valhalla route demo](aux/valhalla_plugin_route.png)
+![Valhalla route demo](https://github.com/gis-ops/tutorials/blob/master/news/aux/valhalla_plugin_route.png?raw=true)
 
 #### Isochrones/Isodistances
 
@@ -96,7 +96,7 @@ Optionally, isochrones and/or isodistances can be calculated, which will be coll
 
 Optionally, you can opt in to return 2 point layers (option "No Points" unticked): one Point layer with the input points of the source locations and one MultiPoint layer with the points Valhalla used to start the routing algorithm on (so-called snapped points, i.e. snapped to the road network).
 
-![Valhalla isochrone demo](aux/valhalla_plugin_isochrone.png)
+![Valhalla isochrone demo](https://github.com/gis-ops/tutorials/blob/master/news/aux/valhalla_plugin_isochrone.png?raw=true)
 
 #### Matrix (`sources_to_targets`)
 
@@ -104,7 +104,7 @@ The `sources_to_targets` will calculate the distance and duration for all input 
 
 The output is a table without any geometry. The point of a matrix is to only return trip summaries and not care about trip details, such as the geometry or navigational instructions.
 
-![Valhalla matrix demo](aux/valhalla_plugin_matrix.png)
+![Valhalla matrix demo](https://github.com/gis-ops/tutorials/blob/master/news/aux/valhalla_plugin_matrix.png?raw=true)
 
 #### Locate
 
@@ -114,7 +114,7 @@ The output of the `locate` method is just a window with the raw JSON response. I
 
 One more important attribute which can be extracted is the **OSM ID** of ways.
 
-![Valhalla matrix demo](aux/valhalla_plugin_matrix.png)
+![Valhalla matrix demo](https://github.com/gis-ops/tutorials/blob/master/news/aux/valhalla_plugin_matrix.png?raw=true)
 
 #### Extract OSM
 
@@ -126,7 +126,7 @@ This is really useful when you're curious why Valhalla would route over one way 
 
 **Note**, this method needs [`osmium`](https://github.com/osmcode/osmium-tool) installed and access to a local PBF (ideally the same used to prepare Valhalla's routing graphs).
 
-![Valhalla matrix demo](aux/valhalla_plugin_locate.png)
+![Valhalla matrix demo](https://github.com/gis-ops/tutorials/blob/master/news/aux/valhalla_plugin_locate.png?raw=true)
 
 ### Processing Toolbox
 
