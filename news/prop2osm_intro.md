@@ -132,7 +132,7 @@ The way it works:
 
 **Output**: a PBF file compatible with all routing engines
 
-**Note**, optionally you can also license TomTom or HERE data through us (in collaboration with [WIGeoGIS](https://www.wigeogis.com/de/home)).
+**Note**, optionally you can also license TomTom data through us (in collaboration with [WIGeoGIS](https://www.wigeogis.com/de/home)).
 
 The output file will be converted to the [OSM data model](https://labs.mapbox.com/mapping/osm-data-model/), either in [PBF](https://wiki.openstreetmap.org/wiki/PBF_Format) or XML format. It will have the same properties as you'd find in "real" OSM files with the most relevant objects and attributes for routing applications. No effort has been made so far to adapt the output to other applications, such as map rendering or geocoding.
 
