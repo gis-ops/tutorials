@@ -114,7 +114,7 @@ The output of the `locate` method is just a window with the raw JSON response. I
 
 One more important attribute which can be extracted is the **OSM ID** of ways.
 
-![Valhalla matrix demo](https://github.com/gis-ops/tutorials/blob/master/news/aux/valhalla_plugin_matrix.png?raw=true)
+![Valhalla matrix demo](https://github.com/gis-ops/tutorials/blob/master/news/aux/valhalla_plugin_locate.png?raw=true)
 
 #### Extract OSM
 
@@ -126,7 +126,7 @@ This is really useful when you're curious why Valhalla would route over one way 
 
 **Note**, this method needs [`osmium`](https://github.com/osmcode/osmium-tool) installed and access to a local PBF (ideally the same used to prepare Valhalla's routing graphs).
 
-![Valhalla matrix demo](https://github.com/gis-ops/tutorials/blob/master/news/aux/valhalla_plugin_locate.png?raw=true)
+![Valhalla matrix demo](https://github.com/gis-ops/tutorials/blob/master/news/aux/valhalla_plugin_identify.png?raw=true)
 
 ### Processing Toolbox
 
