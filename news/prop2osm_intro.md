@@ -39,7 +39,7 @@ The open-source community offers a wide range of professional-grade routing and 
 - [OSRM](https://github.com/Project-OSRM/osrm-backend)
 - [Graphhopper](https://graphhopper.com)
 - [Valhalla](https://github.com/valhalla/valhalla)
-- [Openrouteservice](https://openrouteservice.com)
+- [Openrouteservice](https://openrouteservice.org)
 
 For a detailed description, refer to our [overview article](https://gis-ops.com/open-source-routing-engines-and-algorithms-an-overview/) of open-source routing engines.
 
@@ -73,6 +73,8 @@ Unfortunately there's no good source of truth to judge whether or not these attr
 
 The absolute amount of road segments has (almost) no meaning, as TomTom road segments are usually shorter than in OSM; it's just shown for reference. However, the relative abundance of attributes for these few examples is striking: **TomTom has at least one magnitude, or even multiple magnitudes, better coverage** than OSM (in this admittedly very crude analysis).
 
+And last, but not least, using proprietary data sources also mitigates a lot of liability.
+
 ## Why not combine them?
 
 Many FOSS routing engines already offer an amazing set of user-definable options to alter the way a route is calculated. A routing algorithm typically tries to minimize the _cost_ of the overall route, while the cost is mostly the time it takes to travel (see [here](https://gis-ops.com/open-source-routing-engines-and-algorithms-an-overview/#user-content-costweight) for details):
@@ -88,7 +90,7 @@ This is really impressive! However, as briefly discussed above, the road segment
 
 By enabling FOSS routing engines to work with other data sources one can make full use of these. See for example below a **truck route** with OSM and TomTom in Austria calculated with [Valhalla](https://github.com/valhalla/valhalla), where there's a weight restriction of 7 tons on the road which OSM doesn't have:
 
-![Difference in truck route between OSM and TomTom](https://github.com/gis-ops/tutorials/blob/e95c43bd7f356604e1937d2eed1abefcec411447/news/aux/example_route_7tons.png)
+![Difference in truck route between OSM and TomTom](https://github.com/gis-ops/tutorials/blob/master/news/aux/example_route_7tons.png)
 
 ## TomTom and HERE in action with Valhalla
 
@@ -102,7 +104,7 @@ Enough talking, let's see some action. To showcase the value of **prop2osm** we 
 - calculate reachability areas for **car and truck simultaneously for OSM and TomTom/HERE**, so you can compare the outputs easily
 - define dynamic restrictions which influence the routing/reachability, such as truck dimensions, desire to use highways etc
 
-![Demo app screenshot](https://github.com/gis-ops/tutorials/blob/e95c43bd7f356604e1937d2eed1abefcec411447/news/aux/demo_app.png)
+![Demo app screenshot](https://github.com/gis-ops/tutorials/blob/master/news/aux/demo_app.png)
 
 You can access the demo app yourself on https://converter.gis-ops.com and play around to your heart's content.
 
