@@ -16,7 +16,7 @@ If you don't know Valhalla yet, you can read some more about its advantages and 
 		- [General parameters](#user-content-general-parameters)
 		- [Routing](#user-content-routing)
 		- [Isochrones/Isodistances](#user-content-isochronesisodistances)
-		- [Matrix (`sources_to_targets`)](#user-content-matrix-sourcestotargets)
+		- [Matrix (`sources_to_targets`)](#user-content-matrix-sources_to_targets)
 		- [Locate](#user-content-locate)
 		- [Extract OSM](#user-content-extract-osm)
 	- [Processing Toolbox](#user-content-processing-toolbox)
