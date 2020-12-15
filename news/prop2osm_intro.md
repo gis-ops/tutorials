@@ -1,6 +1,6 @@
 # Open Source Routing With TomTom And HERE
 
-Open-source routing engines offer amazing capabilities, going far beyond what commercial applications like Google Maps can deliver.
+Open-source routing engines offer amazing capabilities, going far beyond what commercial applications like Google Maps can deliver. We wrote [an overview article](https://gis-ops.com/open-source-routing-engines-and-algorithms-an-overview) of FOSS routing engines if you're interested.
 
 However, one limitation which is hard to get around: every each open-source routing engine solely consumes [**OpenStreetMap**](https://openstreetmap.org) data. We're here to remove that limitation and offer a way to convert **any proprietary** street dataset into the [OSM data model](https://wiki.openstreetmap.org/wiki/Elements):
 
