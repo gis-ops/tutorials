@@ -29,7 +29,7 @@ If you don't know Valhalla yet, you can read some more about its advantages and 
 
 You can download the plugin via various sources:
 
-- official [QGIS plugin repository](https://plugins.qgis.org/plugins/Valhalla/)
+- official [QGIS plugin repository](https://plugins.qgis.org/plugins/valhalla/)
 - our own [QGIS plugin repository](https://qgisrepo.gis-ops.com)
 
 You'll also need access to a Valhalla instance, either remote (e.g. [Mapbox](https://www.mapbox.com)) or local. Both are pre-configured inside the plugin. For Mapbox you'll need a Mapbox API token.
