@@ -2,7 +2,10 @@
 
 With this article we aim to give a reasonable overview of a few selected open-source routing engines we've worked with (and for) in the past. We'll rather focus on properties which are important when deciding which routing engine to use for a particular use case.
 
-At the end you'll find a glossary for a (hopefully) approachable explanation of some important concepts in graph theory.
+At the end you'll find a glossary for a (hopefully) approachable explanation of some important concepts in graph theory. For the more interested reader, check out the very nice descriptions by the M9 Chair of the TU München, Germany:
+- [Dijkstra](https://www-m9.ma.tum.de/graph-algorithms/spp-dijkstra/index_en.html)
+- [A*](https://www-m9.ma.tum.de/graph-algorithms/spp-a-star/index_en.html)
+- [Chinese Postman](https://www-m9.ma.tum.de/graph-algorithms/directed-chinese-postman/index_en.html) (more exotic vehicle routing problem, aka Eulerian Path)
 
 If you have any questions or enquiry, please contact us on enquiry@gis-ops.com.
 
