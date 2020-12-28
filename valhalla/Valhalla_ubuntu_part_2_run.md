@@ -4,8 +4,8 @@ This tutorial is part of our Valhalla tutorial series:
 
 -   [Valhalla Docker: How to setup and run Valhalla on Ubuntu with Docker](https://gis-ops.com/valhalla-how-to-run-with-docker/)
 -   [Valhalla local [Part1]: How to build and install Valhalla on Ubuntu](https://gis-ops.com/valhalla-part-1-how-to-install-on-ubuntu/)
--   [Valhalla local [Part2]: How to configure and run Valhalla locally on Ubuntu](https://gis-ops.com/valhalla-how-to-run-with-docker-on-ubuntu/)
--   [Valhalla local [Part3]: How to build Valhalla with elevation support on Ubuntu](https://gis-ops.com/valhalla-part-3-how-to-build-with-elevation-support-on-ubuntu/)
+-   [Valhalla local [Part2]: How to configure and run Valhalla locally on Ubuntu](https://gis-ops.com/valhalla-part-2-how-to-run-valhalla-on-ubuntu/)
+-   [Valhalla local [Part3]: How to build Valhalla with elevation support on Ubuntu](https://gis-ops.com/valhalla-part-3-how-to-build-with-elevation-support-on-ubuntu/)  
 
 ---
 
