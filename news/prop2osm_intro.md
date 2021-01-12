@@ -29,10 +29,10 @@ If you don't want to read on and just have a quick dive into what we offer exact
 
 Open source routing engines have gained massively in popularity, the latest after the shameless price increase of Google Maps in 2018. The clear advantages are
 
-**Flexibility**: use hosted services (Mapbox, GraphHopper or OpenRouteService) or host your own routing service under your own control
-**No vendor lock-in**: install your own routing service instance
-**Transparency**: open source code lets you examine the algorithms and contribute to
-**Price tag**: obviously it's for free to install/use and scalability becomes less a business case compared to hosted services
+**Flexibility**: use hosted services (Mapbox, GraphHopper or OpenRouteService) or host your own routing service under your own control<br/>
+**No vendor lock-in**: install your own routing service instance<br/>
+**Transparency**: open source code lets you examine the algorithms and contribute to<br/>
+**Price tag**: obviously it's for free to install/use and scalability becomes less a business case compared to hosted services<br/>
 
 The open-source community offers a wide range of professional-grade routing and navigation applications which are free to install, run and use. You might know some of these frameworks:
 
