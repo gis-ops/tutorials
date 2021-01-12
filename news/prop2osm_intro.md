@@ -41,7 +41,7 @@ The open-source community offers a wide range of professional-grade routing and 
 - [Valhalla](https://github.com/valhalla/valhalla)
 - [Openrouteservice](https://openrouteservice.org)
 
-For a detailed description, refer to our [overview article](https://gis-ops.com/open-source-routing-engines-and-algorithms-an-overview/) of open-source routing engines.
+For a detailed description and even more routing engines, refer to our [overview article](https://gis-ops.com/open-source-routing-engines-and-algorithms-an-overview/) of open-source routing engines.
 
 ## Why proprietary data?
 
