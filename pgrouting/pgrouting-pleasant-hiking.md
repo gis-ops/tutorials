@@ -1,4 +1,4 @@
-# How to Influence Routing Algorithms for Pleasant Hiking
+# How to Guide Routing Algorithms Towards Pleasant Hiking
 
 ![Coastal Walk From Coogee to Bondi in Sydney](https://github.com/gis-ops/tutorials/raw/master/pgrouting/static/img/sydney-coastal-walk.jpg "Coastal Walk From Coogee to Bondi in Sydney")
 *source: [https://www.sydneycoastwalks.com.au](https://www.sydneycoastwalks.com.au/)*
