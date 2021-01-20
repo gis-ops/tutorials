@@ -10,7 +10,7 @@ Windows compatibility cannot be guaranteed.
 And this makes total sense. In logistics it's usually all about optimizing cost and time which is why common behaviour of proprietary routing engines such as Google Maps, HERE Maps or TomTom will tend to prefer motorways or primary roads as they are --at least in most countries-- the shortest and fastest connections between points. 
 However, if you move away from motorized vehicles and think more about leisure and outdoor activities you may prefer scenic routes instead of walking alongside polluted and noisy main roads in cities. In this small technical tutorial we want to demonstrate you how easy it is to adapt the behaviour of a shortest path algorithm consuming the topology with support of [pgRouting](https://pgrouting.org/) which sits on top of relational databases. With adapting we are referring to the ability change the equation of which route should be preferred as it is always about the cost. In a nutshell: if you want to prefer footways over primary roads, you cn make them "cheaper" and by doing so guide the routing algorithm to use them.
 
-## Prerequisites
+## Prerequisites & Dependencies
 
 To implement and follow all steps of this tutorial it's required to set up [PostgreSQL](https://www.postgresql.org/), [PostGIS](https://postgis.net/) and [pgRouting](https://pgrouting.org/) and for that purpose we recommend to use a docker image provided by [Kartoza](https://github.com/kartoza/docker-postgis) Kartoza.
 Additionally, we will require 3 additional command line tools, namely [osm2po](http://osm2po.de/), [osm2pgsql](https://osm2pgsql.org/) and [osmconvert](https://wiki.openstreetmap.org/wiki/Osmconvert).
@@ -25,7 +25,7 @@ Additionally, we will require 3 additional command line tools, namely [osm2po](h
 
 
 
-## Step 1 - Preparing the OSM data
+## Step 1 - Preparing the OpenStreetMap Data
 
 Please navigate to your working directory on your host and fetch the OSM data with:
 
@@ -40,7 +40,7 @@ osmconvert australia-latest.osm.pbf -b=151.2463,-33.9274,151.2956,-33.8302 -o=sy
 ```
 
 
-## Step 2 - Preparing the Topology with osm2po & Importing OSM data
+## Step 2 - Preparing the Topology with osm2po & Importing OSM Data
 
 
 As mentioned above, we will use *osm2po* to generate the topology from the OSM data we just generated. It is important to understand that OSM data is not routable in its pure form. The geniality of this software is that it isn't only a light-weight routing engine, it also processes the OSM data and outputs a SQL-file which can directly be imported to *PostgreSQL* and be used with *pgRouting*. For this tutorial our task is to make sure we output a topology including all highways in the area of interest as we will want to post-process these in the database directly.
@@ -91,7 +91,7 @@ osm2pgsql --create --database [DB_NAME] --username [USER_NAME] --host [IP] --por
 ```
 
 
-## Step 3 - Guiding the Route Finding by Updating the Edge Weights
+## Step 3 - Guiding the Algorithm by Updating the Edge Weights
 
 
 
