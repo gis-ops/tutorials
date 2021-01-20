@@ -1,6 +1,7 @@
 # How to Influence Routing Algorithms for Pleasant Hiking
 
-![Coastal Walk From Coogee to Bondi in Sydney](https://user-images.githubusercontent.com/10322094/71978844-96e0a800-321c-11ea-8df7-f6d8851248a0.png "Coastal Walk From Coogee to Bondi in Sydney")
+![Coastal Walk From Coogee to Bondi in Sydney](https://github.com/gis-ops/tutorials/raw/master/pgrouting/static/img/sydney-coastal-walk.jpg "Coastal Walk From Coogee to Bondi in Sydney")
+*source: [https://www.sydneycoastwalks.com.au](https://www.sydneycoastwalks.com.au/)*
 
 **Disclaimer**: This tutorial was developed on Mac OSX 10.15.6 and tested on Ubuntu 18.04.
 Windows compatibility cannot be guaranteed.
@@ -32,7 +33,7 @@ Please navigate to your working directory on your host and fetch the OSM data wi
 wget https://download.geofabrik.de/australia-oceania/australia-latest.osm.pbf`
 ```
 
-Using `osmconvert` we will use this data to clip a part of Sydney between [Coogee](https://en.wikipedia.org/wiki/Coogee,_New_South_Wales) and [Bondi](https://en.wikipedia.org/wiki/Bondi,_New_South_Wales) from it (feel free to download the output of this step [here](path_to_download):
+Using `osmconvert` we will use this data to clip a part of Sydney between [Coogee](https://en.wikipedia.org/wiki/Coogee,_New_South_Wales) and [Bondi](https://en.wikipedia.org/wiki/Bondi,_New_South_Wales) from it (feel free to download the output of this step [here](https://github.com/gis-ops/tutorials/raw/master/pgrouting/static/data/sydney-coast.pbf):
 
 ```sh
 osmconvert australia-latest.osm.pbf -b=151.2463,-33.9274,151.2956,-33.8302 -o=sydney-coast.pbf
@@ -44,13 +45,13 @@ osmconvert australia-latest.osm.pbf -b=151.2463,-33.9274,151.2956,-33.8302 -o=sy
 
 As mentioned above, we will use *osm2po* to generate the topology from the OSM data we just generated. It is important to understand that OSM data is not routable in its pure form. The geniality of this software is that it isn't only a light-weight routing engine, it also processes the OSM data and outputs a SQL-file which can directly be imported to *PostgreSQL* and be used with *pgRouting*. For this tutorial our task is to make sure we output a topology including all highways in the area of interest as we will want to post-process these in the database directly.
 
-![](path_to_image)
+![OpenStreetMap not routable](https://github.com/gis-ops/tutorials/raw/master/pgrouting/static/img/osm2po-topology.png "OpenStreetMap data in its pure form is not routable")
 *source: [osm2po.de](http://osm2po.de)*
 
 Change your directory where the osm2po jar file is located. By default osm2po will not include OpenStreetMap highways with pedestrian or cycleway tags which is why we have to make some small changes to the `osm2po.config` file:
 
 1. We want to process OSM data for these profiles, so change line 189 to `.default.wtr.finalMask = car,foot,bike`
-2. Comment in line 221 `.default.wtr.tag.highway.service` to line 230 `.default.wtr.tag.railway.rail`
+2. Comment in **line 221** `.default.wtr.tag.highway.service` to **line 230** `.default.wtr.tag.railway.rail`
 
 Afterwards run the following command:
 
@@ -79,7 +80,7 @@ drwxr-xr-x 6 root root    4096 Jan 18 12:05 ..
 -rw-r--r-- 1 root root  259173 Jan 18 12:05 tw_raw.2po
 ```
 
-The file we are interested in is `syd_2po_4pgr.sql` which consists of a set of columns including the source `osm_id`, `source` and `target`. Download the osm2po output [here](link_to_data) if you want to skip this step.
+The file we are interested in is `syd_2po_4pgr.sql` which consists of a set of columns including the source `osm_id`, `source` and `target`. Download the osm2po output [here](https://github.com/gis-ops/tutorials/raw/master/pgrouting/static/data/syd_2po_4pgr.sql) if you want to skip this step.
 
 Last but not least we want to import the raw OSM-data to be able to join the topology with it's source using the `osm_id` to determine what kind of [highway type](https://wiki.openstreetmap.org/wiki/Key:highway) (e.g. primary road, secondary road, footpath, cycleway..) we are dealing with.
  
@@ -104,4 +105,4 @@ osm2pgsql --create --database [DB_NAME] --username [USER_NAME] --host [IP] --por
 
 Congratulations for completing this tutorial. By now you will have learnt how to set up and use the PostgREST web API to return height values from a digital elevation model.
 
-Please feel free to get in touch with us at **enquiry[at]gis-ops.com** if you have any further questions, need support or have ideas for other tutorials on PostgREST!
+Please feel free to get in touch with us at **enquiry[at]gis-ops.com** if you have any further questions, need support or have ideas for other tutorials on pgRouting & ecosystem!
