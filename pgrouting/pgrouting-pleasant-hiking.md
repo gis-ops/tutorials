@@ -91,7 +91,7 @@ osm2pgsql --create --database [DB_NAME] --username [USER_NAME] --host [IP] --por
 ```
 
 
-## Step 3 - Updating the Edge Weights
+## Step 3 - Guiding the Route Finding by Updating the Edge Weights
 
 
 
