@@ -91,7 +91,16 @@ osm2pgsql --create --database [DB_NAME] --username [USER_NAME] --host [IP] --por
 ```
 
 
-## Step 3 - Guiding the Algorithm by Updating the Edge Weights
+## Step 3 - Guiding the Algorithm by Updating Edge Weights
+
+Let's take a quick glimpse at what common routing services offer, such as [Google Maps](https://maps.google.com/).
+
+![Google Maps from Coogee to Bondi](https://github.com/gis-ops/tutorials/raw/master/pgrouting/static/img/google-coogee-bondi.png "Google Maps from Coogee to Bondi")
+*source: [maps.google.com](https://maps.google.com/)*
+
+If you wanted to walk along the coast what one could do here is add via points along the route. Alternative routing providers exist which are more specialized on routing for hikers, however if you now wanted to set this up yourself and have full control over how the algorithm determines the least cost connection, you will have to start thinking about how to update the cost of the edges in your topology. The precious thing about OpenStreetMap is that the data is fairly structured and streets will feature a specific class. While a highway may be tagged as a "primary road", a path forbidden for motorized vehicles may be tagged was "footway". With this distinction we can start doing fun things to the data.
+
+In the most simple use case the cost of an edge could simply be the length of it.... 
 
 
 
