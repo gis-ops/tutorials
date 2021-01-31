@@ -50,6 +50,8 @@ Change your directory where the osm2po jar file is located. By default osm2po wi
 1. We want to process OSM data for these profiles, so change line 189 to `.default.wtr.finalMask = car,foot,bike`
 2. Comment in **line 221** `.default.wtr.tag.highway.service` to **line 230** `.default.wtr.tag.railway.rail`
 
+Additionally, we want to make sure the topology is produced which can be directly consumed by pgRouting - you will have to comment in line 351 (`postp.0.class = de.cm.osm2po.plugins.postp.PgRoutingWriter`) if you are running version 5.1 or greater.
+
 Afterwards run the following command:
 
 ```sh
@@ -77,7 +79,11 @@ drwxr-xr-x 6 root root    4096 Jan 18 12:05 ..
 -rw-r--r-- 1 root root  259173 Jan 18 12:05 tw_raw.2po
 ```
 
-The file we are interested in is `syd_2po_4pgr.sql` which consists of a set of columns including the source `osm_id`, `source` and `target`. Download the osm2po output [here](https://github.com/gis-ops/tutorials/raw/master/pgrouting/static/data/syd_2po_4pgr.sql) if you want to skip this step.
+The file we are interested in is `syd_2po_4pgr.sql` which consists of a set of columns including the source `osm_id`, `source` and `target`. Download the osm2po output [here](https://github.com/gis-ops/tutorials/raw/master/pgrouting/static/data/syd_2po_4pgr.sql) if you want to skip this step. Import this data with `psql`.
+
+```sh
+psql -h [IP] -U [USER_NAME] -d [DB_NAME] -q -f syd_2po_4pgr.sql
+```
 
 Last but not least we want to import the raw OSM-data to be able to join the topology with it's origin feature using the `osm_id` to determine what kind of [highway type](https://wiki.openstreetmap.org/wiki/Key:highway) (e.g. primary road, secondary road, footpath, cycleway..) we are dealing with.
 
