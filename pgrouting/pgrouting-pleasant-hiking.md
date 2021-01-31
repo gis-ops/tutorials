@@ -1,6 +1,6 @@
 # How to Guide Routing Algorithms Towards Pleasant Hiking
 
-![Coastal Walk From Coogee to Bondi in Sydney](https://github.com/gis-ops/tutorials/blob/pgr-hiking/pgrouting/static/img/sydney-coastal-walk.jpg?raw=true "Coastal Walk From Coogee to Bondi in Sydney")
+![Coastal Walk From Coogee to Bondi in Sydney](https://raw.githubusercontent.com/gis-ops/tutorials/pgr-hiking/pgrouting/static/img/sydney-coastal-walk.jpg "Coastal Walk From Coogee to Bondi in Sydney")
 
 *source: [https://www.sydneycoastwalks.com.au](https://www.sydneycoastwalks.com.au/)*
 
@@ -43,7 +43,7 @@ Alternatively, feel free to download the output of this step [here](https://gith
 
 As mentioned above, we will use *osm2po* to generate the topology from the OSM data we generated in the previous step. It is important to understand that OSM data is not routable in its raw form. The geniality of this software is that it isn't only a light-weight routing engine, it also processes the OSM data and outputs a SQL file which can directly be imported to your PostgreSQL database and be used with **pgRouting**. For this tutorial our task is to make sure we output a topology including all highways in the area of interest as we will want to post-process these in the database.
 
-![OpenStreetMap not Routable](https://github.com/gis-ops/tutorials/blob/pgr-hiking/pgrouting/static/img/osm2po-topology.png?raw=true?raw=true "OpenStreetMap data in its pure form is not routable")
+![OpenStreetMap not Routable](https://raw.githubusercontent.com/gis-ops/tutorials/pgr-hiking/pgrouting/static/img/osm2po-topology.jpg "OpenStreetMap data in its pure form is not routable")
 
 Change your directory where the osm2po jar file is located. By default osm2po will not include OpenStreetMap highways with pedestrian or cycleway tags which is why we have to make some small changes to the `osm2po.config` file:
 
@@ -99,7 +99,7 @@ Objective of this tutorial is to guide Dijkstra's algorithm along the coast of S
 
 The choice being Sydney's coastal walk is quite convenient. There exist many roads you could walk on which are more or less parallel to the coastal footpaths, obviously getting you faster to the destination. The reason is straightforward: the distance is shorter. If you take a quick glimpse at what common routing services usually compute, such as [Google Maps](https://maps.google.com/), you will understand what we mean and why you may want to do some customizing.
 
-![Google Maps from Coogee to Bondi](https://github.com/gis-ops/tutorials/blob/pgr-hiking/pgrouting/static/img/google-coogee-bondi.png?raw=true "Google Maps from Coogee to Bondi")
+![Google Maps from Coogee to Bondi](https://raw.githubusercontent.com/gis-ops/tutorials/pgr-hiking/pgrouting/static/img/google-coogee-bondi.jpg "Google Maps from Coogee to Bondi")
 
 If you wanted to have full control over how the algorithm determines the least cost connection, you will have to start thinking about how to update the individual costs of the edges in your topology. The precious thing about OpenStreetMap is that the data is fairly structured and streets will feature a specific class. While a highway may be tagged as a "primary road", a path forbidden for motorized vehicles may be tagged as "footway". With this distinction we can start doing some fun things to the data.
 
@@ -141,7 +141,7 @@ JOIN   syd_2po_4pgr AS pt
 
 ...your result should look like the following (which is very similar to what we got using Google Maps up top):
 
-![pgRouting from Coogee to Bondi using the ST_Length](https://github.com/gis-ops/tutorials/blob/pgr-hiking/pgrouting/static/img/pgr_shortest_path.png?raw=true "pgRouting from Coogee to Bondi using the ST_Length")
+![pgRouting from Coogee to Bondi using the ST_Length](https://raw.githubusercontent.com/gis-ops/tutorials/pgr-hiking/pgrouting/static/img/pgr_shortest_path.jpg "pgRouting from Coogee to Bondi using the ST_Length")
 
 Well, it's the shortest path and we aren't satisfied with this result as we want to see the coast non-stop. This is where we will exploit the nature of the algorithm and guide it onto footpaths as much as we can (and guess what: the coastal tracks are foopaths). If you remember we imported the OpenStreetMap data at the beginning which we will now join to the topology allowing us to decrease the cost of the edges in question. To this end, we will add an auxiliary column `cost_updated` to our topology table (which will be consumed by pgRouting later on). Subsequently we will populate this column using a very straightforward logic. If the source osm_id of the record (edge) is tagged `footway, pedestrian, living_street, cycleway, track` or `steps` (in `planet_osm_line` or `planet_osm_polygon`), we will divide the length of the edge by 1000, otherwise the cost remains the metric length. The division ultimately makes the cost very cheap, i.e. the algorithm will be guided onto this subset of edges.  
 
@@ -178,7 +178,7 @@ WHERE t.osm_id = l.osm_id;
 
 Executing the query once again from above and instead of using `ST_Length(ST_Transform(geom_way, 3857)) AS cost` but `cost_updated AS cost`, your route will look something like this - enjoy the walk!
 
-![pgRouting from Coogee to Bondi Guiding Dijkstra along the Coast](https://github.com/gis-ops/tutorials/blob/pgr-hiking/pgrouting/static/img/pgr_adapted_least_cost_path.png?raw=true "pgRouting from Coogee to Bondi Guiding the Algorithm along the Coast")
+![pgRouting from Coogee to Bondi Guiding Dijkstra along the Coast](https://raw.githubusercontent.com/gis-ops/tutorials/pgr-hiking/pgrouting/static/img/pgr_adapted_least_cost_path.jpg "pgRouting from Coogee to Bondi Guiding the Algorithm along the Coast")
 
 
 ### Wrap-up
