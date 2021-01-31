@@ -1,29 +1,27 @@
 # How to Guide Routing Algorithms Towards Pleasant Hiking
 
 ![Coastal Walk From Coogee to Bondi in Sydney](https://github.com/gis-ops/tutorials/blob/pgr-hiking/pgrouting/static/img/sydney-coastal-walk.jpg?raw=true "Coastal Walk From Coogee to Bondi in Sydney")
+
 *source: [https://www.sydneycoastwalks.com.au](https://www.sydneycoastwalks.com.au/)*
 
-**Disclaimer**: This tutorial was developed on Mac OSX 10.15.6 and tested on Ubuntu 18.04 as well as Ubuntu 20.04.
-Windows compatibility cannot be guaranteed.
+> **Disclaimer**: This tutorial was developed on Mac OSX 10.15.6 and tested on Ubuntu 18.04 as well as Ubuntu 20.04. Windows compatibility cannot be guaranteed.
 
-"Dear routing service, please get me from A to B!". If you are sitting in a car or truck you would usually expect the fastest or shortest route and not care too much about the environment around you.
-And this --in the majority of cases-- makes total sense. In logistics it's usually all about optimizing cost and time which is why common behaviour of proprietary routing engines such as [Google Maps](https://maps.google.com), [HERE Maps](https://wego.here.com/) or [TomTom](https://mydrive.tomtom.com) will tend to prefer motorways or primary roads as they are --at least in most countries-- the shortest and fastest connections between positions on the map.
+## Motivation
+
+"Dear routing service, please get me from A to B!". If you are sitting in a car or truck you would usually expect the fastest route and not care too much about the environment around you.
+
 However, if you move away from motorized vehicles and think more about leisure and outdoor activities you may prefer scenic routes instead of walking alongside polluted and noisy main roads in metropolitans.
 
-In this small technical tutorial we want to demonstrate you how easy it is to adapt the behaviour of a shortest path algorithm consuming the topology with support of [pgRouting](https://pgrouting.org/) which sits on top of a relational database. With adapting we are referring to the ability change the equation of which route should be preferred as it is always about the least cost (it doesn't have to always be the shortest!). In a nutshell and algorithmitically speaking: if you want to prefer footways over primary roads, you can make this subset of roads "cheaper" to use - and by doing so guide the routing algorithm (we will be using Dijkstra's in this tutorial) to use them.
+In this small technical tutorial we want to demonstrate you how easy it is to adapt the behaviour of a least cost path algorithm consuming the topology with the support of [pgRouting](https://pgrouting.org/) using the full power of PostgreSQL.
+
+In a nutshell and algorithmically speaking: if you want to prefer footways over primary roads, you can make this subset of roads "cheaper" to use - and by doing so guide the routing algorithm (we will be using Dijkstra's in this tutorial) to prefer those ways. If you need a primer or refresher on the terminology you can look at the glossary of our comprehensive [FOSS routing engine article](https://gis-ops.com/open-source-routing-engines-and-algorithms-an-overview/#Glossary).
 
 ## Prerequisites & Dependencies
 
-To implement and follow all steps of this tutorial it's required to set up [PostgreSQL](https://www.postgresql.org), [PostGIS](https://postgis.net) and [pgRouting](https://pgrouting.org). For this purpose we recommend to use a docker image provided by [Kartoza](https://github.com/kartoza/docker-postgis) Kartoza.
-Additionally, we will require 3 additional command line tools, namely [osm2po](http://osm2po.de/), [osm2pgsql](https://osm2pgsql.org/) and [osmconvert](https://wiki.openstreetmap.org/wiki/Osmconvert) to prepare the data.
-
-- You can use [this](https://github.com/gis-ops/tutorials/blob/postgrest-elevation-api/postgres/postgres_postgis_postgrest_installation.md) installation guide which will help you get the docker container up and running. Just make sure you specify `POSTGRES_MULTIPLE_EXTENSIONS=postgis,pgrouting` for the extensions in the arguments. Feel free to ignore the PostgREST steps as these will not be required. Also, it may be handy to add a shared volume for the files which will be produced in the course of this tutorial.
-
-- *osmconvert* will be used to clip the OpenStreetMap file of [Australia](https://download.geofabrik.de/australia-oceania/australia.html) as we are merely interested in parts of Sydney in this tutorial (installation details can be found [here](https://wiki.openstreetmap.org/wiki/Osmconvert)).
-
-- *osm2po* is used to create the topology from raw OpenStreetMap data which is not routable in its initial state. You can download it [here](http://osm2po.de/). To use this software, you will require `java` in your environment. If you want to skip this step, we will provide you with the processed topology SQL file later on in this tutorial.
-
-- *osm2pgsql* will help us import the raw [OpenStreetMap](http://openstreetmap.org) data to our PostgreSQL database. We will require this data to update the cost of edges in the topology accordingly. Installation details can be found [here](https://github.com/openstreetmap/osm2pgsql#installing)
+- PostgreSQL instance with **PostGIS and pgRouting enabled**, we recommend [Kartoza](kartoza.com)'s [docker image]([Kartoza](https://github.com/kartoza/docker-postgis)) (see [this tutorial](https://gis-ops.com/postgrest-tutorial-installation-and-setup/))
+- osmconvert ([installation instructions](https://wiki.openstreetmap.org/wiki/Osmconvert)): easily clip OSM files
+- [osm2po](http://osm2po.de/): create pgRouting topology from raw OSM data (later on you'll be provided with the SQL topology file, so you _could_ skip this step)
+- osm2pgsql ([installation instructions](https://github.com/openstreetmap/osm2pgsql#installing)): import OSM to PostgreSQL to update the edge costs of the topology
 
 ## Step 1 - Preparing the OpenStreetMap Data
 
@@ -43,7 +41,7 @@ Alternatively, feel free to download the output of this step [here](https://gith
 
 ## Step 2 - Preparing the Topology with osm2po & Importing OSM Data
 
-As mentioned above, we will use *osm2po* to generate the topology from the OSM data we generated in the previous step. It is important to understand that OSM data is not routable in its pure form. The geniality of this software is that it isn't only a light-weight routing engine, it also processes the OSM data and outputs a SQL-file which can directly be imported to your *PostgreSQL* database and be used with *pgRouting*. For this tutorial our task is to make sure we output a topology including all highways in the area of interest as we will want to post-process these in the database.
+As mentioned above, we will use *osm2po* to generate the topology from the OSM data we generated in the previous step. It is important to understand that OSM data is not routable in its raw form. The geniality of this software is that it isn't only a light-weight routing engine, it also processes the OSM data and outputs a SQL file which can directly be imported to your PostgreSQL database and be used with **pgRouting**. For this tutorial our task is to make sure we output a topology including all highways in the area of interest as we will want to post-process these in the database.
 
 ![OpenStreetMap not Routable](https://github.com/gis-ops/tutorials/blob/pgr-hiking/pgrouting/static/img/osm2po-topology.png?raw=true?raw=true "OpenStreetMap data in its pure form is not routable")
 *source: [osm2po.de](http://osm2po.de)*
@@ -94,12 +92,12 @@ osm2pgsql --create --database [DB_NAME] --username [USER_NAME] --host [IP] --por
 
 Objective of this tutorial is to guide Dijkstra's algorithm along the coast of Sydney. The way we will be approaching this will bring in quite an imbalance into the network consisting of broken up roads (edges). However, for the purpose of this tutorial this will give you a basic understanding. Later, if and when you are tailoring your own topology, you can think about more sophisticated approaches to adapt the costs in a more delicate fashion, for instance using gravity-based ideas, where points of interest (points or even polygons) may attract the routing algorithm "their way".
 
-The choice being Sydney's coastal walk is quite convenient. There exist many roads you could walk on which are more or less parallel to the coastal footpaths, obviously getting you faster to the destination. The reason is straightforward: the distance is shorter (shortest path algorithms - who would have thought?). If you take a quick glimpse at what common routing services usually compute, such as [Google Maps](https://maps.google.com/), you will understand what we mean and why you may want to do some customizing.
+The choice being Sydney's coastal walk is quite convenient. There exist many roads you could walk on which are more or less parallel to the coastal footpaths, obviously getting you faster to the destination. The reason is straightforward: the distance is shorter. If you take a quick glimpse at what common routing services usually compute, such as [Google Maps](https://maps.google.com/), you will understand what we mean and why you may want to do some customizing.
 
 ![Google Maps from Coogee to Bondi](https://github.com/gis-ops/tutorials/blob/pgr-hiking/pgrouting/static/img/google-coogee-bondi.png?raw=true "Google Maps from Coogee to Bondi")
 *source: [maps.google.com](https://maps.google.com/)*
 
-If you wanted to have full control over how the algorithm determines the least cost connection, you will have to start thinking about how to update the individual costs of the edges in your topology. The precious thing about OpenStreetMap is that the data is fairly structured and streets will feature a specific class. While a highway may be tagged as a "primary road", a path forbidden for motorized vehicles may be tagged was "footway". With this distinction we can start doing some fun things to the data.
+If you wanted to have full control over how the algorithm determines the least cost connection, you will have to start thinking about how to update the individual costs of the edges in your topology. The precious thing about OpenStreetMap is that the data is fairly structured and streets will feature a specific class. While a highway may be tagged as a "primary road", a path forbidden for motorized vehicles may be tagged as "footway". With this distinction we can start doing some fun things to the data.
 
 In the most simple use case the cost of an edge could simply be the length of it. If we executed the following query using our topology generated by **osm2po** in our database and feeding it to **pgRouting**...
 
@@ -139,9 +137,9 @@ JOIN   syd_2po_4pgr AS pt
 
 ...your result should look like the following (which is very similar to what we got using Google Maps up top):
 
-![pgRouting from Coogee to Bondi using the ST_Length](https://github.com/gis-ops/tutorials/blob/pgr-hiking/pgrouting/static/img/google-coogee-bondi.png?raw=true "pgRouting from Coogee to Bondi using the ST_Length")
+![pgRouting from Coogee to Bondi using the ST_Length](https://github.com/gis-ops/tutorials/blob/pgr-hiking/pgrouting/static/img/pgr_shortest_path.png?raw=true "pgRouting from Coogee to Bondi using the ST_Length")
 
-Well, it's the shortest path and we aren't satisfied with this result as we want to see the coast non-stop. This is where we will exploit the nature of the algorithm and guide it onto footpaths as much as we can (and guess what: the coastal tracks are). If you remember we imported the OpenStreetMap data at the beginning which we will now join to the topology allowing us to decrease the cost of the edges in question. To this end, we will add an auxiliary column `cost_updated` to our topology table (which will be consumed by pgRouting later on). Subsequently we will populate this column using a very straightforward logic. If the source osm_id of the record (edge) is tagged `footway, pedestrian, living_street, cycleway, track` or `steps` (in `planet_osm_line` or `planet_osm_polygon`), we will divide the length of the edge by 1000, otherwise the cost remains the metric length. The division ultimately makes the cost very cheap, i.e. the algorithm will be guided onto this subset of edges.  
+Well, it's the shortest path and we aren't satisfied with this result as we want to see the coast non-stop. This is where we will exploit the nature of the algorithm and guide it onto footpaths as much as we can (and guess what: the coastal tracks are foopaths). If you remember we imported the OpenStreetMap data at the beginning which we will now join to the topology allowing us to decrease the cost of the edges in question. To this end, we will add an auxiliary column `cost_updated` to our topology table (which will be consumed by pgRouting later on). Subsequently we will populate this column using a very straightforward logic. If the source osm_id of the record (edge) is tagged `footway, pedestrian, living_street, cycleway, track` or `steps` (in `planet_osm_line` or `planet_osm_polygon`), we will divide the length of the edge by 1000, otherwise the cost remains the metric length. The division ultimately makes the cost very cheap, i.e. the algorithm will be guided onto this subset of edges.  
 
 ```sql
 -- Add aux cost column
