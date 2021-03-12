@@ -42,7 +42,7 @@ You can click on widgets in your dialog to select them. But sometimes it's good 
 Each widget exposes a list of properties, like geometry or font, which you will find in this panel. You didn't see any actual code yet, but these properties are accessible methods through the Python class of your GUI. So it's also a good reference to available widget properties to be modified. It gives you a whole lot more information though:
 - the name you give the widget
 - the PyQt5 class name, e.g. `QDialogButtonBox` for the OK/Cancel button group
-- you can immediately see the sub-classing for each widget by examining the tabs of the Property dialog. E.g. the `QDialogButtonBox` is sub-classed from (in descending order):
+- you can immediately see the inheritance tree for each widget by examining the tabs of the Property dialog. E.g. the `QDialogButtonBox` is sub-classed from (in descending order):
 	- `QObject`, which only exposes the `objectName` property and will be widget identifier in your code
 	- `QWidget`, which exposes multiple properties, mostly layout related
 	- and finally `QDialogButtonBox`, which has mostly functional properties, e.g. which buttons are displayed
@@ -60,6 +60,8 @@ Quick access to different layouts for container widgets, see its importance righ
 - **Size policies are important!** When building bigger GUIs it will be increasingly important to define how widgets behave visually within their layout. When the user changes the window size, it can be disorienting if a button scales with the resizing. Size policies define the widget's size behavior within the layout.
 
 ## Qt resources.qrc
+
+> **_Deprecation Notice_**: the concept of a resource store is actually not very useful for Python based apps, so the next version of PyQt will not support `pyrcc` anymore and instead you'll rely on more common Python patterns to import files.
 
 Qt has the concept of an in-app resource store, which is defined in `resources.qrc` files on a plugin level. That file has a XML structure and is used to register binary files, like PNG images, with Qt in-app. Making use of this internal resource store is of advantage to:
 

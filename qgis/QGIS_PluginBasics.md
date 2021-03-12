@@ -57,7 +57,7 @@ pyrcc5 -o resources.py resources.qrc
 ln -s myplugin/ ~/.local/share/QGIS/QGIS3/profiles/default/python/plugins
 ```
 
-Then, use the [Plugin Reloader](https://plugins.qgis.org/plugins/plugin_reloader/) plugin to reload your modified code on-the-fly from within QGIS, without restarting QGIS. **Note**, that this only works if you didn't modify any methods which are **only** loaded on QGIS startup, like the root's `__init__.py` or the `initGui()` method.
+Then, use the [Plugin Reloader](https://plugins.qgis.org/plugins/plugin_reloader/) plugin to reload your modified code on-the-fly from within QGIS, without restarting QGIS. **Note**, a restart is necessary if you modified any methods which are **only** loaded on QGIS startup, like the root `__init__.py` or the `initGui()` method.
 
 ## `metadata.txt`
 
@@ -96,13 +96,15 @@ The minimum tree for a functioning output of Plugin Builder 3 would look like:
 
 - `my_plugin_dialog_base.ui`: this is the Qt Designer file to style and build the UI, i.e. plugin window.
 
-- `resource.qrc`: contains the resources for Qt. You will only edit this file when you rename the plugin icon or you want to add additional icons. **Needs to be compiled to resources.py**.
+- `resource.qrc`: contains the resources for Qt. You will only edit this file when you rename the plugin icon or you want to add additional icons. **Needs to be compiled to resources.py** (_Note_: soon obsolete).
 
 Find a more detailed description below.
 
 ### `resources.qrc`
 
 That's a Qt resource file. Basically, it contains instructions for the Qt framework where to find which resources, e.g. plugin icons. Find a more detailed discussion [here](https://github.com/gis-ops/tutorials/blob/master/qgis/QGIS_QtDesigner.md#qt-resourcesqrc). It needs to be compiled to `resources.py` and imported in `my_plugin.py`.
+
+> **Note**, this will be deprecated in a future in `PyQt6`, load icons and other resources via more pythonic methods.
 
 ### `__init__.py`
 
@@ -140,7 +142,7 @@ We'll go through the lines in order:
 
 - `self.iface`: saves a reference to the QGIS GUI interface (`qgis.gui.QgisInterface`)
 
-- `locale`: all code lines concerning locales, you can (more or less) safely ignore for now. They mostly deal with 
+- `locale`: all code lines concerning locales, you can (more or less) safely ignore for now. They mostly deal with
 s and internationalization.
 
 - `self.actions`: a container for `QAction`s, which we'll explain a little later.

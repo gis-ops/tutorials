@@ -1,7 +1,0 @@
-<RCC>
-  <qresource prefix="/plugins/quick_api">
-    <file>icons/icon_locate.png</file>
-    <file>icons/icon_reverse.png</file>
-    <file>icons/icon_isochrones.png</file>
-  </qresource>
-</RCC>

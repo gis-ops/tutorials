@@ -1,18 +1,14 @@
-# This file contains metadata for your plugin. Since 
-# version 2.0 of QGIS this is the proper way to supply 
-# information about a plugin. The old method of 
-# embedding metadata in __init__.py will 
-# is no longer supported since version 2.0.
+# This file contains metadata for your plugin.
 
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
 name=Quick API
 qgisMinimumVersion=3.0
-description=This plugin balbla
+description=Query OpenElevation API
 version=0.1
-author=bla
-email=abl
+author=GIS-OPS UG
+email=info@gis-ops.com
 
 about=Provide a brief description of the plugin and its purpose.
 
@@ -22,6 +18,7 @@ repository=http://repo
 
 # Recommended items:
 
+hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
 # changelog=
 
@@ -36,4 +33,15 @@ experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
+
+# Since QGIS 3.8, a comma separated list of plugins to be installed
+# (or upgraded) can be specified.
+# Check the documentation for more information.
+# plugin_dependencies=
+
+Category of the plugin: Raster, Vector, Database or Web
+# category=
+
+# If the plugin can run on QGIS Server.
+server=False
 

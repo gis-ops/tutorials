@@ -74,37 +74,22 @@ The Plugin Builder will have generated a lot of (well-intended) files now. Head 
    ├──metadata.txt
    ├──quick_api.py
    ├──quick_api_dialog.py
-   ├──quick_api_dialog_base.ui
-   └──resources.qrc
+   └──quick_api_dialog_base.ui
 ```
 
 A more thorough explanation of the generated files and methods is available [here](https://gis-ops.com/qgis-3-plugin-development-reference-guide/#detailed-module-and-method-description).
 
-### Compile `resources.qrc`
+### Link Plugin to QGIS
 
-A more detailed description of the concept of `resources.qrc` can be found [here](https://gis-ops.com/qgis-3-qt-designer-explained/#qt-resourcesqrc).
+For maximum convenience, create a symbolic link of your development folder to the QGIS plugin folder. This way code changes are registered by simply clicking the `Plugin Reload` button (s. [below](#reload-plugin)).
 
-Plugin Builder 3 will try to compile your resource file, but often enough fails to determine the system path of the `pyrcc5` executable, so you'll have to do it manually:
-
-```bash
-pyrcc5 -o resources.py resources.qrc
+```shell
+ln -s $PWD $HOME/.local/share/QGIS/QGIS3/profiles/default/python/plugins/
 ```
-
-Repeat this step if you make adjustments to `resources.qrc`.
 
 ### Test initial plugin
 
 At this point you can already test if QGIS loads your new (very unfunctional) plugin:
-
-#### Deploy plugin to QGIS
-
-First, you should create the directory where your plugin will be picked up on QGIS startup and copy all files there:
-
-```bash
-cp -arf ../quick_api $HOME/.local/share/QGIS/QGIS3/profiles/default/python/plugins/
-```
-
-Run this command whenever you change something in your development project.
 
 #### Load plugin
 
@@ -116,17 +101,15 @@ If you activate it, a new icon will be added to the Plugin toolbar. Also, you'll
 
 #### Reload plugin
 
-Whenever you replace the plugin code with a newer version, make sure to use the **Plugin Reloader** plugin to reload the plugin, instead of restarting QGIS.
+Whenever you replace the plugin code with a newer version, make sure to use the **Plugin Reloader** plugin to reload your own plugin, instead of restarting QGIS.
 
-Note, this only works for code alterations outside of the main `__init__.py`.
+Note, you'll have to restart if you alter the root `__init__.py` and/or functions which are only executed once like `initGui()`.
 
 #### Troubleshooting
 
-- if you can't access `pyrcc5`, it might not be installed on your system for mysterious reasons. In that case, please try `sudo apt-get install pyqt5-dev-tools`, which should contain `pyrcc5`.
-
 - if you don't see the plugin in the manager after a QGIS restart, check you didn't accidentally set the `experimental` flag by allowing experimental plugins in *Plugin Manager* ► *Settings*.
 
-- if you experience a Python error, you likely did something wrong in the previous steps. Best bet: start from scratch before you dump an inconceivable amount of time in finding the bug. Also, check our [QGIS Plugin 101]().
+- if you experience a Python error, you likely did something wrong in the previous steps. Best bet: start from scratch before you dump an inconceivable amount of time in finding the bug. Also, check our [QGIS Plugin 101](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-reference-guide/).
 
 ## Qt Designer
 
@@ -179,15 +162,18 @@ The logic will be:
 4. Process the response to add it as a layer to QGIS
 5. Add logic to zoom to a bounding box
 
-After each step, pause for a moment, add some `print()` statements to your code to see that everything works as expected (we'll provide some **DEBUG** hints), copy your code to the plugin directory and reload it in QGIS. Open the QGIS Python console and run the plugin logic. If you see unexpected results, revert to the code and investigate.
+After each step, pause for a moment, add some `print()` statements to your code to see that everything works as expected (we'll provide some **DEBUG** hints) and reload it in QGIS via `Plugin Reloader`. Open the QGIS Python console and run the plugin logic. If you see unexpected results, go back and investigate.
 
-### Imports
+### Imports and initial cleanup
 
-We'll need a few imports from `qgis.core` and `QMessageBox` from `PyQt`, plus `requests` for this to work. Just paste this into your import statements at the top of `quick_api.py`, we'll explain later:
+On top of what's already imported in `quick_api.py`, included these as well, we'll explain later:
 
 ```python
-import requests
-from PyQt5.QtWidgets import QAction, QMessageBox
+import json
+
+from qgis.PyQt.QtCore import QUrl, QUrlQuery
+from qgis.PyQt.QtWidgets import QMessageBox
+from qgis.PyQt.QtNetwork import QNetworkRequest
 from qgis.core import (QgsCoordinateReferenceSystem,
                        QgsCoordinateTransform,
                        QgsProject,
@@ -195,10 +181,19 @@ from qgis.core import (QgsCoordinateReferenceSystem,
                        QgsPointXY,
                        QgsGeometry,
                        QgsVectorLayer,
-                       QgsFeature)
+                       QgsFeature,
+                       QgsNetworkAccessManager,
+											 QgsNetworkReplyContent)
 ```
 
-Note, in other plugin tutorials people often use star imports, i.e. `from qgis.core import *`. This is bad practice generally. While it makes your import statement a lot more compact, you have no idea where the method comes from, especially when done on multiple modules (and neither does your IDE).
+Note, in other plugin tutorials people often use star imports, i.e. `from qgis.core import *`. This is generally bad practice in Python: while it makes your import statement a lot more compact, you have no idea where the method comes from, especially when done on multiple modules (and neither does your IDE unless their symbols are unique in the current environment).
+
+We also need to clean up a little since we don't use the `resources.qrc` approach: remove the line `from .resources import *`, we build this plugin in a future-proof way (`pyrrc` for compiling the `resources.qrc` will be deprecated soon). As a consequence, you also will have to change the way the plugin references the `icon.png` in its `initGui` method: remove `icon_path = ':/plugins/quick_api/icon.png'` in the method and replace with:
+
+```python
+current_dir = os.path.dirname(os.path.abspath(__file__))
+icon_path = os.path.join(current_dir, 'icon.png')
+```
 
 ### Set dialog attributes
 
@@ -207,14 +202,14 @@ You included a CRS picker in your plugin. However, there's no option to set a de
 ```python
 if self.first_start == True:
 		...
-    self.dlg.crs_input.setCrs(QgsCoordinateReferenceSystem(4326))
+    self.dlg.crs_input.setCrs(QgsCoordinateReferenceSystem('EPSG:4326'))
 ```
 
-`crs_input` is the CRS picker GUI object, an instance of `QgsProjectionSelectionWidget`. In its [documentation](https://qgis.org/api/classQgsProjectionSelectionWidget.html#a2af9a2e3aaf29ddbe9a6a9121d9bf505), you'll find all info on its methods, like `setCrs()`. Which expects a `QgsCoordinateReferenceSystem`, which again can be built from a valid EPSG code as integer.
+`crs_input` is the CRS picker GUI object, an instance of `QgsProjectionSelectionWidget`. In its [documentation](https://qgis.org/api/classQgsProjectionSelectionWidget.html#a2af9a2e3aaf29ddbe9a6a9121d9bf505), you'll find all info on its methods, like `setCrs()`. Which expects a `QgsCoordinateReferenceSystem`, which again can be built from a valid EPSG code (or others, see the documentation for more on the topic.)
 
 ### Save reference to current project
 
-All throughout the following code we'll need a reference to a `QgisProject` instance, which refers to the QGIS project which is currently active for a user. As that, it deals with all project properties (in `read` and `write` mode), e.g. the file path, the map CRS and also the map layers present in the project. Add the following line above `self.dlg.show()`:
+All throughout the following code we'll need a reference to the `QgsProject` object, which refers to the currently active QGIS project. As that, it deals with all project properties (in `read` and `write` mode), e.g. the file path, the map CRS and also the map layers present in the project. Add the following line above `self.dlg.show()`:
 
 ```python
 project = QgsProject.instance()
@@ -222,13 +217,13 @@ project = QgsProject.instance()
 
 ### 1. Process user input
 
-Once the GUI is correctly built, it's shown to the user and it'll be open until the user interacts with its buttons. Now, you can add the logic to read the user input once the OK button was clicked. Also, define the output CRS, which will be WGS84:
+Once the GUI is correctly built, it's shown to the user and it'll be in front until the user interacts with its buttons. Now, you can add the logic to read the user input once the OK button was clicked. Also, define the output CRS, which will be WGS84:
 
 ```python
 if result:
     lineedit_text = self.dlg.lineedit_xy.value()
     crs_input = self.dlg.crs_input.crs()
-    crs_out = QgsCoordinateReferenceSystem(4326)
+    crs_out = QgsCoordinateReferenceSystem('EPSG:4326')
 ```
 
 `lineedit_text` is a string. We need it as coordinate decimal points though:
@@ -253,7 +248,7 @@ except:
 
 This will just pop up an error message with an OK button and a custom message and then end the plugin logic.
 
-**DEBUG**: add `print(crs_input.authid(), lineedit_yx)` to the end and reload the plugin in QGIS.
+**DEBUG**: add `print(crs_input.authid(), lineedit_yx)` to the end and reload the plugin in QGIS with the Python console open.
 
 ### 2. Convert user input to QGIS objects
 
@@ -264,7 +259,7 @@ Next, we need to create an object that QGIS understands to be a Point object. No
 point = QgsPointXY(*reversed(lineedit_yx))
 ```
 
-If the coordinate input was in a CRS differenct from WGS84, we need to transform the point to WGS84:
+If the coordinate input was in a CRS other than WGS84, we need to transform the point to WGS84:
 
 ```python
 # if result:
@@ -276,29 +271,41 @@ if crs_input.authid() != 'EPSG:4326':
     point = point_transform
 ```
 
-`QgsCoordinateReferenceSystem` comes with `authid`, which returns a string in the form `Provider:ID`, e.g. 'EPSG:4326' for WGS84 Lat/Long. `QgsCoordinateTransform` also expects a `QgsProject.instance()` so that custom project-based transformations can be applied (if set).
+`QgsCoordinateReferenceSystem` comes with `authid`, which returns a string in the form `Provider:ID`, e.g. `EPSG:4326` for WGS84 Lat/Long. `QgsCoordinateTransform` also expects a `QgsProject.instance()` so that the correct transformation contect can be applied (if set).
 
 **DEBUG**: add `print(point)` before and after the transformation.
 
 ### 3. Request Nominatim API
 
-Nominatim expects a GET request, which means parameters are encoded in the URL string, e.g. [https://nominatim.openstreetmap.org/reverse?lat=52.098&lon=8.43&format=json](https://nominatim.openstreetmap.org/reverse?lat=52.098&lon=8.43&format=json). It's best practice to pass a base URL and the parameters separately, not in one huge URL string. Additionally, Nominatim's [usage policy](https://operations.osmfoundation.org/policies/nominatim/) dictates to include a descriptive `User-Agent` in the request header to identify applications.
+Nominatim expects a GET request, which means parameters are encoded in the URL string, e.g. [https://nominatim.openstreetmap.org/reverse?lat=52.098&lon=8.43&format=json](https://nominatim.openstreetmap.org/reverse?lat=52.098&lon=8.43&format=json). It's best practice to pass a base URL and the parameters separately, not in one huge URL string. Additionally, Nominatim's [fair usage policy](https://operations.osmfoundation.org/policies/nominatim/) requires you to include a descriptive `User-Agent` in the request header to identify applications.
 
-The full parameter list for Nominatim's reverse endpoint can be found [here](https://wiki.openstreetmap.org/wiki/Nominatim#Reverse_Geocoding). We'll just specify coordinate fields and the format.
+The full parameter list for Nominatim's reverse geocoding endpoint can be found [here](https://wiki.openstreetmap.org/wiki/Nominatim#Reverse_Geocoding). We'll just specify coordinate fields and the format.
 
 ```python
 # if result:
-user_agent = 'PyQGIS@GIS-OPS.com'
-base_url = 'https://nominatim.openstreetmap.org/reverse'
-params = {'lat': point.y(), 'lon': point.x(), 'format': 'json'}
 
-response = requests.get(url=base_url, params=params, headers={'User-Agent': user_agent})
-response_json = response.json()
+# Set up the GET Request to Nominatim
+query = QUrlQuery()
+query.addQueryItem('lat', str(point.y()))
+query.addQueryItem('lon', str(point.x()))
+query.addQueryItem('format', 'json')
+
+url = QUrl('https://nominatim.openstreetmap.org/reverse')
+url.setQuery(query)
+
+request = QNetworkRequest(url)
+request.setHeader(QNetworkRequest.UserAgentHeader, 'PyQGIS@GIS-OPS.com')
+
+nam = QgsNetworkAccessManager()
+response: QgsNetworkReplyContent = nam.blockingGet(request)
 ```
 
-Since we requested a JSON format, the response text will be accessible over its `json()` method as a `dict` type.
+This might seem like a lot of code when comparing it to the compact (and somewhat magical) design of e.g. the `requests` module. However, it's highly recommended to use the built-in Qt & QGIS way of doing requests for several reasons (among others):
 
-**DEBUG**: add `print(response.request.full_url)` at the end to see the raw request URL used.
+- proxies are much easier to deal with: either use QGIS built-in proxy handler or your system's
+- you can take advantage of the QGIS authentication manager to handle e.g. Basic Authentication for URLs which require it
+
+The response `QgsNetworkReplyContent` is a QGIS object, which gives the response context, e.g. if an error occurred and of course access to response's `content()`.
 
 ### 4. Process response
 
@@ -306,19 +313,20 @@ First, you need to check whether Nominatim replied with a `200` HTTP status code
 
 ```python
 # if result:
-if response.status_code == 200:
+status_code = response.attribute(QNetworkRequest.HttpStatusCodeAttribute)
+if status_code == 200:
+    # Get the content of the response and process it
+    response_json = json.loads(bytes(response.content()))
     if response_json.get('error'):
         QMessageBox.critical(self.iface.mainWindow(),
-			                       "Quick API error",
-	                           "The request was not processed succesfully!\n\n"
-														 "Message:\n"
-														 "{}".format(response.json()))
+                             "Quick API error",
+                             "The request was not processed succesfully!\n\n"
+                             "Message:\n"
+                             "{}".format(response_json['error']))
         return
 ```
 
-**DEBUG**: add `print(response.text)` to see the raw text of the response.
-
-If everything went well, you can store the most important response fields. All Nominatim response fields seem to be text, i.e. of string type, so you'll have to cast to `float` where necessary:
+If everything went well, you can store the most important response fields. All Nominatim response fields seem to be text, i.e. of `str` type, so you'll have to cast to `float` where necessary:
 
 ```python
 # if result:
@@ -327,14 +335,13 @@ x = float(response_json['lon'])
 y = float(response_json['lat'])
 address = response_json['display_name']
 license = response_json['licence']
-
 ```
 
 Next, start to build the output layer. There's more types for [QGIS map layers](https://qgis.org/api/classQgsMapLayer.html#adf3b0b576d7812c4359ece2142170308), you'll use `QgsVectorLayer` here. This class expects a layer **URI, layer name and provider** as a minimum to be constructed.
 
-The **URI** sets the important attributes of the layer and has the general form `<geomType>?crs=<CRS_string>&field=<name>:<type>..`. The CRS string can be any literal `QgsCoordinateReferenceSystem.createFromString()` understands.
+The **URI** sets the important attributes of the layer and has the general form `<geomType>?crs=<CRS_string>&field=<name>:<type>..`. The CRS string can be any literal [`QgsCoordinateReferenceSystem.createFromString()`](https://www.qgis.org/api/classQgsCoordinateReferenceSystem.html#a0b233da61bdfd4f6cdc9e43af21044ed) understands.
 
-The **provider** relates to the layer source, which can be `ogr`, `postgres` or (very useful) `memory`. The `memory` provider creates a layer well.. in memory, i.e. it will not be stored on disk. So, you don't have to mess around with directory paths.
+The **provider** relates to the layer's source driver, which can be `ogr`, `postgres` or (very useful) `memory`. The `memory` provider creates a layer well.. in memory, i.e. it will not be stored on disk, and the user can decide what to do with the result layer.
 
 ```python
 # if result:
@@ -342,10 +349,9 @@ The **provider** relates to the layer source, which can be `ogr`, `postgres` or 
 layer_out = QgsVectorLayer("Point?crs=EPSG:4326&field=address:string&field=license:string",
                            "Nominatim Reverse Geocoding",
                            "memory")
-
 ```
 
-As you can see, you already defined two fields in the URI: `address` and `license` (both `string` type). Now, we just have to create a feature and add it to this layer:
+As you can see, you already defined two fields in the URI: `address` and `license` (both `string` type). Now, we just have to create a feature and add it to the new layer:
 
 ```python
 # if result:
@@ -370,18 +376,14 @@ Finally, you add the layer to the current project after updating its extents.
 
 ### 5. Zoom to bounding box
 
-As a last step, we can instruct QGIS to zoom to the geocoded feature. Nominatim supplies you with a response parameter `boundingbox`, which you'll use here. The coordinates are given as a list of strings in `[<ymin>, <ymax>, <xmin>, <xmax>]` format, which is not ideal, so you have to process them to make them PyQGIS compatible. Also, the CRS of the coordinates is WGS84, while the map canvas likely has a different CRS. So, you'll have to transform them accordingly:
+As a last step, we can instruct QGIS to zoom to the geocoded feature. Nominatim supplies you with a response parameter `boundingbox`, which you'll use here. The coordinates are given as a list of strings in `[<ymin>, <ymax>, <xmin>, <xmax>]` format, which is really not ideal (awkward coordintate order and of `str` type), so you have to process them to make them PyQGIS compatible. Also, the CRS of the coordinates is WGS84, while the map canvas likely has a different CRS. So, you'll have to transform them accordingly:
 
 ```python
 # if result:
 # if response.status_code == 200:
 bbox = [float(coord) for coord in response_json['boundingbox']]
 min_y, max_y, min_x, max_x = bbox
-bbox_geom = QgsGeometry.fromPolygonXY([[QgsPointXY(min_x, min_y),
-                                        QgsPointXY(min_x, max_y),
-                                        QgsPointXY(max_x, max_y),
-                                        QgsPointXY(max_x, min_y),
-                                       ]])
+bbox_geom = QgsGeometry.fromRect(QgsRectangle(min_x, min_y, max_x, max_y))
 
 # Transform bbox if map canvas has a different CRS
 if project.crs().authid() != 'EPSG:4326':
@@ -392,7 +394,7 @@ if project.crs().authid() != 'EPSG:4326':
 self.iface.mapCanvas().zoomToFeatureExtent(QgsRectangle.fromWkt(bbox_geom.asWkt()))
 ```
 
-First, construct `QgsPointXY`s from the extent of `boundingbox` and add those to `QgsGeometry` to build a Polygon geometry. A geometry object can then be transformed in-place. Finally, the `zoomToFeatureExtent()` method of the map canvas expects a `QgsRectangle`, which can be built from the Well-Known-Text (WKT) string of the polygon geometry.
+First, construct `QgsPointXY`s from the extent of `boundingbox` and add those to `QgsGeometry` to build a Rectangle geometry. A geometry object can then be transformed in-place. Finally, the `zoomToFeatureExtent()` method of the map canvas expects a `QgsRectangle`, which can be built from the geometry's Well-Known-Text (WKT) string.
 
 ## Final plugin
 
