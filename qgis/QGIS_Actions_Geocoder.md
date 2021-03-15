@@ -7,6 +7,7 @@ This tutorial is part of our QGIS tutorial series:
 - [QGIS 3 Plugins - Signals and Slots in PyQt](https://gis-ops.com/qgis-3-plugin-tutorial-pyqt-signal-slot-explained/)
 - [QGIS 3 Plugins - Plugin Development Part 1](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-1/)
 - [QGIS 3 Plugins - Plugin Development Part 2](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/)
+- [QGIS 3 Plugins - Plugin Development Part 3](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-3/)
 - [QGIS 3 Plugins - Set up Plugin Repository](https://gis-ops.com/qgis-3-plugin-tutorial-set-up-a-plugin-repository-explained/)
 
 ---
@@ -36,7 +37,7 @@ This tutorial follows you through the development process of a simple QGIS 3 Act
 
 ![Melbourne Polygon with Random Points](https://raw.githubusercontent.com/gis-ops/tutorials/master/qgis/static/img/actions_img1.jpg)
 
-Once you have opened your QGIS3 environment add a basemap of your choice (we recommend [QuickMapServices](https://plugins.qgis.org/plugins/quick_map_services/)). 
+Once you have opened your QGIS3 environment add a basemap of your choice (we recommend [QuickMapServices](https://plugins.qgis.org/plugins/quick_map_services/)).
 Afterwards select `EPSG:4326` as your project coordinate reference system and drag and drop the provided [melbourne.geojson](https://github.com/gis-ops/tutorials/raw/master/qgis/data/melbourne.geojson) file into your map.
 Note: You obviously could use any other polygon here.
 
@@ -48,7 +49,7 @@ Up next we will need to generate some random points in our polygon which we will
 4. We will save the output to a temporary layer
 
 A temporary layer called "Random Points" should have been generated and you will be seeing the amount of points you selected in 3. in your polygon on the map.
-Our QGIS action will be created in a way which will consume this point data which will be sent to the HERE Maps Geocoder service. 
+Our QGIS action will be created in a way which will consume this point data which will be sent to the HERE Maps Geocoder service.
 The response will be an address at that location which we will save to our temporary table.
 
 To this end, we will have to add one additional column to this table:
@@ -70,8 +71,8 @@ The logic of the action will be invoked once a user has either selected it in th
 
 ### Create a new Action
 
-Right click the points layer and select "Properties". 
-Once opened, navigate to "Actions" and add a new action of type "Python" with a short description. 
+Right click the points layer and select "Properties".
+Once opened, navigate to "Actions" and add a new action of type "Python" with a short description.
 The scopes of the action to be selected are "Feature Scope" and "Canvas" which define where and how this specific action can be invoked.
 
 ![Create the QGIS Action](https://raw.githubusercontent.com/gis-ops/tutorials/master/qgis/static/img/actions_img2.jpg)
@@ -84,7 +85,7 @@ The script consists of multiple code blocks which we will break down for you in 
 #### Imports and Programmatically Derive Feature Geometry
 
 The "Action Text" is where we will write our Python code which will handle the aforementioned logic.
-First of all please paste the following into your import statements. 
+First of all please paste the following into your import statements.
 
 ```python
 from qgis.core import QgsMessageLog
@@ -119,7 +120,7 @@ manager.finished.connect(handle_response)
 ```
 
 We can make use of some nifty QGIS features here, namely some built-in functions to derive information of layers and features.
-With `@layer_id` we can grab the layer id we are currently working in which is holding our points. 
+With `@layer_id` we can grab the layer id we are currently working in which is holding our points.
 `$id` on the other hand provides us with the ID of the feature which was clicked to invoke this script.
 We bring these 2 variables together and access the feature from the current layer which we then can use to extract the geometry.
 Now and then we have added some log messages to help us debug which you can see when the script successfully runs ("View" > "Panels" > "Log Messages").
@@ -145,7 +146,7 @@ And declare this new method which can sit right after the imports.
 
 ```python
 def do_request(manager, lat, lng, api_key):
-    
+
     url = f'https://reverse.geocoder.ls.hereapi.com/6.2/reversegeocode.json?prox={lat}%2C{lng}%2C250&mode=retrieveAddresses&maxresults=1&gen=9&apiKey={api_key}'
     QgsMessageLog.logMessage(f'Making a request to {url}')
 
@@ -168,12 +169,12 @@ However, the callback method won't be called because it doesn't exist yet, so le
 ```python
 
 def handle_response(resp):
-    
+
     QgsMessageLog.logMessage(f'Err ? {resp.error()}. Response message : {resp}')
-    
+
     response_data = json.loads(bytes(resp.readAll()))
     QgsMessageLog.logMessage(f'Response {response_data}')
-    
+
     address = response_data["Response"]["View"][0]["Result"][0]["Location"]["Address"]["Label"]
 
     our_layer.startEditing()    
@@ -185,7 +186,7 @@ def handle_response(resp):
 
 ```
 
-A successful response with a coordinate reverse geocoded will yield a json object from HERE containing all different kinds of interesting information corresponding to these coordinates. 
+A successful response with a coordinate reverse geocoded will yield a json object from HERE containing all different kinds of interesting information corresponding to these coordinates.
 To keep this tutorial simple, we are only interested in the full text address which HERE Maps provides in the `Label` object of the response (check the log messages to get a full understanding of the JSON response from HERE Maps).
 The response object holding this information is a `QByteArray` which we have to cast to bytes to make sure we can load it into a json object which we can access.
 
@@ -218,19 +219,19 @@ from qgis.PyQt.QtNetwork import  QNetworkAccessManager, QNetworkRequest
 import json
 
 def do_request(manager, lat, lng, api_key):
-    
+
     url = f'https://reverse.geocoder.ls.hereapi.com/6.2/reversegeocode.json?prox={lat}%2C{lng}%2C250&mode=retrieveAddresses&maxresults=1&gen=9&apiKey={api_key}'
     QgsMessageLog.logMessage(f'Making a request to {url}')
     req = QNetworkRequest(QUrl(url))
     manager.get(req)
 
 def handle_response(resp):
-    
+
     QgsMessageLog.logMessage(f'Err ? {resp.error()}. Response message : {resp}')
-    
+
     response_data = json.loads(bytes(resp.readAll()))
     QgsMessageLog.logMessage(f'Response {response_data}')
-    
+
     address = response_data["Response"]["View"][0]["Result"][0]["Location"]["Address"]["Label"]
 
     our_layer.startEditing()    
@@ -264,5 +265,5 @@ do_request(manager, lat, lng, here_api_key)
 
 ```
 
-The final action code can also be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/QGIS_Actions_Geocoder.py). 
+The final action code can also be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/QGIS_Actions_Geocoder.py).
 Feel free to clone it and compare!

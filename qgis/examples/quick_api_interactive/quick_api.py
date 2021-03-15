@@ -186,7 +186,7 @@ class QuickApi:
             self.iface.removePluginVectorMenu(
                 self.tr(u'&Quick API'),
                 action)
-            self.iface.removeToolBarIcon(action)#class QuickApi:
+            self.iface.removeToolBarIcon(action)
 
     def run(self):
         """Run method that performs all the real work"""

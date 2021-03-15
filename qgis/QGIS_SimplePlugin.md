@@ -420,3 +420,7 @@ zip -r dist/quick_api_v0.1.zip quickapi
 ### Upload plugin
 
 The uploading details and more general guidelines can be followed from [the official homepage](https://plugins.qgis.org).
+
+## Next steps
+
+In the next tutorial we'll add some interactivity to the plugin, so the user can click a point on the map to be reverse geocoded rather than copy/pasting the coordinate: https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/.
