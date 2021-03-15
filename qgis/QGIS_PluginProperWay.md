@@ -13,7 +13,7 @@ This tutorial is part of our QGIS tutorial series:
 
 ---
 
-# QGIS 3 Plugins - Apply Best Practices
+# QGIS 3 Plugins - Apply Best Practices & Useful Tips
 
 This tutorial follows up on the [second QGIS plugin development tutorial](https://gis-ops.com/qgis-simple-plugin/), which built an interactive plugin where a user could reverse geocode via [Nominatim](https://wiki.openstreetmap.org/wiki/Nominatim) by clicking a point in the map canvas. If you have no idea what I'm talking about, go through the last [tutorial](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/) or get the previously prepared plugin from our [repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api_interactive).
 
@@ -227,4 +227,4 @@ So if you'd want to change the geocoder to e.g. [OpenCage Geocoder](https://open
 
 You could even define an abstract base class which defines abstract methods which **need to be implemented** by any inheriting class. Then `Nominatim()` and other geocoder classes could sub-class the base class and implement their own logic.
 
-That's a very object-oriented way and unfortunately Python is not very well suited for object-oriented programming, at least out-of-the-box. However, separation of concerns and single responsibility for objects is very important for maintainability, extensibility, testability and ease of on-boarding new developers.
+That's a fairly object-oriented way and unfortunately Python is not perfectly well suited to enforce some object-oriented programming paradigms, at least out-of-the-box. However, it's possible, and separation of concerns and single responsibility for classes is very important for maintainability, extensibility, testability and ease of on-boarding new developers.
