@@ -10,7 +10,7 @@ version=0.1
 author=GIS-OPS UG
 email=enquiry@gis-ops.com
 
-about=This plugin is part of the GIS • OPS tutorial series: https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-3/
+about=This plugin is part of the GIS • OPS tutorial series: https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-3/
 
 tracker=https://github.com/gis-ops/tutorials/issues
 repository=https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api_interactive_proper

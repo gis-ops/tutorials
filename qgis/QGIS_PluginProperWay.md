@@ -5,9 +5,9 @@ This tutorial is part of our QGIS tutorial series:
 - [QGIS 3 Plugins - Plugin 101](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-reference-guide/)
 - [QGIS 3 Plugins - Qt Designer Explained](https://gis-ops.com/qgis-3-plugin-tutorial-qt-designer-explained/)
 - [QGIS 3 Plugins - Signals and Slots in PyQt](https://gis-ops.com/qgis-3-plugin-tutorial-pyqt-signal-slot-explained/)
-- [QGIS 3 Plugins - Geocoding with Nominatim Part 1](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-1/)
-- [QGIS 3 Plugins - Geocoding with Nominatim Part 2](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/)
-- [QGIS 3 Plugins - Geocoding with Nominatim Part 3](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-3/)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 1](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-1/)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 2](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-2/)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 3](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-3/)
 - [QGIS 3 Plugins - Set up Plugin Repository](https://gis-ops.com/qgis-3-plugin-tutorial-set-up-a-plugin-repository-explained/)
 
 
@@ -15,9 +15,9 @@ This tutorial is part of our QGIS tutorial series:
 
 # QGIS 3 Plugins - Geocoding with Nominatim Part 3
 
-This tutorial follows up on the [second QGIS plugin development tutorial](https://gis-ops.com/qgis-simple-plugin/), which built an interactive plugin where a user could reverse geocode via [Nominatim](https://wiki.openstreetmap.org/wiki/Nominatim) by clicking a point in the map canvas. If you have no idea what I'm talking about, go through the last [tutorial](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/) or get the previously prepared plugin from our [repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api_interactive).
+This tutorial follows up on the [second QGIS plugin development tutorial](https://gis-ops.com/qgis-simple-plugin/), which built an interactive plugin where a user could reverse geocode via [Nominatim](https://wiki.openstreetmap.org/wiki/Nominatim) by clicking a point in the map canvas. If you have no idea what I'm talking about, go through the last [tutorial](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-2/) or get the previously prepared plugin from our [repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api_interactive).
 
-In this tutorial we won't introduce a lot of new functionality, but rather focus on things that'll make our live a lot easier going forward developing a plugin: apply a better code/module structure, learn some tricks like IntelliSense autocompletion in your IDE and introduce quality features like code linting. So far (almost) everything lived in a single file. Which is totally fine for the limited functionality we have up to now. But suppose you'd want to offer another geocoding provider, such as [OpenCage Geocoder](https://opencagedata.com/) or integrate more plugin dialogs. You'd have to refactor a lot and you'd soon notice that one file is not enough to hold the entire logic. After describing some of those principles & tips, we'll apply them in the last chapter to the interactive plugin you developed in the [last tutorial](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/). In the next tutorial we'll go one step further and introduce automated testing.
+In this tutorial we won't introduce a lot of new functionality, but rather focus on things that'll make our live a lot easier going forward developing a plugin: apply a better code/module structure, learn some tricks like IntelliSense autocompletion in your IDE and introduce quality features like code linting. So far (almost) everything lived in a single file. Which is totally fine for the limited functionality we have up to now. But suppose you'd want to offer another geocoding provider, such as [OpenCage Geocoder](https://opencagedata.com/) or integrate more plugin dialogs. You'd have to refactor a lot and you'd soon notice that one file is not enough to hold the entire logic. After describing some of those principles & tips, we'll apply them in the last chapter to the interactive plugin you developed in the [last tutorial](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-2/). In the next tutorial we'll go one step further and introduce automated testing.
 
 The final restructured plugin can be found in our [tutorial repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api_interactive_proper).
 
@@ -38,7 +38,7 @@ The final restructured plugin can be found in our [tutorial repository](https://
 
 - Basic understanding of Python
 - QGIS v3.x
-- **[Previous tutorial(s)](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/)** or alternatively the **[prepared plugin](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api_interactive)**
+- **[Previous tutorial(s)](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-2/)** or alternatively the **[prepared plugin](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api_interactive)**
 - [Plugin Reloader](https://plugins.qgis.org/plugins/plugin_reloader/) plugin installed
 - Python >= 3.6 (should be your system Python3)
 

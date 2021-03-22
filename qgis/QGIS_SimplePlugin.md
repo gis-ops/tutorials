@@ -5,9 +5,9 @@ This tutorial is part of our QGIS tutorial series:
 - [QGIS 3 Plugins - Plugin 101](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-reference-guide/)
 - [QGIS 3 Plugins - Qt Designer Explained](https://gis-ops.com/qgis-3-plugin-tutorial-qt-designer-explained/)
 - [QGIS 3 Plugins - Signals and Slots in PyQt](https://gis-ops.com/qgis-3-plugin-tutorial-pyqt-signal-slot-explained/)
-- [QGIS 3 Plugins - Geocoding with Nominatim Part 1](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-1/)
-- [QGIS 3 Plugins - Geocoding with Nominatim Part 2](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/)
-- [QGIS 3 Plugins - Geocoding with Nominatim Part 2](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-3/)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 1](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-1/)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 2](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-2/)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 2](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-3/)
 - [QGIS 3 Plugins - Set up Plugin Repository](https://gis-ops.com/qgis-3-plugin-tutorial-set-up-a-plugin-repository-explained/)
 
 ---
@@ -424,4 +424,4 @@ The uploading details and more general guidelines can be followed from [the offi
 
 ## Next steps
 
-In the next tutorial we'll add some interactivity to the plugin, so the user can click a point on the map to be reverse geocoded rather than copy/pasting the coordinate: https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/.
+In the next tutorial we'll add some interactivity to the plugin, so the user can click a point on the map to be reverse geocoded rather than copy/pasting the coordinate: https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-2/.

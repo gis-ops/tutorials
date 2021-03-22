@@ -5,9 +5,9 @@ This tutorial is part of our QGIS tutorial series:
 - [QGIS 3 Plugins - Plugin 101](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-reference-guide/)
 - [QGIS 3 Plugins - Qt Designer Explained](https://gis-ops.com/qgis-3-plugin-tutorial-qt-designer-explained/)
 - [QGIS 3 Plugins - Signals and Slots in PyQt](https://gis-ops.com/qgis-3-plugin-tutorial-pyqt-signal-slot-explained/)
-- [QGIS 3 Plugins - Geocoding with Nominatim Part 1](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-1/)
-- [QGIS 3 Plugins - Geocoding with Nominatim Part 2](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/)
-- [QGIS 3 Plugins - Geocoding with Nominatim Part 3](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-3/)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 1](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-1/)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 2](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-2/)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 3](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-3/)
 - [QGIS 3 Plugins - Set up Plugin Repository](https://gis-ops.com/qgis-3-plugin-tutorial-set-up-a-plugin-repository-explained/)
 
 ---
@@ -43,7 +43,7 @@ The final extended plugin can be found in our [tutorial repository](https://gith
 
 - Basic understanding of Python
 - QGIS v3.x
-- **[Previous tutorial](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-1/)** or alternatively the **[prepared plugin](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api)**
+- **[Previous tutorial](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-1/)** or alternatively the **[prepared plugin](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api)**
 - [Plugin Reloader](https://plugins.qgis.org/plugins/plugin_reloader/) plugin installed
 - Python >= 3.6 (should be your system Python3)
 
@@ -337,4 +337,4 @@ And that's it! Best of luck!
 
 ## Next steps
 
-In the next tutorial we'll you some useful tricks around QGIS plugin development and apply some software development best practices by restructuring the whole code base a little. This will help us for the last tutorial in this series which is about an automated test infrastructure for QGIS plugins: https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-3/.
+In the next tutorial we'll you some useful tricks around QGIS plugin development and apply some software development best practices by restructuring the whole code base a little. This will help us for the last tutorial in this series which is about an automated test infrastructure for QGIS plugins: https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-3/.
