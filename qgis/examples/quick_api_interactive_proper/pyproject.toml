@@ -1,0 +1,10 @@
+[tool.black]
+line-length = 79
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | quick_api_dialog_base.py
+  | dist
+)/
+'''

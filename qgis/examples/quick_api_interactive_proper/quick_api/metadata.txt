@@ -10,10 +10,10 @@ version=0.1
 author=GIS-OPS UG
 email=enquiry@gis-ops.com
 
-about=This plugin is part of the GIS • OPS tutorial series: https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-1/
+about=This plugin is part of the GIS • OPS tutorial series: https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-3/
 
 tracker=https://github.com/gis-ops/tutorials/issues
-repository=https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api
+repository=https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api_interactive_proper
 # End of mandatory metadata
 
 # Recommended items:
@@ -27,7 +27,7 @@ tags=python,nominatim,geocode
 
 homepage=https://gis-ops.com/qgis/
 category=Vector
-icon=icon.png
+icon=icons/icon.png
 # experimental flag
 experimental=False
 
