@@ -5,15 +5,15 @@
 [general]
 name=Quick API
 qgisMinimumVersion=3.0
-description=Query OpenElevation API
+description=Reverse geocode points with Nominatim
 version=0.1
 author=GIS-OPS UG
 email=enquiry@gis-ops.com
 
-about=Provide a brief description of the plugin and its purpose.
+about=This plugin is part of the GIS • OPS tutorial series: https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-1/
 
-tracker=http://bugs
-repository=http://repo
+tracker=https://github.com/gis-ops/tutorials/issues
+repository=https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api
 # End of mandatory metadata
 
 # Recommended items:
@@ -23,9 +23,9 @@ hasProcessingProvider=no
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=python
+tags=python,nominatim,geocode
 
-homepage=http://homepage
+homepage=https://gis-ops.com/qgis/
 category=Vector
 icon=icon.png
 # experimental flag

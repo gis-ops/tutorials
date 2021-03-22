@@ -33,4 +33,5 @@ def classFactory(iface):  # pylint: disable=invalid-name
     """
     #
     from .quick_api import QuickApi
+
     return QuickApi(iface)

@@ -5,15 +5,15 @@ This tutorial is part of our QGIS tutorial series:
 - [QGIS 3 Plugins - Plugin 101](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-reference-guide/)
 - [QGIS 3 Plugins - Qt Designer Explained](https://gis-ops.com/qgis-3-plugin-tutorial-qt-designer-explained/)
 - [QGIS 3 Plugins - Signals and Slots in PyQt](https://gis-ops.com/qgis-3-plugin-tutorial-pyqt-signal-slot-explained/)
-- [QGIS 3 Plugins - Plugin Development Part 1](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-1/)
-- [QGIS 3 Plugins - Plugin Development Part 2](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/)
-- [QGIS 3 Plugins - Plugin Development Part 3](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-3/)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 1](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-1/)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 2](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 3](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-3/)
 - [QGIS 3 Plugins - Set up Plugin Repository](https://gis-ops.com/qgis-3-plugin-tutorial-set-up-a-plugin-repository-explained/)
 
 
 ---
 
-# QGIS 3 Plugins - Apply Best Practices & Useful Tips
+# QGIS 3 Plugins - Geocoding with Nominatim Part 3
 
 This tutorial follows up on the [second QGIS plugin development tutorial](https://gis-ops.com/qgis-simple-plugin/), which built an interactive plugin where a user could reverse geocode via [Nominatim](https://wiki.openstreetmap.org/wiki/Nominatim) by clicking a point in the map canvas. If you have no idea what I'm talking about, go through the last [tutorial](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-explained-part-2/) or get the previously prepared plugin from our [repository](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api_interactive).
 
@@ -65,7 +65,7 @@ Let's continue with the most gratifying and useful tip: enable your IDE to provi
 
 The exact method depends a lot on the IDE and platform (Linux, MacOS, Win), but the general idea is always the same: you have to tell your IDE where the QGIS packages are located. The process of doing that obviously also depends on your IDE; for PyCharm see [this SO thread](https://stackoverflow.com/questions/48947494/add-directory-to-python-path-in-pycharm).
 
-To really understand what's goind on, there's a couple of gotcha's in the way QGIS and Python interact:
+To really understand what's going on, there's a couple of gotcha's in the way QGIS and Python interact:
 
 - On Linux and MacOS QGIS uses the system Python3, on Win it ships with its own Python installation
 - QGIS provides the system python only with the `qgis` namespace, things like `processing` (for processing functionality like running algorithms) are missing
@@ -158,34 +158,58 @@ The code inside the plugin package is commonly leaning towards QGIS own logic:
 
 ## 6 - Linters
 
-Linters deal with ensuring best development practices (e.g flagging unused variables) and can also be used to ensure a consistent style across the code base. Style and best practice conformance will help you write better code and make it much easier for external contributors.
+Linters deal with ensuring best development practices (e.g. flagging unused variables) and can also be used to ensure a consistent style across the code base. Style and best practice conformance will help you write better code and make it much easier for external contributors.
 
-There's tons of options for Python, we'll use `flake8`, a wrapper multiple related projects, which will report any violations of registered style/programming guides (check the [documentation](https://flake8.pycqa.org/en/latest/user/configuration.html) on how to ignore certain violations like maximum line length).
+There's tons of options for Python, we'll use `flake8`, a wrapper around multiple related projects, which will report any violations of registered style/programming guides (check the [documentation](https://flake8.pycqa.org/en/latest/user/configuration.html) on how to ignore certain violations like maximum line length). For style formatting we'll use `black`, the ["_uncompromising Python code formatter_"](https://github.com/psf/black).
 
-After installing, you can configure `flake8` project-wide in `setup.cfg` so you don't have to do it on the command line. Our configuration for this project looks like this:
+#### Configuration
 
+After installing both via `pip`, you can configure `flake8` and `black` project-wide. Unfortunately, both packages support different configuration files (Python really has an infrastructure problem...): `black` wants its config in `pyproject.toml` while `flake8` expects its configuration in `setup.cfg`. Our configuration for this project looks like this:
+
+##### `setup.cfg`
 ```ini
 [flake8]
-# only ignores "too long line" warnings
-ignore = E501
+# ignore some errors to play nicely with black
+ignore = E203,E266,E501,W503,F403,E722
 max-complexity = 10
+max-line-length = 88
 exclude = quick_api_dialog_base.py
 ```
+##### `pyproject.toml`
+```ini
+[tool.black]
+line-length = 79
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | quick_api_dialog_base.py
+  | dist
+)/
+'''
+```
 
-Your IDE likely already flags certain style or best practice violations. Linters are supposed to make sure that you don't _commit_ any code not following the guidelines. Hence it's most useful to add a linter check as a [`pre-commit` hook](https://towardsdatascience.com/getting-started-with-python-pre-commit-hooks-28be2b2d09d5), where a small script is registered with your local `.git` repository and runs _before_ every commit. And of course there's a convenient package for this as well: [`pre-commit`](https://pre-commit.com). This will set you up:
+#### pre-commit
+
+Your IDE likely already flags certain style or best practice violations. Linters are supposed to make sure that you don't _commit_ any code not following the guidelines. Hence it's most useful to add linter checks as a [`pre-commit` hook](https://towardsdatascience.com/getting-started-with-python-pre-commit-hooks-28be2b2d09d5), where a small script is registered with your local `.git` repository and runs _before_ every commit. And of course there's a convenient package for this as well: [`pre-commit`](https://pre-commit.com). This will set you up:
 
 1. `pip install pre-commit`
 2. Add a `.pre-commit-config.yaml` to your project at the top level with e.g.:
 ```yaml
 repos:
+- repo: https://github.com/ambv/black
+  rev: stable
+  hooks:
+  - id: black
+    language_version: python3.9
 - repo: https://gitlab.com/pycqa/flake8
   rev: 3.8.4  # pick a git hash / tag to point to
   hooks:
-      - id: flake8
+  - id: flake8
 ```
 3. Install the commit hook: `pre-commit install`
 
-Now the `flake8` check will be done every time you commit to the repository. If the check fails you won't be able to commit. So it's really important `flake8` only captures stuff you want to comply with (I do care line length, but when I exceed I do it fully consciously).
+Now the `flake8` and `black` checks will run every time you commit to the repository. If the check fails you won't be able to commit. So it's really important you configure the tools in a way that it only captures stuff you want to comply with (e.g. `E722`, I sometimes like using a bare `except`).
 
 ## 7 - Restructure the plugin
 

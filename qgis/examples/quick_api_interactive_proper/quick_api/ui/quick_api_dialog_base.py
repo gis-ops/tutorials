@@ -29,7 +29,9 @@ class Ui_QuickApiDialogBase(object):
         self.gridLayout.addWidget(self.crs_input, 1, 0, 1, 2)
         self.button_box = QtWidgets.QDialogButtonBox(QuickApiDialogBase)
         self.button_box.setOrientation(QtCore.Qt.Horizontal)
-        self.button_box.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.button_box.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        )
         self.button_box.setObjectName("button_box")
         self.gridLayout.addWidget(self.button_box, 2, 0, 1, 2)
 
@@ -40,6 +42,10 @@ class Ui_QuickApiDialogBase(object):
 
     def retranslateUi(self, QuickApiDialogBase):
         _translate = QtCore.QCoreApplication.translate
-        QuickApiDialogBase.setWindowTitle(_translate("QuickApiDialogBase", "Quick API"))
+        QuickApiDialogBase.setWindowTitle(
+            _translate("QuickApiDialogBase", "Quick API")
+        )
         self.map_button.setText(_translate("QuickApiDialogBase", "..."))
+
+
 from qgis import gui

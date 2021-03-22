@@ -28,17 +28,28 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.gui import QgisInterface, QgsMapTool
-from qgis.core import QgsCoordinateReferenceSystem, QgsProject, QgsPointXY, QgsVectorLayer, \
-    QgsFeature, QgsGeometry, QgsRectangle
+from qgis.core import (
+    QgsCoordinateReferenceSystem,
+    QgsProject,
+    QgsPointXY,
+    QgsVectorLayer,
+    QgsFeature,
+    QgsGeometry,
+    QgsRectangle,
+)
 
-from ..core.utils import maybe_transform_point_from_wgs, maybe_transform_point_to_wgs
+from ..core.utils import (
+    maybe_transform_point_from_wgs,
+    maybe_transform_point_to_wgs,
+)
 from ..core.query import Nominatim
 from ..core.maptool import PointTool
 from ..ui.quick_api_dialog_base import Ui_QuickApiDialogBase
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
-FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), '../ui/quick_api_dialog_base.ui'))
+FORM_CLASS, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "../ui/quick_api_dialog_base.ui")
+)
 
 
 class QuickApiDialog(QtWidgets.QDialog, Ui_QuickApiDialogBase):
@@ -54,14 +65,18 @@ class QuickApiDialog(QtWidgets.QDialog, Ui_QuickApiDialogBase):
         self.last_map_tool: QgsMapTool = None
 
         # Set up widgets
-        self.map_button.setIcon(QIcon(":images/themes/default/cursors/mCapturePoint.svg"))
-        self.crs_input.setCrs(QgsCoordinateReferenceSystem('EPSG:4326'))
+        self.map_button.setIcon(
+            QIcon(":images/themes/default/cursors/mCapturePoint.svg")
+        )
+        self.crs_input.setCrs(QgsCoordinateReferenceSystem("EPSG:4326"))
 
         # Set up callbacks
         self.finished.connect(self.request_geocoder)
         self.map_button.clicked.connect(self._on_map_click)
         self.point_tool.canvasClicked.connect(self._write_line_widget)
-        self.point_tool.deactivated.connect(lambda: QApplication.restoreOverrideCursor())
+        self.point_tool.deactivated.connect(
+            lambda: QApplication.restoreOverrideCursor()
+        )
 
     def request_geocoder(self, result: int):
         # See if OK was pressed
@@ -73,15 +88,21 @@ class QuickApiDialog(QtWidgets.QDialog, Ui_QuickApiDialogBase):
 
             # Protect the free text field for coordinates from generic user failure
             try:
-                lineedit_yx = [float(coord.strip()) for coord in lineedit_text.split(',')]
+                lineedit_yx = [
+                    float(coord.strip()) for coord in lineedit_text.split(",")
+                ]
             except:
-                QMessageBox.critical(self.iface.mainWindow(),
-                                     'QuickAPI error',
-                                     "Did you really specify a coordinate in comma-separated Lat/Long?\nExiting...")
+                QMessageBox.critical(
+                    self.iface.mainWindow(),
+                    "QuickAPI error",
+                    "Did you really specify a coordinate in comma-separated Lat/Long?\nExiting...",
+                )
                 return
 
             # Create the input point and transform if necessary
-            point = maybe_transform_point_to_wgs(QgsPointXY(*reversed(lineedit_yx)), crs_input, project)
+            point = maybe_transform_point_to_wgs(
+                QgsPointXY(*reversed(lineedit_yx)), crs_input, project
+            )
             # Do the request and set the attributes
             self.nominatim.do_request(point)
 
@@ -89,21 +110,27 @@ class QuickApiDialog(QtWidgets.QDialog, Ui_QuickApiDialogBase):
             if self.nominatim.status_code == 200:
                 # Get the content of the response and process it
                 if self.nominatim.error_string:
-                    QMessageBox.critical(self.iface.mainWindow(),
-                                         "Quick API error",
-                                         "The request was not processed succesfully!\n\n"
-                                         "Message:\n"
-                                         f"{self.nominatim.error_string}")
+                    QMessageBox.critical(
+                        self.iface.mainWindow(),
+                        "Quick API error",
+                        "The request was not processed succesfully!\n\n"
+                        "Message:\n"
+                        f"{self.nominatim.error_string}",
+                    )
                     return
 
                 # Create the output memory layer
-                layer_out = QgsVectorLayer("Point?crs=EPSG:4326&field=address:string&field=license:string",
-                                           "Nominatim Reverse Geocoding",
-                                           "memory")
+                layer_out = QgsVectorLayer(
+                    "Point?crs=EPSG:4326&field=address:string&field=license:string",
+                    "Nominatim Reverse Geocoding",
+                    "memory",
+                )
 
                 # Create the output feature (only one here)
                 feature = QgsFeature()
-                feature.setGeometry(QgsGeometry.fromPointXY(self.nominatim.get_point()))
+                feature.setGeometry(
+                    QgsGeometry.fromPointXY(self.nominatim.get_point())
+                )
                 feature.setAttributes(list(self.nominatim.get_attributes()))
                 # Add feature to layer and layer to map
                 layer_out.dataProvider().addFeature(feature)
@@ -112,11 +139,15 @@ class QuickApiDialog(QtWidgets.QDialog, Ui_QuickApiDialogBase):
 
                 # build bbox for auto-zoom feature
                 bbox_temp = list()
-                for p in (self.nominatim.get_bbox_points()):
-                    p = maybe_transform_point_from_wgs(p, project.crs(), project)
+                for p in self.nominatim.get_bbox_points():
+                    p = maybe_transform_point_from_wgs(
+                        p, project.crs(), project
+                    )
                     bbox_temp.append(p)
 
-                self.iface.mapCanvas().zoomToFeatureExtent(QgsRectangle(*bbox_temp))
+                self.iface.mapCanvas().zoomToFeatureExtent(
+                    QgsRectangle(*bbox_temp)
+                )
 
     def _on_map_click(self):
         self.hide()
