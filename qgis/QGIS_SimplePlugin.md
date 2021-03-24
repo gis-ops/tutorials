@@ -184,7 +184,7 @@ from qgis.core import (QgsCoordinateReferenceSystem,
                        QgsVectorLayer,
                        QgsFeature,
                        QgsNetworkAccessManager,
-											 QgsNetworkReplyContent)
+                       QgsNetworkReplyContent)
 ```
 
 Note, in other plugin tutorials people often use star imports, i.e. `from qgis.core import *`. This is generally bad practice in Python: while it makes your import statement a lot more compact, you have no idea where the method comes from, especially when done on multiple modules (and neither does your IDE unless their symbols are unique in the current environment).
@@ -243,7 +243,7 @@ try:
 except:
     QMessageBox.critical(self.iface.mainWindow(),
                          'QuickAPI error',
-                         "Did you really specify a coordinate in comma-separated Lat/Long?\nExiting...")
+                         "Did you really specify a coordinate in comma-separated Lat Long?\nExiting...")
     return
 ```
 
@@ -389,9 +389,9 @@ bbox_geom = QgsGeometry.fromRect(QgsRectangle(min_x, min_y, max_x, max_y))
 # Transform bbox if map canvas has a different CRS
 if project.crs().authid() != 'EPSG:4326':
     xform = QgsCoordinateTransform(crs_out,
-	     		           							 project.crs(),
-			           			 						 project)
-		bbox_geom.transform(xform)
+                                   project.crs(),
+                                   project)
+    bbox_geom.transform(xform)
 self.iface.mapCanvas().zoomToFeatureExtent(QgsRectangle.fromWkt(bbox_geom.asWkt()))
 ```
 
