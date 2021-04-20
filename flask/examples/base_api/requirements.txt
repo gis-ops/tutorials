@@ -16,7 +16,7 @@ marshmallow==3.2.2
 more-itertools==8.0.0
 packaging==19.2
 pluggy==0.13.1
-py==1.8.0
+py==1.10.0
 pyparsing==2.4.5
 pyproj==2.4.2.post1
 pyrsistent==0.15.6
