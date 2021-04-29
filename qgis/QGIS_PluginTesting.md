@@ -505,7 +505,7 @@ jobs:
         run: cd "${GITHUB_WORKSPACE}/${PLUGIN_PATH}" && flake8 .
 
       - name: Black
-        run: cd "${GITHUB_WORKSPACE}/${PLUGIN_PATH}" && black .
+        run: cd "${GITHUB_WORKSPACE}/${PLUGIN_PATH}" && black . --check
 ```
 
 ### requirements-test.txt

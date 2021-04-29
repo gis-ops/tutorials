@@ -9,9 +9,7 @@ WGS84 = QgsCoordinateReferenceSystem.fromEpsgId(4326)
 
 
 def maybe_transform_wgs84(
-    point: QgsPointXY,
-    own_crs: QgsCoordinateReferenceSystem,
-    direction: int
+    point: QgsPointXY, own_crs: QgsCoordinateReferenceSystem, direction: int
 ) -> QgsPointXY:
     """
     Transforms the ``point`` to (``direction=ForwardTransform`) or from

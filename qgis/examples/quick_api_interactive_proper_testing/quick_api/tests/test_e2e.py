@@ -2,7 +2,12 @@ import unittest
 
 from qgis.PyQt.QtTest import QTest
 from qgis.PyQt.QtCore import Qt, QEvent, QPoint, QTimer
-from qgis.PyQt.QtWidgets import QPushButton, QDialogButtonBox, QMessageBox, QApplication
+from qgis.PyQt.QtWidgets import (
+    QPushButton,
+    QDialogButtonBox,
+    QMessageBox,
+    QApplication,
+)
 from qgis.gui import QgsMapCanvas, QgsMapMouseEvent
 from qgis.core import (
     QgsProject,
@@ -63,7 +68,9 @@ class TestFlow(unittest.TestCase):
         self.assertTrue(dlg.isVisible())
 
         # Clicking the OK button should load the Nominatim result layer
-        QTest.mouseClick(dlg.button_box.button(QDialogButtonBox.Ok), Qt.LeftButton)
+        QTest.mouseClick(
+            dlg.button_box.button(QDialogButtonBox.Ok), Qt.LeftButton
+        )
         layers = project.mapLayers(validOnly=True)
         self.assertEqual(len(layers), 1)
 
@@ -77,8 +84,12 @@ class TestFlow(unittest.TestCase):
         # Test the attributes and geometry
         self.assertIn("Havelland,", feat["address"])
         self.assertIn("OpenStreetMap contributors", feat["license"])
-        self.assertAlmostEqual(feat.geometry().asPoint().x(), 12.703847, delta=1.0)
-        self.assertAlmostEqual(feat.geometry().asPoint().y(), 52.590965, delta=1.0)
+        self.assertAlmostEqual(
+            feat.geometry().asPoint().x(), 12.703847, delta=1.0
+        )
+        self.assertAlmostEqual(
+            feat.geometry().asPoint().y(), 52.590965, delta=1.0
+        )
 
     def test_full_failure(self):
         """Test failing request"""
@@ -129,7 +140,9 @@ class TestFlow(unittest.TestCase):
         # Time the MsgBox test to 7000 ms after clicking
         # the OK button (Nominatim rate limiting for ~6 secs..)
         QTimer.singleShot(7000, handle_msgbox)
-        QTest.mouseClick(dlg.button_box.button(QDialogButtonBox.Ok), Qt.LeftButton)
+        QTest.mouseClick(
+            dlg.button_box.button(QDialogButtonBox.Ok), Qt.LeftButton
+        )
 
         # No layers produced
         layers = project.mapLayers(validOnly=True)

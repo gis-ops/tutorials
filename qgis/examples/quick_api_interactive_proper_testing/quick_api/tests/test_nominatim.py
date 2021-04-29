@@ -15,7 +15,9 @@ class TestNominatim(unittest.TestCase):
     TODO: make the test independent of nominatim results, i.e. provide a mock
     """
 
-    def _assertCoordsAlmostEqual(self, pt1: QgsPointXY, pt2: QgsPointXY, places=6):
+    def _assertCoordsAlmostEqual(
+        self, pt1: QgsPointXY, pt2: QgsPointXY, places=6
+    ):
         """Assert coordinates are the same within 0.000005 degrees"""
         self.assertAlmostEqual(pt1.x(), pt2.x(), places=places)
         self.assertAlmostEqual(pt1.y(), pt2.y(), places=places)

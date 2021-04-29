@@ -14,13 +14,13 @@
 
 """
 
-__author__ = 'tim@linfiniti.com'
-__revision__ = '$Format:%H$'
-__date__ = '10/01/2011'
+__author__ = "tim@linfiniti.com"
+__revision__ = "$Format:%H$"
+__date__ = "10/01/2011"
 __copyright__ = (
-    'Copyright (c) 2010 by Ivan Mincik, ivan.mincik@gista.sk and '
-    'Copyright (c) 2011 German Carrillo, geotux_tuxman@linuxmail.org'
-    'Copyright (c) 2014 Tim Sutton, tim@linfiniti.com'
+    "Copyright (c) 2010 by Ivan Mincik, ivan.mincik@gista.sk and "
+    "Copyright (c) 2011 German Carrillo, geotux_tuxman@linuxmail.org"
+    "Copyright (c) 2014 Tim Sutton, tim@linfiniti.com"
 )
 
 import logging
@@ -28,10 +28,9 @@ from typing import List
 from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal, QSize
 from qgis.PyQt.QtWidgets import QDockWidget
 from qgis.core import QgsProject, QgsMapLayer
-from qgis.gui import (QgsMapCanvas,
-                      QgsMessageBar)
+from qgis.gui import QgsMapCanvas, QgsMessageBar
 
-LOGGER = logging.getLogger('QGIS')
+LOGGER = logging.getLogger("QGIS")
 
 
 # noinspection PyMethodMayBeStatic,PyPep8Naming
@@ -41,6 +40,7 @@ class QgisInterface(QObject):
     This class is here for enabling us to run unit tests only,
     so most methods are simply stubs.
     """
+
     currentLayerChanged = pyqtSignal(QgsMapLayer)
 
     def __init__(self, canvas: QgsMapCanvas):
@@ -51,7 +51,7 @@ class QgisInterface(QObject):
         self.canvas = canvas
         # Set up slots so we can mimic the behaviour of QGIS when layers
         # are added.
-        LOGGER.debug('Initialising canvas...')
+        LOGGER.debug("Initialising canvas...")
         # noinspection PyArgumentList
         QgsProject.instance().layersAdded.connect(self.addLayers)
         # noinspection PyArgumentList

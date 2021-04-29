@@ -35,7 +35,8 @@ from qgis.core import (
     QgsVectorLayer,
     QgsFeature,
     QgsGeometry,
-    QgsRectangle, QgsCoordinateTransform,
+    QgsRectangle,
+    QgsCoordinateTransform,
 )
 
 from ..core.utils import maybe_transform_wgs84
@@ -98,7 +99,9 @@ class QuickApiDialog(QtWidgets.QDialog, Ui_QuickApiDialogBase):
 
             # Create the input point and transform if necessary
             point = maybe_transform_wgs84(
-                QgsPointXY(*reversed(lineedit_yx)), crs_input, QgsCoordinateTransform.ForwardTransform
+                QgsPointXY(*reversed(lineedit_yx)),
+                crs_input,
+                QgsCoordinateTransform.ForwardTransform,
             )
             # Do the request and set the attributes
             self.nominatim.do_request(point)
@@ -138,7 +141,9 @@ class QuickApiDialog(QtWidgets.QDialog, Ui_QuickApiDialogBase):
                 bbox_temp = list()
                 for p in self.nominatim.get_bbox_points():
                     p = maybe_transform_wgs84(
-                        p, project.crs(), QgsCoordinateTransform.ReverseTransform
+                        p,
+                        project.crs(),
+                        QgsCoordinateTransform.ReverseTransform,
                     )
                     bbox_temp.append(p)
 

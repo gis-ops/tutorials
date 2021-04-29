@@ -16,24 +16,29 @@ import qgis  # noqa: F401
 import coverage
 from osgeo import gdal
 
-__author__ = 'Alessandro Pasotti'
-__revision__ = '$Format:%H$'
-__date__ = '30/04/2018'
-__copyright__ = (
-    'Copyright 2018, North Road')
+__author__ = "Alessandro Pasotti"
+__revision__ = "$Format:%H$"
+__date__ = "30/04/2018"
+__copyright__ = "Copyright 2018, North Road"
 
 
 def _run_tests(test_suite, package_name):
     """Core function to test a test suite."""
     count = test_suite.countTestCases()
-    print('########')
-    print('%s tests has been discovered in %s' % (count, package_name))
-    print('Python GDAL : %s' % gdal.VersionInfo('VERSION_NUM'))
-    print('########')
+    print("########")
+    print("%s tests has been discovered in %s" % (count, package_name))
+    print("Python GDAL : %s" % gdal.VersionInfo("VERSION_NUM"))
+    print("########")
 
     cov = coverage.Coverage(
-        source=['/tests_directory/quick_api'],
-        omit=["*/quick_api_dialog_base.py", "*/quick_api.py", '*/__init__.py', "*/tests/*", "*/test_suite.py"],
+        source=["/tests_directory/quick_api"],
+        omit=[
+            "*/quick_api_dialog_base.py",
+            "*/quick_api.py",
+            "*/__init__.py",
+            "*/tests/*",
+            "*/test_suite.py",
+        ],
     )
     cov.start()
 
@@ -44,7 +49,7 @@ def _run_tests(test_suite, package_name):
     cov.report(file=sys.stdout)
 
 
-def test_package(package='quick_api'):
+def test_package(package="quick_api"):
     """Test package.
     This function is called by travis without arguments.
 
@@ -59,5 +64,5 @@ def test_package(package='quick_api'):
     _run_tests(test_suite, package)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_package()
