@@ -21,17 +21,12 @@ env:
   # python notation to test running inside plugin
   TESTS_RUN_FUNCTION: quick_api.test_suite.test_package
 
-
 jobs:
-
-  Test-plugin-DataPlotly:
-
+  Tests:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         docker_tags: [release-3_16, release-3_18, latest]
-
     steps:
 
       - name: Checkout
@@ -71,7 +66,7 @@ jobs:
           cd "${GITHUB_WORKSPACE}/${PLUGIN_PATH}" && pip install -r requirements-tests.txt
 
       - name: Flake8
-        run: cd "${GITHUB_WORKSPACE}${PLUGIN_PATH}" && flake8 .
+        run: cd "${GITHUB_WORKSPACE}/${PLUGIN_PATH}" && flake8 .
 
       - name: Black
-        run: cd "${GITHUB_WORKSPACE}${PLUGIN_PATH}" && black .
+        run: cd "${GITHUB_WORKSPACE}/${PLUGIN_PATH}" && black .

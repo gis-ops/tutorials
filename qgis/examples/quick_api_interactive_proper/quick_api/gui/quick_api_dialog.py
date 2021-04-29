@@ -36,12 +36,10 @@ from qgis.core import (
     QgsFeature,
     QgsGeometry,
     QgsRectangle,
+    QgsCoordinateTransform,
 )
 
-from ..core.utils import (
-    maybe_transform_point_from_wgs,
-    maybe_transform_point_to_wgs,
-)
+from ..core.utils import maybe_transform_wgs84
 from ..core.query import Nominatim
 from ..core.maptool import PointTool
 from ..ui.quick_api_dialog_base import Ui_QuickApiDialogBase
@@ -100,8 +98,10 @@ class QuickApiDialog(QtWidgets.QDialog, Ui_QuickApiDialogBase):
                 return
 
             # Create the input point and transform if necessary
-            point = maybe_transform_point_to_wgs(
-                QgsPointXY(*reversed(lineedit_yx)), crs_input, project
+            point = maybe_transform_wgs84(
+                QgsPointXY(*reversed(lineedit_yx)),
+                crs_input,
+                QgsCoordinateTransform.ForwardTransform,
             )
             # Do the request and set the attributes
             self.nominatim.do_request(point)
@@ -128,9 +128,7 @@ class QuickApiDialog(QtWidgets.QDialog, Ui_QuickApiDialogBase):
 
                 # Create the output feature (only one here)
                 feature = QgsFeature()
-                feature.setGeometry(
-                    QgsGeometry.fromPointXY(self.nominatim.get_point())
-                )
+                feature.setGeometry(QgsGeometry.fromPointXY(self.nominatim.get_point()))
                 feature.setAttributes(list(self.nominatim.get_attributes()))
                 # Add feature to layer and layer to map
                 layer_out.dataProvider().addFeature(feature)
@@ -140,14 +138,12 @@ class QuickApiDialog(QtWidgets.QDialog, Ui_QuickApiDialogBase):
                 # build bbox for auto-zoom feature
                 bbox_temp = list()
                 for p in self.nominatim.get_bbox_points():
-                    p = maybe_transform_point_from_wgs(
-                        p, project.crs(), project
+                    p = maybe_transform_wgs84(
+                        p, project.crs(), QgsCoordinateTransform.ReverseTransform
                     )
                     bbox_temp.append(p)
 
-                self.iface.mapCanvas().zoomToFeatureExtent(
-                    QgsRectangle(*bbox_temp)
-                )
+                self.iface.mapCanvas().zoomToFeatureExtent(QgsRectangle(*bbox_temp))
 
     def _on_map_click(self):
         self.hide()

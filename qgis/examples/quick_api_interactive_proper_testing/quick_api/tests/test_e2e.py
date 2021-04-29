@@ -4,8 +4,14 @@ from qgis.PyQt.QtTest import QTest
 from qgis.PyQt.QtCore import Qt, QEvent, QPoint, QTimer
 from qgis.PyQt.QtWidgets import QPushButton, QDialogButtonBox, QMessageBox, QApplication
 from qgis.gui import QgsMapCanvas, QgsMapMouseEvent
-from qgis.core import QgsProject, QgsCoordinateReferenceSystem, QgsRectangle, QgsVectorLayer, QgsFeature, \
-    QgsFeatureIterator
+from qgis.core import (
+    QgsProject,
+    QgsCoordinateReferenceSystem,
+    QgsRectangle,
+    QgsVectorLayer,
+    QgsFeature,
+    QgsFeatureIterator,
+)
 
 from .utilities import get_qgis_app
 
@@ -14,7 +20,6 @@ QGISAPP, CANVAS, IFACE, PARENT = get_qgis_app()
 
 
 class TestFlow(unittest.TestCase):
-
     def tearDown(self) -> None:
         project = QgsProject.instance()
         project.removeAllMapLayers()
@@ -29,7 +34,6 @@ class TestFlow(unittest.TestCase):
         # first set up a project
         CRS = QgsCoordinateReferenceSystem.fromEpsgId(3857)
         project = QgsProject.instance()
-        project.setCrs(CRS)
         CANVAS.setExtent(QgsRectangle(1469703, 6870031, 1506178, 6907693))
         CANVAS.setDestinationCrs(CRS)
 
@@ -52,10 +56,10 @@ class TestFlow(unittest.TestCase):
             QPoint(0, 0),
             Qt.LeftButton,
             Qt.LeftButton,
-            Qt.NoModifier
+            Qt.NoModifier,
         )
         dlg.point_tool.canvasReleaseEvent(map_releases)
-        self.assertRegex(dlg.lineedit_xy.text(), r'^(\d+\.\d+.+\d+\.\d+)$')
+        self.assertRegex(dlg.lineedit_xy.text(), r"^(\d+\.\d+.+\d+\.\d+)$")
         self.assertTrue(dlg.isVisible())
 
         # Clicking the OK button should load the Nominatim result layer
@@ -71,8 +75,8 @@ class TestFlow(unittest.TestCase):
         self.assertRaises(StopIteration, next, result_features)
 
         # Test the attributes and geometry
-        self.assertIn('Havelland,', feat['address'])
-        self.assertIn('OpenStreetMap contributors', feat['license'])
+        self.assertIn("Havelland,", feat["address"])
+        self.assertIn("OpenStreetMap contributors", feat["license"])
         self.assertAlmostEqual(feat.geometry().asPoint().x(), 12.703847, delta=1.0)
         self.assertAlmostEqual(feat.geometry().asPoint().y(), 52.590965, delta=1.0)
 
@@ -109,17 +113,17 @@ class TestFlow(unittest.TestCase):
             QPoint(0, 0),  # Relative to the canvas' dimensions
             Qt.LeftButton,
             Qt.LeftButton,
-            Qt.NoModifier
+            Qt.NoModifier,
         )
         dlg.point_tool.canvasReleaseEvent(map_releases)
-        self.assertRegex(dlg.lineedit_xy.text(), r'^(\d+\.\d+.+\d+\.\d+)$')
+        self.assertRegex(dlg.lineedit_xy.text(), r"^(\d+\.\d+.+\d+\.\d+)$")
         self.assertTrue(dlg.isVisible())
 
         # Clicking the OK button should result in a QMessageBox.critical dialog
         def handle_msgbox():
             msgbox: QMessageBox = QApplication.activeWindow()
             self.assertIsInstance(msgbox, QMessageBox)
-            self.assertIn('Unable to geocode', msgbox.text())
+            self.assertIn("Unable to geocode", msgbox.text())
             QTest.mouseClick(msgbox.button(QMessageBox.Ok), Qt.LeftButton)
 
         # Time the MsgBox test to 7000 ms after clicking
