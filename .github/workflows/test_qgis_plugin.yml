@@ -1,0 +1,80 @@
+name: Test plugin
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "qgis/examples/quick_api_interactive_proper/**"
+      - ".github/workflows/test_qgis_plugin.yaml"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "qgis/examples/quick_api_interactive_proper/**"
+      - ".github/workflows/test_qgis_plugin.yaml"
+
+env:
+  # plugin name/directory where the code for the plugin is stored
+  PLUGIN_NAME: quick_api
+  # python notation to test running inside plugin
+  TESTS_RUN_FUNCTION: quick_api.test_suite.test_package
+  # Docker settings
+  DOCKER_IMAGE: qgis/qgis
+
+
+jobs:
+
+  Test-plugin-DataPlotly:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        docker_tags: [release-3_16, release-3_18, latest]
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Docker pull and create container
+        run: |
+          docker pull "$DOCKER_IMAGE":${{ matrix.docker_tags }}
+          docker run -d --name qgis-testing-environment -v "$GITHUB_WORKSPACE":/tests_directory -e DISPLAY=:99 qgis/qgis:${{ matrix.docker_tags }}
+
+      - name: Docker set up QGIS
+        run: |
+          docker exec qgis-testing-environment sh -c "qgis_setup.sh $PLUGIN_NAME"
+          docker exec qgis-testing-environment sh -c "rm -f /root/.local/share/QGIS/QGIS3/profiles/default/python/plugins/$PLUGIN_NAME"
+          docker exec qgis-testing-environment sh -c "ln -s /tests_directory/$PLUGIN_NAME /root/.local/share/QGIS/QGIS3/profiles/default/python/plugins/$PLUGIN_NAME"
+          docker exec qgis-testing-environment sh -c "pip3 install -r /tests_directory/REQUIREMENTS_TESTING.txt"
+          docker exec qgis-testing-environment sh -c "apt-get update"
+          docker exec qgis-testing-environment sh -c "apt-get install -y python3-pyqt5.qtwebkit"
+
+      - name: Docker run plugin tests
+        run: |
+          docker exec qgis-testing-environment sh -c "qgis_testrunner.sh $TESTS_RUN_FUNCTION"
+
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Install Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.9'
+          architecture: 'x64'
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install packages
+        run: |
+          pip install -r requirements-tests.txt
+
+      - name: Flake8
+        run: cd qgis/examples/quick_api_interactive_proper_testing && flake8 .
+
+      - name: Black
+        run: cd qgis/examples/quick_api_interactive_proper_testing && black .
