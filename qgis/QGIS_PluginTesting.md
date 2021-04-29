@@ -70,7 +70,7 @@ In any case: this is a good example where majority behavior shouldn't be your gu
 
 As always in software development there are certain terms you should be familiar with  (sigh..):
 
-**Unit** testing ideally isolates each method to be tested individually, meaning no (or as little as possible) side effects from other parts of the code.<br/>**Integration** tests ensure that the individual components work well together, e.g. the output of one function works as input to another function. <br/>Finally **e2e** tests imitate an actual user using the application for entire workflow start to finish.<br/>**CI** stands for **C**ontinuous **I**ntegration and actually describes the behavior of merging code from several contributors on a regular basis. It's mostly synonymous today for running automated tests on a remote infrastructure. Here we'll use Github Actions.
+**Unit** testing ideally isolates each method to be tested individually, meaning no (or as little as possible) side effects from other parts of the code.<br/>**Integration** tests ensure that the individual components work well together, e.g. the output of one function works as input to another function. <br/>**e2e** tests imitate an actual user using the application for entire workflow start to finish.<br/>**CI** stands for **C**ontinuous **I**ntegration and actually describes the behavior of merging code from several contributors on a regular basis. It's mostly synonymous today for running automated tests on a remote infrastructure. Here we'll use Github Actions.
 
 Integration and e2e tests will be pretty much the same here, the lines are pretty blurry often anyways.
 
@@ -78,13 +78,13 @@ Integration and e2e tests will be pretty much the same here, the lines are prett
 
 First we'll prepare our project. In the last tutorial we already took some measures to make the test-writing part a smooth(er) journey, so we don't actually have to touch any of the plugin code.
 
-To not complicate things further we'll write our tests with Python's built-in `unittest` framework. In bigger projects, we usually prefer to use [`pytest`](https://docs.pytest.org/en/6.2.x/), which uses an entirely different, but more scalable approach.
+To not complicate things further we'll write our tests with Python's built-in `unittest` framework. In bigger projects, we usually prefer to use [`pytest`](https://docs.pytest.org/en/6.2.x/), which uses an entirely different, more scalable approach.
 
 We _actually_ prefer to have out-of-source tests (i.e. in a root `tests` folder, so we don't have to ship irrelevant tests to users). However, the CI setup we'll come to later will depend on in-source tests. So create a folder called `tests` in `quick_api/`.
 
 As a first action you'll copy/paste the code from smarter people than us, which will make the whole thing much easier.
 
-First some background: One issue which makes testing QGIS plugins a little alien is the fact that we need to test software which _is expecting to run_ within a QGIS application, but _are run_ in isolated tests, i.e. not within the QGIS environment. You typically invoke `unittest` suites with `python -m unittest` from the command line. But then your code very much depends on a living QGIS environment, so you need a way to initialize one.
+Some background to that: One issue which makes testing QGIS plugins a little alien is the fact that we need to test software which _is expecting to run_ within a QGIS application, but _are run_ in isolated tests, i.e. not within the QGIS environment. You typically invoke `unittest` suites with `python -m unittest` from the command line. But then your code very much depends on a living QGIS environment, so you need a way to initialize one.
 
 So, we copy some code from [DataPlotly](https://github.com/ghtmtt/DataPlotly), which will set up QGIS and it's heavier components:
 
@@ -146,7 +146,7 @@ class TestUtils(unittest.TestCase):
 
 It's conventional to prefix your test names with `test_`. In fact `unittest` will use this pattern to auto-discover your tests.
 
-Here, we use the `setUpClass()` class method to initialize a few objects we'll need in the single tests. This method will only run _once before_ all its tests are executed and is often used to set up stuff like database connections etc. It has a counterpart called `tearDownClass()` which is run _once after_ all its tests are executed. There's also `setUp()` and `teardown()` which are run _before_ and _after every_ test function, respectively.
+Here, we use the `setUpClass()` class method to initialize a few objects we'll need in the individual tests. This method will only run **once before all** its tests are executed and is often used to set up stuff like database connections etc. It has a counterpart called `tearDownClass()` which is run **once after all** its tests are executed. There's also `setUp()` and `teardown()` which are run **before** and **after every** test function, respectively.
 
 Finally each test does some `assert`, which is the actual test. We advise you to use the `unittest` abstractions around `assert` (e.g. `self.assertEqual()`), otherwise the error messages on failures will be very non-descriptive.
 
@@ -156,7 +156,7 @@ We "only" tested the cases for forward transformation, i.e. from `EPSG:3857` to 
 
 ## 4 - Unit tests involving QGIS
 
-Often you'll get away without initializing a full QGIS environment and can test just like we did above. However, sometimes you need to test code which relies on a QGIS environment and that's not always super obvious.
+Often you'll get away without initializing a full QGIS environment and can test just like we did above. However, sometimes you need to test code which relies on a QGIS environment and it's not always super obvious when that's the case.
 
 To exemplify, let's test the Nominatim client in `core/query.py`. In the end there are only two scenarios we need to test here: a successful geocoding request and a failed one. So let's get to it:
 
@@ -171,8 +171,6 @@ from ..core.query import Nominatim
 class TestNominatim(unittest.TestCase):
     """
     Test that Nominatim is returning valid results.
-
-    TODO: make the test independent of nominatim results, i.e. provide a mock
     """
 
     def _assertCoordsAlmostEqual(self, pt1: QgsPointXY, pt2: QgsPointXY, places=6):
@@ -198,19 +196,21 @@ class TestNominatim(unittest.TestCase):
         self.assertEqual(clnt.error_string, '')
 
     def test_failure(self):
+        # test point in the Northern Sea
         in_pt = QgsPointXY(5.822754, 54.889246)
         clnt = Nominatim()
         clnt.do_request(in_pt)
 
-        # Nominatim weirdness
-        self.assertEqual(clnt.status_code, 200)
+        self.assertEqual(clnt.status_code, 200)  # Nominatim weirdness
         self.assertNotEqual(clnt.error_string, '')
         self.assertEqual(clnt.get_point(), None)
         self.assertEqual(clnt.get_bbox_points(), None)
         self.assertEqual(clnt.get_attributes(), None)
 ```
 
-The tests should be pretty self-explanatory. One problem with testing HTTP APIs like this is that we heavily rely on the actual response from Nominatim. That's bad because we don't have control over Nominatim's query results. Our test request might return a different response sometime in the future: the underlying OSM data could change, Nominatim could change its format etc. We do try to circumvent this issue a little by only comparing coordinates to 4 decimal places in `self._assertCoordsAlmostEqual()`. Often people "mock" HTTP API responses with e.g. [`responses`](https://pypi.org/project/responses/). However, then the problem is again that we _wouldn't_ be notified if Nominatim changes its request/response format which is even worse than a failing test here and there which we can easily correct for.
+The tests should be pretty self-explanatory.
+
+One problem with testing HTTP APIs like this is that we heavily rely on the actual response from Nominatim. That can be problematic because we don't have control over Nominatim's query results. Our test request might return a different response sometime in the future: the underlying OSM data could change, Nominatim could change its format etc. We do try to circumvent this issue a little by only comparing coordinates to 4 decimal places in `self._assertCoordsAlmostEqual()`. Often people "mock" HTTP API responses with e.g. [`responses`](https://pypi.org/project/responses/). However, then the problem is again that we _wouldn't_ be notified if Nominatim changes its request/response format which is even worse than a failing test here and there which we can easily correct when it happens.
 
 If you run the tests now you should get an error along the lines of
 ```
@@ -218,9 +218,9 @@ If you run the tests now you should get an error along the lines of
 ```
 What a useful error message.. So, what happened?
 
-The problem is that the `Nominatim` class uses the `QgsNetworkAccessManager` class to make the request. And that one _does_ depend on a QGIS environment: you can pass authentication strings from QGIS' auth database and it uses QGIS built-in proxy details if needed.
+The issue is that the `Nominatim` class uses the `QgsNetworkAccessManager` class to make the request. And that one _does_ depend on a QGIS environment: you can pass authentication strings from QGIS' auth database and it uses QGIS built-in proxy details if needed.
 
-The solution couldn't be easier thanks to the effort of others: we simply have to import the `get_qgis_app()` function from `quick_api/tests/utitlities` and execute it at the top of the file:
+The solution couldn't be easier thanks to the effort of others: we simply have to import the `get_qgis_app()` function from `quick_api/tests/utitlities` and execute it at the top of the file which will initialize a QGIS instance and `QgsNetworkAccessManager` will have something to hold on to:
 
 ```python
 import unittest
@@ -241,14 +241,14 @@ Now a `python -m unittest discover` will work!
 
 ## 5 - e2e tests
 
-This is much more interesting. Now we want to simulate a user's behavior and make sure the plugin reacts as intended. These sort of tests are often much more involved, because you often encounter internal parts of the flow which are harder to test, such as modal dialogs, signals/slots etc.
+This is much more interesting. Now we want to simulate a user's behavior and make sure the plugin reacts as intended. These sort of tests are often much more involved, because you often encounter parts of the Qt/QGIS API which are harder to test, such as modal dialogs, signals/slots etc.
 
-For our use little plugin, we have two e2e tests in mind:
+For our little plugin, we have two e2e tests in mind:
 
 1. The user has a project in a CRS different from WGS84, opens the plugin dialog, clicks in the map where Nominatim can find an address and the result will be dumped to a layer and added to the canvas.
-2. The user does the same as in 1., but clicks in the map where Nominatim will fail to find an address. In that case we want to make sure the modal error dialog is shown to the user before the plugin exits.
+2. The user does the same as in 1., but clicks in an area on the map where Nominatim will fail to find an address. In that case we want to make sure the modal error dialog is shown to the user before the plugin exits.
 
-We'll only show here the 2. scenario and you can add another method for yourself testing the 1. scenario:
+We'll only show the more interesting 2. scenario and you can add another method for yourself testing the 1. scenario (or look at [our solution](https://github.com/gis-ops/tutorials/blob/qgis-testing/qgis/examples/quick_api_interactive_proper_testing/quick_api/tests/test_e2e.py)):
 
 ```python
 import unittest
@@ -327,19 +327,21 @@ class TestFlow(unittest.TestCase):
 Let's go through point by point:
 
 1. After all the imports you'll notice we capture all objects returned from `get_qgis_app()`. While the `CANVAS` is a real `QgsMapCanvas` object, `IFACE` is the stub class from `qgis_interface.py` which we'll need to initialize our own plugin dialog.
-2. Next you'll see that we have another set of imports _inside_ the test function. The reason here is that `quick_api/core/maptool.py`, from which `PointTool` is imported, defined a `QPixMap` in its body. A `QPixMap` needs a running application apparently. If you stick to normal import patterns, Python would try to evaluate all the "free" blocks in the imported modules first, which is _before_ `get_qgis_app()` is executed and consequently fail. You can achieve the same, if you import those two things _after_ `get_qgis_app()` is called at the top of the file.
+2. Next you'll see that we have another set of imports _inside_ the test function. The reason here is that `quick_api/core/maptool.py`, from which `PointTool` is imported, defined a `QPixMap` as a static global variable. A `QPixMap` needs a running application apparently. If you stick to normal import patterns, Python would try to evaluate all the global and static stuff in the imported modules first, which is _before_ `get_qgis_app()` is executed and will consequently fail. You can achieve the same if you import those two things _after_ `get_qgis_app()` is called at the top of the file.
 3. Then we set up the canvas to have a CRS of `EPSG:3857` and set its extent to be somewhere in the Northern Sea to make sure Nominatim will definitely fail the request.
 4. By creating the dialog with the fake `QgisInterface` (remember, we have no access to the real deal) we simulate the user opening the plugin dialog. The fake `QgisInterface` is also the reason why we create a `QuickApiDialog` and not the higher-level `QuickApi` class from `quick_api/quick_api.py`: the latter is only responsible to register some stuff with QGIS, mostly its `iface` member.
 5. We can use `QTest` to simulate a left mouse click on the `map_button` (which is the name we gave this button in Qt Designer). `QTest.mouseClick()` will by default simulate the click in the center of the widget it's passed. Now we can test the expected behavior of hiding the plugin dialog and making sure our map tool is active.
-6. The next step is a little tricky: We need to simulate that the user clicked (and released the click) on the map canvas. Remember our map tool has the `canvasReleaseEvent()` slot which is called with a `QgsMapMouseEvent` by `QgsMapCanvas` _inside_ QGIS. `QTest.mouseClick()` cannot emit this event, so we have construct it ourselves and pass it to the map tool. That triggers a signal which emits the transformed clicked point to the plugin dialog's `lineedit_xy` widget. A user would now see the dialog again with the WGS84 coordinates of the clicked point. We're not really caring about the exact Lat/Lon values since we don't have too much control which coordinate was clicked on the canvas.
+6. The next step is a little tricky: We need to simulate that the user clicked (and released the click) on the map canvas. Remember our map tool has the `canvasReleaseEvent()` slot which is called with a `QgsMapMouseEvent` by `QgsMapCanvas` _inside_ QGIS. `QTest.mouseClick()` cannot emit this event, so we have construct it ourselves and pass it to the map tool. That triggers our custom `canvasClicked` signal from `quick_api/core/maptool.py` which emits the transformed clicked point to the plugin dialog's `lineedit_xy` widget. A user would now see the dialog again with the WGS84 coordinates of the clicked point. We're not really caring about the exact Lat/Lon values since we don't have too much control which coordinate was clicked on the canvas, so we test with a simple regex.
 7. This is the most interesting part. At this point the simulated user would only need to click "OK" to request Nominatim. But the request will fail, there are [(almost) no addresses](https://en.wikipedia.org/wiki/Principality_of_Sealand) in the Northern Sea. On failure a modal dialog will open warning the user about it. A modal dialog is problematic because it stops code execution until the user interacts with it. However, in an automated test there is no user and once the modal dialog is open no one can push a button and the dialog would never close. To work around that Qt has a `QTimer`, which can schedule a task in the background _before_ the modal dialog is triggered, passing the time in msec it should delay the execution of the passed function. So, 7 seconds after being called the `QTimer.singleShot` calls `handle_msgbox()` which will test that the modal dialog was indeed opened. We delay for 7 seconds because of Nominatim's quite heave rate limiting.
 8. Finally we make sure there was no layer created.
+
+When you run this test, don't be surprised when the message box pops up on your screen. It's supposed to. Don't interact with it (or any other window) as that would invalidate the test.
 
 Testing our 1. scenario would look very similar: you'd choose a different area for the canvas' extent and check the created layer and the feature it contains. See [our solution](https://github.com/gis-ops/tutorials/blob/qgis-testing/qgis/examples/quick_api_interactive_proper_testing/quick_api/tests/test_e2e.py)
 
 ## 6 - Measure coverage
 
-Running all these tests is great, but how do we know our code was thoroughly tested? That's the job of the `coverage` package. First install it: `pip install coverage`. It's another tool we need to configure a little though. In the `pyproject.toml` of the plugin, include this section:
+Running all these tests is great, but how do we know our code was thoroughly tested? That's the job of the `coverage` package. First install it: `pip install coverage`. It's another tool we need to configure a little. In the `pyproject.toml` of the plugin include this section:
 
 ```ini
 [tool.coverage.run]
@@ -354,7 +356,7 @@ Next we can run `coverage run -m unittest discover && coverage report` to print 
 
 ## 7 - Set up Github Actions CI
 
-Finally we can set up our CI jobs on Github Actions, so you can get the fancy badges like [![Test plugin](https://github.com/gis-ops/tutorials/actions/workflows/test_qgis_plugin.yml/badge.svg)](https://github.com/gis-ops/tutorials/actions/workflows/test_qgis_plugin.yml). We won't give the full overview here for Github Actions as that's faaar out-of-scope. But there are a few peculiarities around testing QGIS plugins remotely, so we'll show you a little the in's and out's.
+Finally we can set up our CI jobs on Github Actions, so you can get the fancy badges like [![Test plugin](https://github.com/gis-ops/tutorials/actions/workflows/test_qgis_plugin.yml/badge.svg)](https://github.com/gis-ops/tutorials/actions/workflows/test_qgis_plugin.yml). We won't give the full overview here for Github Actions as that's waaayyy out-of-scope. But there are a few peculiarities around testing QGIS plugins remotely, so we'll show you a little the ins and outs.
 
 ### Overview
 
@@ -408,9 +410,9 @@ jobs:
           docker exec qgis-testing-environment sh -c "qgis_testrunner.sh $TESTS_RUN_FUNCTION"
 ```
 
-One of the most important things to note here is the `strategy` matrix which defines docker tags for the relevant QGIS releases: LTR (3.16), stable (3.18) and `latest` (which is the `master` branch of QGIS). This strategy ensures that your plugin will work in the most relevant QGIS environments. **Note**, this obviously only tests Linux platforms, a setup for CI testing Windows and Mac could be worthwhile in case you include platform-specific stuff (like external, compiled libraries).
+One of the most important things to note here is the `strategy` matrix which defines docker tags for the relevant QGIS releases: LTR (3.16), stable (3.18) and `latest` (which is the `master` branch of QGIS). This strategy ensures that your plugin will work in the most relevant QGIS environments. **Note**, this obviously only tests Linux platforms, a setup for CI testing Windows and Mac could be worthwhile in case you include platform-specific stuff (like external, compiled libraries), but we have currently also no idea how to do that (future blog?).
 
-The test are run in a QGIS docker container, which contains some magic to set up the right environment. Just note for now, that your repository base is mapped to the `/tests_directory` directory inside the container.
+The tests are run in a QGIS docker container, which contains some magic to set up the right environment. Just note for now, that your repository root is mapped to the `/tests_directory` directory inside the container.
 
 ### Test suite module
 
@@ -472,7 +474,7 @@ if __name__ == '__main__':
     test_package()
 ```
 
-This will programmatically invoke `unittest` and `coverage`, and print the report to the console.
+Now the CI command will programmatically invoke `unittest` and `coverage`, and print the report to the console.
 
 ### Linting
 
@@ -481,7 +483,7 @@ Remember how we set up a linter (`flake8`) and style checker (`black`) in the [l
 Add this section to your CI config yaml:
 
 ```yaml
-jobs:
+#jobs:
   ...
 
   Lint:
@@ -508,9 +510,11 @@ jobs:
         run: cd "${GITHUB_WORKSPACE}/${PLUGIN_PATH}" && black . --check
 ```
 
+Now the `Lint` job will fail if a PR or commit to `master` is not adhering to the project's style & lint constraints.
+
 ### requirements-test.txt
 
-Now we have a couple of packages which we need to successfully run our CI jobs. These will have to be installed on the vanilla Python distribution that's typically installed on fresh Ubuntu CI machines.
+Now we have a couple of packages which our tests expect. These will have to be installed on the vanilla Python distribution that's typically installed on fresh Ubuntu CI machines.
 
 Create the `requirements-tests.txt` file at the top level with the following:
 

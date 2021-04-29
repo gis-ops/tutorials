@@ -21,7 +21,9 @@ class PointTool(QgsMapToolEmitPoint):
         crs_canvas = self.canvas().mapSettings().destinationCrs()
         self.canvasClicked.emit(
             maybe_transform_wgs84(
-                event.mapPoint(), crs_canvas, QgsCoordinateTransform.ForwardTransform
+                event.mapPoint(),
+                crs_canvas,
+                QgsCoordinateTransform.ForwardTransform,
             )
         )
 

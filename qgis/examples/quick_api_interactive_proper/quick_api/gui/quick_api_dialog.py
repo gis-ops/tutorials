@@ -128,7 +128,9 @@ class QuickApiDialog(QtWidgets.QDialog, Ui_QuickApiDialogBase):
 
                 # Create the output feature (only one here)
                 feature = QgsFeature()
-                feature.setGeometry(QgsGeometry.fromPointXY(self.nominatim.get_point()))
+                feature.setGeometry(
+                    QgsGeometry.fromPointXY(self.nominatim.get_point())
+                )
                 feature.setAttributes(list(self.nominatim.get_attributes()))
                 # Add feature to layer and layer to map
                 layer_out.dataProvider().addFeature(feature)
@@ -139,11 +141,15 @@ class QuickApiDialog(QtWidgets.QDialog, Ui_QuickApiDialogBase):
                 bbox_temp = list()
                 for p in self.nominatim.get_bbox_points():
                     p = maybe_transform_wgs84(
-                        p, project.crs(), QgsCoordinateTransform.ReverseTransform
+                        p,
+                        project.crs(),
+                        QgsCoordinateTransform.ReverseTransform,
                     )
                     bbox_temp.append(p)
 
-                self.iface.mapCanvas().zoomToFeatureExtent(QgsRectangle(*bbox_temp))
+                self.iface.mapCanvas().zoomToFeatureExtent(
+                    QgsRectangle(*bbox_temp)
+                )
 
     def _on_map_click(self):
         self.hide()

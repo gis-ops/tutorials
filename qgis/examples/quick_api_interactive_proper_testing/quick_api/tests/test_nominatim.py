@@ -11,8 +11,6 @@ QGIS_APP = get_qgis_app()
 class TestNominatim(unittest.TestCase):
     """
     Test that Nominatim is returning valid results.
-
-    TODO: make the test independent of nominatim results, i.e. provide a mock
     """
 
     def _assertCoordsAlmostEqual(
