@@ -1,0 +1,72 @@
+name: Test plugin
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "qgis/examples/quick_api_interactive_proper/**"
+      - ".github/workflows/test_qgis_plugin.yaml"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "qgis/examples/quick_api_interactive_proper/**"
+      - ".github/workflows/test_qgis_plugin.yaml"
+
+env:
+  # plugin name/directory where the code for the plugin is stored
+  PLUGIN_NAME: quick_api
+  PLUGIN_PATH: qgis/examples/quick_api_interactive_proper_testing
+  # python notation to test running inside plugin
+  TESTS_RUN_FUNCTION: quick_api.test_suite.test_package
+
+jobs:
+  Tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        docker_tags: [release-3_16, release-3_18, latest]
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Docker pull and create container
+        run: |
+          docker pull qgis/qgis:${{ matrix.docker_tags }}
+          docker run -d --name qgis-testing-environment -v "${GITHUB_WORKSPACE}/${PLUGIN_PATH}":/tests_directory -e DISPLAY=:99 qgis/qgis:${{ matrix.docker_tags }}
+
+      - name: Docker set up QGIS
+        run: |
+          docker exec qgis-testing-environment sh -c "qgis_setup.sh $PLUGIN_NAME"
+          docker exec qgis-testing-environment sh -c "rm -f /root/.local/share/QGIS/QGIS3/profiles/default/python/plugins/$PLUGIN_NAME"
+          docker exec qgis-testing-environment sh -c "ln -s /tests_directory/$PLUGIN_NAME /root/.local/share/QGIS/QGIS3/profiles/default/python/plugins/$PLUGIN_NAME"
+          docker exec qgis-testing-environment sh -c "pip3 install -r /tests_directory/requirements-tests.txt"
+
+      - name: Docker run plugin tests
+        run: |
+          docker exec qgis-testing-environment sh -c "qgis_testrunner.sh $TESTS_RUN_FUNCTION"
+
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Install Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.9'
+          architecture: 'x64'
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install packages
+        run: |
+          cd "${GITHUB_WORKSPACE}/${PLUGIN_PATH}" && pip install -r requirements-tests.txt
+
+      - name: Flake8
+        run: cd "${GITHUB_WORKSPACE}/${PLUGIN_PATH}" && flake8 .
+
+      - name: Black
+        run: cd "${GITHUB_WORKSPACE}/${PLUGIN_PATH}" && black . --check

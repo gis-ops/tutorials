@@ -12,8 +12,8 @@ def maybe_transform_wgs84(
     point: QgsPointXY, own_crs: QgsCoordinateReferenceSystem, direction: int
 ) -> QgsPointXY:
     """
-    Transforms the ``point`` to (``direction=ForwardTransform``) or from
-    (``direction=ReverseTransform``) WGS84.
+    Transforms the ``point`` to (``direction=ForwardTransform`) or from
+    (``direction=ReverseTransform`) WGS84.
     """
     project = QgsProject.instance()
     out_point = point

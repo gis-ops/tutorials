@@ -1,0 +1,43 @@
+# This file contains metadata for your plugin.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
+[general]
+name=Quick API
+qgisMinimumVersion=3.0
+description=Reverse geocode points with Nominatim
+version=0.1
+author=GIS-OPS UG
+email=enquiry@gis-ops.com
+
+about=This plugin is part of the GIS • OPS tutorial series: https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-3/
+
+tracker=https://github.com/gis-ops/tutorials/issues
+repository=https://github.com/gis-ops/tutorials/tree/master/qgis/examples/quick_api_interactive_proper
+# End of mandatory metadata
+
+# Recommended items:
+
+hasProcessingProvider=no
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags=python,nominatim,geocode
+
+homepage=https://gis-ops.com/qgis/
+category=Vector
+icon=icons/icon.png
+# experimental flag
+experimental=False
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
+# Since QGIS 3.8, a comma separated list of plugins to be installed
+# (or upgraded) can be specified.
+# Check the documentation for more information.
+# plugin_dependencies=
+
+# If the plugin can run on QGIS Server.
+server=False

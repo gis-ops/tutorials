@@ -7,9 +7,8 @@ from qgis.core import QgsCoordinateTransform
 
 from ..core.utils import maybe_transform_wgs84
 
-CUSTOM_CURSOR = QCursor(
-    QIcon(":images/themes/default/cursors/mCapturePoint.svg").pixmap(48, 48)
-)
+CURSOR_ICON = QIcon(":images/themes/default/cursors/mCapturePoint.svg")
+CUSTOM_CURSOR = QCursor(CURSOR_ICON.pixmap(48, 48))
 
 
 class PointTool(QgsMapToolEmitPoint):

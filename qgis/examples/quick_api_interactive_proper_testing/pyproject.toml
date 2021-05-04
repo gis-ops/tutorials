@@ -1,0 +1,15 @@
+[tool.black]
+line-length = 79
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | quick_api_dialog_base.py
+  | dist
+)/
+'''
+
+[tool.coverage.run]
+branch = true
+source = ["quick_api"]
+omit = ["*/quick_api_dialog_base.py", "*/quick_api.py", '*/__init__.py', "*/tests/*", "*/test_suite.py"]
