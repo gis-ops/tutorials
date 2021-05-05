@@ -338,4 +338,4 @@ And that's it! Best of luck!
 
 ## Next steps
 
-In the next tutorial we'll you some useful tricks around QGIS plugin development and apply some software development best practices by restructuring the whole code base a little. This will help us for the last tutorial in this series which is about an automated test infrastructure for QGIS plugins: https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-3/.
+In the next tutorial we'll show you some useful tricks around QGIS plugin development and apply some software development best practices by restructuring the whole code base a little. This will help us for the last tutorial in this series which is about an automated test infrastructure for QGIS plugins: https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-3/.

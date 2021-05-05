@@ -253,3 +253,7 @@ So if you'd want to change the geocoder to e.g. [OpenCage Geocoder](https://open
 You could even define an abstract base class which defines abstract methods which **need to be implemented** by any inheriting class. Then `Nominatim()` and other geocoder classes could sub-class the base class and implement their own logic.
 
 That's a fairly object-oriented way and unfortunately Python is not perfectly well suited to enforce some object-oriented programming paradigms, at least out-of-the-box. However, it's possible, and separation of concerns and single responsibility for classes is very important for maintainability, extensibility, testability and ease of on-boarding new developers.
+
+## Next steps
+
+Our next tutorial in this series will be all about setting up automated tests for QGIS plugins, an often overlooked part of plugin development. We'll briefly go over important testing concepts (unit & e2e) and show you how to implement them with the example of this plugin. Additionally we'll showcase an example configuration for Github Actions to run your new test suite on every push & pull request. Try it out: https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-4/.
