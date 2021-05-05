@@ -39,7 +39,7 @@ Once you dig in you'll notice that the vast majority of QGIS plugins **do not** 
 
 Having little test coverage on plugins should be a reason for concern, as bad user experience from buggy plugins could stain QGIS' reputation as a whole. I can't speak for the majority of plugin developers, but talking from my own experience this might be a result of:
 
-- No clear community guidelines (as far as I can tell)
+- Little community guidelines
 - Few properly implemented test suites in other plugins "to see how it's done"
 - Sometimes authors are not professional developers and/or the plugin is a side project gone public with very limited time budgets (and testing is often lowest priority in that context)
 - and last but not least: QGIS Plugins are hard(er) to test in all their components (GUI, processing, some async features etc)
