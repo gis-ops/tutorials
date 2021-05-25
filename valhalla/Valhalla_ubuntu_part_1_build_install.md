@@ -158,7 +158,8 @@ git submodule update --init --recursive
 This will give us the up-to-date versions of all needed and included submodules. Those are all so-called header-only libraries. They don't need to be compiled, which makes them highly portable and can be included in projects for convenience (some libraries are harder to install on some OSes).
 
 ### Finally: Build and install Valhalla
-If you reached this point without errors, you're good to go to build Valhalla. Make sure you set `DENABLE_NODE_BINDINGS` to `On` if you want Valhalla to build with Node support:
+
+If you reached this point without errors, you're good to go to build Valhalla:
 
 ```bash
 mkdir build
@@ -166,8 +167,6 @@ cd $_
 cmake .. \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX=/usr \
-  -DENABLE_TOOLS=OFF \
-  -DENABLE_TESTS=OFF \
   -DENABLE_BENCHMARKS=OFF
 ```
 -   `cmake ..` configures the build for `make` (writes some config files)
@@ -181,12 +180,12 @@ If you made it to this point... **Congratulations!** You're ready to insert the 
 cd build
 make -j$(nproc)
 # make -j$(nproc) check
-make install
+sudo make install
 ```
 
 -   `make -j$(nproc)` compiles Valhalla with all available cores
 -   `make -j$(nproc) check` runs the Valhalla tests with all available cores. This is optional and takes a lot more time than the simple `make` step. If Valhalla configured and built without errors, you can assume the runtime is fine too, so you can skip this check.
--   `make install` installs Valhalla to your system (`/usr` directory you configured with CMake)
+-   `sudo make install` installs Valhalla to your system (`/usr` directory you configured with CMake)
 
 ## Next steps:
 
