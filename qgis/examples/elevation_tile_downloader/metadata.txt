@@ -1,0 +1,47 @@
+# This file contains metadata for your plugin.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
+[general]
+name=Elevation Tile Downloader
+qgisMinimumVersion=3.0
+description=Downloads elevation tiles 
+version=0.1
+author=Christian Beiwinkel
+email=christian@gis-ops.com
+
+about=Downloads elevation tiles from Tilezen's global elevation layer hosted at AWS that overlap with features of the selected layer.
+
+tracker=https://github.com/gis-ops/elevation_tile_plugin/issues
+repository=https://github.com/gis-ops/elevation_tile_plugin/
+# End of mandatory metadata
+
+# Recommended items:
+
+hasProcessingProvider=no
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags=python
+
+homepage=https://github.com/gis-ops/elevation_tile_plugin/
+category=Raster
+icon=icon.png
+# experimental flag
+experimental=True
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
+# Since QGIS 3.8, a comma separated list of plugins to be installed
+# (or upgraded) can be specified.
+# Check the documentation for more information.
+# plugin_dependencies=
+
+Category of the plugin: Raster, Vector, Database or Web
+# category=
+
+# If the plugin can run on QGIS Server.
+server=False
+
