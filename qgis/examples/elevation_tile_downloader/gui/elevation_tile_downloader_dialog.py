@@ -30,7 +30,10 @@ from qgis.core import (
     QgsGeometry,
     QgsMapLayerProxyModel,
     QgsApplication,
-    QgsRectangle
+    QgsRectangle,
+    QgsCoordinateTransform,
+    QgsCoordinateReferenceSystem,
+    QgsFeature
 )
 from math import floor, ceil
 from typing import List
@@ -55,16 +58,18 @@ class ElevationTileDownloaderDialog(QtWidgets.QDialog, Ui_ElevationTileDownloade
         creates and starts the download task and connects the plugin to task signals.
         """
         poly_layer: QgsVectorLayer = self.layer_choice.currentLayer()
+        crs = poly_layer.crs()
         out_dir: str = self.output_dir.filePath()
         add = self.add_to_map.isChecked()
         grid = []
         for feature in poly_layer.getFeatures():
-            bbox: QgsRectangle = feature.geometry().boundingBox()
+            feature_geom = self.to_wgs84(feature.geometry(), crs)
+            bbox: QgsRectangle = feature_geom.boundingBox()
             bounds = [bbox.xMinimum(), bbox.yMinimum(), bbox.xMaximum(), bbox.yMaximum()]
             rounded_bounds = [floor(x) if i < 2 else ceil(x) for i, x in enumerate(bounds)]
             grid_polys = self.create_grid_from_bounds(rounded_bounds)
             for grid_poly in grid_polys:
-                if feature.geometry().intersects(grid_poly):
+                if feature_geom.intersects(grid_poly):
                     grid.append(grid_poly)
 
         self.task = DownloadTask(grid, out_dir, add)
@@ -92,3 +97,16 @@ class ElevationTileDownloaderDialog(QtWidgets.QDialog, Ui_ElevationTileDownloade
     def _on_task_completion(self):
         self.iface.mainWindow().statusBar().showMessage("")
         self.close()
+
+    @staticmethod
+    def to_wgs84(geometry: QgsGeometry, own_crs: QgsCoordinateReferenceSystem) -> QgsGeometry:
+        """
+        Transforms the ``point`` to (``direction=ForwardTransform``) or from
+        (``direction=ReverseTransform``) WGS84.
+        """
+        wgs84 = QgsCoordinateReferenceSystem.fromEpsgId(4326)
+        project = QgsProject.instance()
+        if own_crs != wgs84:
+            xform = QgsCoordinateTransform(own_crs, wgs84, project)
+            success = geometry.transform(xform)
+        return geometry

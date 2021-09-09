@@ -27,7 +27,7 @@ class DownloadTask(QgsTask):
         self.traceback = None
         self.total = len(self.grid)
         self.add = add
-        self.tiles_downloaded: List[Path] = []
+        self.tiles: List[Path] = []
         self.nam = QgsNetworkAccessManager()
 
     def run(self):
@@ -90,7 +90,7 @@ class DownloadTask(QgsTask):
             )
         elif not result and not self.exception:
             QgsMessageLog.logMessage(
-                message=f'Canceled download task. {len(self.tiles_downloaded)} tiles downloaded.',
+                message=f'Canceled download task. {len(self.tiles)} tiles downloaded.',
                 level=Qgis.Warning
             )
 
@@ -102,7 +102,7 @@ class DownloadTask(QgsTask):
 
     def add_to_map(self):
         project = QgsProject.instance()
-        for tile_path in self.tiles_downloaded:
+        for tile_path in self.tiles:
             finfo = QFileInfo(str(tile_path))
             base_name = finfo.baseName()
             path = finfo.filePath()
