@@ -282,7 +282,7 @@ Generally, there are three ways in which tasks can be created:
 
 Our task is a little bigger and we like things to be encapsulated, so we chose to extend `QgsTask`. There is a bunch of functions you will need to override/implement when subclassing `QgsTask`:
 - `run()`: this is where the real work will happen in a separate thread, similar to a `QgsProcessingAlgorithm::processAlgorithm`. This method must not call any UI related functions or interact with the main QGIS interface at all or crashes will occur
-- `finished()`: will be called after the `run()` method is finished. It's safe to call UI functions here e.g. to inform the user about success or errors.
+- `finished(result: bool)`: will be called after the `run()` method is finished and gets passed the boolean result of `run()`. It's safe to call UI functions here e.g. to inform the user about success or errors.
 
 ### 3.1 Extending `QgsTask`
 We start by creating a new Python module `task.py` inside a new package called `core`. Here, we subclass `QgsTask`:
