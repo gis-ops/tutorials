@@ -453,4 +453,4 @@ def download_tiles(self) -> None:
 
 Finally, the task needs to be run. For this, we use the `QgsTaskManager`, which is a singleton class that takes care of delegating any background tasks. We add the task and the task manager makes sure that the task starts running.
 
-And that's it! We have successfully created a small plugin that downloads SRTM tiles in the background by using `QgsTask`, so that the user can continue interacting with QGIS while the download runs.
+And that's it! We have successfully created a small plugin that downloads Mapzen/Tilezen elevation tiles in the background by using `QgsTask`, so that the user can continue interacting with QGIS while the download runs.
