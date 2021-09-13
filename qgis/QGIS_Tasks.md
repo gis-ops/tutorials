@@ -381,9 +381,11 @@ class DownloadTask(QgsTask):
             self.exception = e
             return False
 ```
-The `run()` method of a `QgsTask` always needs to return a boolean value, which is used in `finished()` to evaluate whether the task ran successfully. After initializing the network access manager, which is used for handling the http requests, we wrap the remainder of the method inside a `try`/`except` block to prevent exceptions from being raised. If an exception is caught, we save it and return `False`. In order to give the user control over cancelling the download, we check for this after each iteration by calling `self.isCanceled()`, and return False if the user has canceled the task.
+The logic of the actual heavy lifting inside `run()` works as follows: for every box in the elevation tile grid, we get the southwestern-most coordinates (their base lat/lon), from which the directory and tile names are created, as well as the URL to download the tile from. If the file does not exist yet, we download it, extract the `.gz` file in-memory and save the result into the respective directory.
 
-The logic of the actual heavy lifting inside `run()` works as follows: for every box in the grid, we get the southwesternmost coordinates, from wich the directory and tile names are created, as well as the URL to download the tile from. If the file does not exist yet, we download it, extract the `.gz`file and save the result into the respective directory.
+The `run()` method of a `QgsTask` always needs to return a boolean value, which is used in `finished()` to evaluate whether the task ran successfully. After initializing the `QgsNetworkAccessManager`, which is used for handling the HTTP requests, we wrap the remainder of the method inside a `try`/`except` block to prevent exceptions from being raised. If an exception is caught, we save it and return `False`. In order to give the user control over cancelling the download, we check `self.isCanceled()` after each iteration, and return `False` if the user has canceled the task.
+
+
 	
 Next up is the `finished()` method:
 ```python
