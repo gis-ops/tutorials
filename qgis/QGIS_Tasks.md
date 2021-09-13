@@ -18,7 +18,7 @@ This tutorial is part of our QGIS tutorial series:
 
 In this tutorial you'll build a plugin which downloads and displays [Mapzen Terrain Tiles](https://registry.opendata.aws/terrain-tiles/), within the extents of a user-defined polygon layer. This download task can be enormous: the planet-wide dataset weighs \~ 1.5 TB. If the main plugin code simply calls a download function, QGIS would freeze for multiple minutes. This is where the QGIS background tasks (`QgsTask`) come in very handy. You can start a `QgsTask` which will run in another thread, keeping the main thread with QGIS reactive for the user.
 
-The final plugin code can be found [here](https://github.com/gis-ops/tutorials/qgis/examples/elevation_tile_downloader). We assume that you are familiar with PyQGIS and the basics of plugin development in QGIS. In case you want to catch up on the latter, please refer to our [QGIS plugin development guide](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-reference-guide/).
+The final plugin code can be found [here](https://github.com/gis-ops/tutorials/tree/master/qgis/examples/elevation_tile_downloader). We assume that you are familiar with PyQGIS and the basics of plugin development in QGIS. In case you want to catch up on the latter, please refer to our [QGIS plugin development guide](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-reference-guide/).
 
 **Goals:** 
 - become familiar with the concept of background tasks in PyQGIS
