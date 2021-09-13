@@ -437,7 +437,7 @@ In the first two cases, we only want to communicate the task outcome to the user
 
 ### 3.2 Wrap up: user feedback and running the task
 
-Lastly, we want to update the progress bar while the tiles are downloading. Remember that we can't directly access the widget we created earlier in `gui/tile_elevation_dlg.py`, but luckily, `QgsTask` comes with a set of signals we can use to communicate with the user while the background task is running. `progressChanged` is the most important one here: we can emit it by calling `self.setProgress(int)`, where `int` is an integer between 0 - 100, indicating the tasks progress in percent. We connect to the signal in `gui/tile_elevation_dlg.py` right after initializing the task, and to the `taskCompleted` signal to clear the message bar again after the task has run:
+Lastly, we want to update the progress bar while the tiles are downloading. Remember that we can't directly access the widget we created earlier in `gui/tile_elevation_dlg.py` from within a running `QgsTask`, but luckily, `QgsTask` comes with a set of signals we can use to communicate with the user while the background task is running. `progressChanged` is the most important one here: we can emit it by calling `self.setProgress(int)`, where `int` is an integer between 0 - 100, indicating the tasks progress in percent. We connect to the signal in `gui/tile_elevation_dlg.py` right after initializing the task, and to the `taskCompleted` signal to clear the message bar again after the task has run:
 
 ```python
 def download_tiles(self) -> None:
