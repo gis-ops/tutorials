@@ -4,7 +4,7 @@ repos:
   hooks:
     - id: black
       language_version: python3.9
-      args: [--check, --config, qgis/examples/quick_api_interactive_proper_testing/pyproject.toml]
+      args: [--config, qgis/examples/quick_api_interactive_proper_testing/pyproject.toml]
 - repo: https://gitlab.com/pycqa/flake8
   rev: 3.8.4  # pick a git hash / tag to point to
   hooks:

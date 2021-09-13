@@ -1,55 +1,285 @@
 ### QGIS Tutorials
 
-# QGIS Tasks – delegate chores to the background
+This tutorial is part of our QGIS tutorial series:
 
-This tutorial shows how to use tasks in pyQGIS by giving a short introduction to the concept and giving an example of how tasks may be utilized in an example plugin. The final plugin code can be found [here](./examples/elevation_tile_downloader). We assume that you are familiar with pyQgis and the basics of plugin development in QGIS. In case you want to catch up on the latter, please refer to our [QGIS plugin development guide](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-reference-guide/).
+- [QGIS 3 Plugins - Plugin 101](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-reference-guide/)
+- [QGIS 3 Plugins - Qt Designer Explained](https://gis-ops.com/qgis-3-plugin-tutorial-qt-designer-explained/)
+- [QGIS 3 Plugins - Signals and Slots in PyQt](https://gis-ops.com/qgis-3-plugin-tutorial-pyqt-signal-slot-explained/)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 1](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-1/) (First Steps)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 2](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-2/) (Interactivity)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 3](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-3/) (Best Practices)
+- [QGIS 3 Plugins - Geocoding with Nominatim Part 4](https://gis-ops.com/qgis-3-plugin-tutorial-geocoding-with-nominatim-part-4/) (Tests & CI)
+- [QGIS 3 Plugins - Set up Plugin Repository](https://gis-ops.com/qgis-3-plugin-tutorial-set-up-a-plugin-repository-explained/)
+- [QGIS 3 Plugins - Background Tasks](https://gis-ops.com/qgis-3-plugin-tutorial-background-tasks-explained/)
 
-If you miss documentation of some methods or concepts, please [issue on GitHub](https://github.com/gis-ops/tutorials/issues) or create a [pull request](https://github.com/gis-ops/tutorials/pulls) with your enhancement.
+---
+
+# QGIS Tasks – background processing
+
+In this tutorial you'll buid a plugin which downloads and displays [Mapzen Terrain Tiles](https://registry.opendata.aws/terrain-tiles/), within the extents of a user-defined polygon layer. This download task can be enormous: the planet-wide dataset weighs \~ 1.5 TB. If the main plugin code simply calls a download function, QGIS would freeze for multiple minutes. This is where the QGIS background tasks (`QgsTask`) come in very handy. You can start a `QgsTask` which will run in another thread, keeping the main thread with QGIS reactive for the user.
+
+The final plugin code can be found [here](https://github.com/gis-ops/tutorials/qgis/examples/elevation_tile_downloader). We assume that you are familiar with PyQGIS and the basics of plugin development in QGIS. In case you want to catch up on the latter, please refer to our [QGIS plugin development guide](https://gis-ops.com/qgis-3-plugin-tutorial-plugin-development-reference-guide/).
 
 **Goals:** 
-- become familiar with the concept of tasks in pyQGIS
-- create tasks and manage them using QGIS' task manager
+- become familiar with the concept of background tasks in PyQGIS
 - communicating a background task's progress to the user
 
-Imagine you are developing a plugin that requires the user to download huge amounts of geodata and do something with it afterwards. If you simply start the download in your main plugin code, you will notice that the whole program freezes until the download finishes and the rest of the plugin logic completes. What if you wanted to let the user keep using QGIS while the download takes place? Enter tasks, or – more specifically – `QgsTask`. 
-Tasks help to perform work in the background, while giving the user GUI control. So not only is this useful for CPU intense work, but also for operations where little of your machine's computing resources are needed, like downloads.
+> **Disclaimer**
+>
+> Validity only confirmed for **Linux**, **Mac OS** and **QGIS v3.20.2**
 
-There are three main ways in which tasks can be created:
+## Prerequisites
 
-- creating it from a function,
+### Hard prerequisites
+
+- Good understanding of Python
+- Basic understanding of QGIS plugin development
+- QGIS v3.x
+- [Plugin Reloader](https://plugins.qgis.org/plugins/plugin_reloader/) plugin installed
+- Python >= 3.6 (should be your system Python3)
+
+### Recommendations
+
+- Good Python knowledge
+- Familiarity with
+	- Qt Designer application, see [our tutorial](https://gis-ops.com/qgis-3-qt-designer-explained/)
+	- Python Plugin Basics, see [our tutorial](https://gis-ops.com/qgis-3-plugin-development-reference-guide/)
+
+## 1 Build UI
+
+First we need to build the UI with Qt Designer. We won't cover any of the basics here, refer to our [Qt Designer tutorial](https://gis-ops.com/qgis-3-plugin-tutorial-qt-designer-explained/) if you need a refresher. 
+
+The final plugin will look something like this:
+
+<closeup of Qt Designer window>
+
+To make sure we're on the same page along the code examples:
+- the layer widget is a `QgsMapLayerComboBox`, which we named `layer_choice` and will be the polygon layer selector
+- the folder picker is a `QgsFileWidget`, which we named `output_dir` and will be the user-defined output directory for the downloaded terrain tiles
+
+You can go ahead, create the UI file in Qt Designer, convert it to a Python file with `pyuic5` and do the usual boilerplate code to get the plugin loadable by QGIS. You can always double-check with [our solution](https://github.com/gis-ops/tutorials/qgis/examples/elevation_tile_downloader) when in doubt. Our minimal layout looks like this, with `plugin.py` holding our plugin's main class and `gui` and `core` being packages we'll add further files to further down:
+
+```
+├── core
+├── gui
+│   ├── __init__.py
+│	├── tile_downloader_dlg_base.py
+│	└── tile_downloader_dlg_base.ui
+├── __init__.py
+├── __pycache__
+├── icon.png
+├── __init__.py
+├── metadata.txt
+├── plugin.py
+├── README.html
+└── README.txt
+
+
+```
+
+Our `plugin.py` is pretty standard:
+
+```python
+from pathlib import Path
+from typing import Optional
+
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction
+from qgis.gui import QgisInterface
+
+from .gui.tile_downloader_dlg import ElevationTileDownloaderDialog
+
+
+class ElevationTileDownloader:
+    """QGIS Plugin Implementation."""
+
+    def __init__(self, iface: QgisInterface):
+        """Constructor."""
+        self.iface = iface
+
+        self.dlg: Optional[ElevationTileDownloaderDialog] = None
+        self.action: Optional[QAction] = None
+
+    def initGui(self):
+        """Create the menu entries and toolbar icons inside the QGIS GUI."""
+        icon = QIcon(str(Path(__file__).parent.joinpath("icon.png")))
+        self.action = QAction(
+            icon, "Download elevation tiles", self.iface.mainWindow()
+        )
+        self.action.triggered.connect(self.run)
+
+        # add action to the raster menu and the default plugin toolbar
+        self.iface.addPluginToRasterMenu(
+            "Elevation Tile Downloader", self.action
+        )
+        self.iface.addToolBarIcon(self.action)
+
+    def unload(self):
+        """Removes the plugin menu item and icon from QGIS GUI."""
+        self.iface.removePluginRasterMenu(
+            self.action.objectName(), self.action
+        )
+        self.iface.removeToolBarIcon(self.action)
+
+    def run(self):
+        """Run method that performs all the real work"""
+
+        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
+        if not self.dlg:
+            self.dlg = ElevationTileDownloaderDialog(self.iface)
+
+        # show the dialog
+        self.dlg.open
+
+```
+
+## 2 Collect the input
+
+### 2.1 Make the UI usable
+
+Before we start off with the more interesting part of designing the background task, we first have to know which elevation tiles we actually need to download. So we'll have to add some logic to the UI we just built.
+
+Create a file `gui/tile_elevation_dlg.py` to hold that logic. As always we need a class which subclasses what we import from the output of `pyuic5`. Don't be suprised by all the imports, we'll need them along the way:
+
+```python
+from pathlib import Path
+from math import floor, ceil
+from typing import List, Optional, Set
+
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtWidgets import QDialogButtonBox, QProgressBar, QDialog
+from qgis.gui import QgisInterface, QgsMessageBarItem
+from qgis.core import (
+    QgsProject,
+    QgsVectorLayer,
+    QgsGeometry,
+    QgsMapLayerProxyModel,
+    QgsApplication,
+    QgsRectangle,
+    QgsCoordinateTransform,
+    QgsCoordinateReferenceSystem,
+    Qgis,
+    QgsTask,
+)
+
+from ..gui.tile_downloader_dlg_base import Ui_ElevationTileDownloaderDialogBase
+
+class ElevationTileDownloaderDialog(QDialog, Ui_ElevationTileDownloaderDialogBase):
+    def __init__(self, iface: QgisInterface, parent=None):
+        """Constructor."""
+        super(ElevationTileDownloaderDialog, self).__init__(parent)
+        self.iface = iface
+        self.setupUi(self)
+
+        # we only allow polygon layers
+        self.layer_choice.setFilters(QgsMapLayerProxyModel.PolygonLayer)
+        self.accepted.connect(self.download_tiles)
+
+        # change the text of the "Ok" button
+        self.button_box.button(QDialogButtonBox.Ok).setText("Download")
+
+```
+
+This should be quite self-explanatory: when the user hits the "Download" button it will invoke the `download_tiles()` function, which we still need to define.
+
+### 2.2 Collecting tiles to download
+
+Before we start out, we have to know how those terrain tiles can be actually accessed. They're hosted on AWS Open Data infrastructure (the only thing you should use AWS for!), an example URL is http://s3.amazonaws.com/elevation-tiles-prod/skadi/N49/N49W097.hgt.gz. The tiles' size is 1° x 1° in WGS84. The base URL is http://s3.amazonaws.com/elevation-tiles-prod/skadi, then a folder collects all 360 longitudinal tiles for that latitude (here `N49`), while the file name denotes the lat/lon of the lower-left corner of the tile. 
+
+We'll want to collect all tiles which are covered by input polygon features, so let's see what that'd look like:
+
+```python
+def to_wgs84(geometry: QgsGeometry, own_crs: QgsCoordinateReferenceSystem) -> QgsGeometry:
+    """
+    Transforms the ``point`` to (``direction=ForwardTransform``) or from
+    (``direction=ReverseTransform``) WGS84.
+    """
+    wgs84 = QgsCoordinateReferenceSystem.fromEpsgId(4326)
+    if own_crs != wgs84:
+        xform = QgsCoordinateTransform(own_crs, wgs84, QgsProject.instance())
+        geometry.transform(xform)
+
+    return geometry
+
+
+def create_grid_from_bounds(bounds: QgsRectangle) -> List[QgsGeometry]:
+    """Creates a regular grid of size 1x1 within specified bounds"""
+    grid_bboxes = []
+
+    # loop through x and y range and create the grid
+    min_x, min_y = [floor(x) for x in (bounds.xMinimum(), bounds.yMinimum())]
+    max_x, max_y = [ceil(x) for x in (bounds.xMinimum() + bounds.width(), bounds.yMinimum() + bounds.height())]
+    for x in range(min_x, max_x):
+        for y in range(min_y, max_y):
+            grid_bboxes.append(QgsGeometry.fromRect(QgsRectangle(x, y, x + 1, y + 1)))
+
+    return grid_bboxes
+
+
+class ElevationTileDownloaderDialog(QDialog, Ui_ElevationTileDownloaderDialogBase):
+	...
+    def download_tiles(self) -> None:
+        """
+        The plugin's main method; constructs the grid from selected input features,
+        creates and starts the download task and connects the plugin to task signals.
+        """
+        poly_layer: QgsVectorLayer = self.layer_choice.currentLayer()
+        out_dir = Path(self.output_dir.filePath())
+
+        # Collect the tile bounding boxes covering the input polygons
+        grid: Set[QgsGeometry] = set()
+        for feature in poly_layer.getFeatures():
+            # transform the feature's bounding box and create a 1 x 1 degree tile grid from it
+            feature_geom = to_wgs84(feature.geometry(), poly_layer.crs())
+            grid_bboxes = create_grid_from_bounds(feature_geom.boundingBox())
+            for grid_bbox in grid_bboxes:
+                if feature_geom.intersects(grid_bbox):
+                    grid.add(grid_bbox)
+
+        self.total = len(grid)
+        if not self.total:
+            self.iface.messageBar().pushMessage(
+                "No tiles",
+                f"Layer {poly_layer.name()} does not intersect any tiles",
+            )
+            return
+
+```
+
+For all user-defined polygon features, we transform them to WGS84 and collect a `set` (to avoid duplicates) of all tiles whose bounding box intersect with the polygons' bounding boxes. If we couldn't find any intersecting tiles we notify the user and abort.
+
+### 2.3 User feedback
+
+Since the download could be potentially huge, we'd like to inform the user about the progress. The best communication way is via fairly unobtrusive messages in the pop-up message bar on top of the map canvas. That message bar does not only accept text to display but even other widgets, such as a progress bar:
+
+```python
+
+class ElevationTileDownloaderDialog(QDialog, Ui_ElevationTileDownloaderDialogBase):
+	...
+    def download_tiles(self) -> None:
+    	...
+        # Create a progress bar in the QGIS message bar
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setMaximum(100)
+        self.progress_bar.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        progress_msg: QgsMessageBarItem = (
+            self.iface.messageBar().createMessage("Download Progress: ")
+        )
+        progress_msg.layout().addWidget(self.progress_bar)
+        self.iface.messageBar().pushWidget(progress_msg, Qgis.Info)
+
+```
+
+Before we show you how we'll update the progress bar, we'll first create our `QgsTask`.
+
+## 3 The `QgsTask`
+
+Generally, there are three ways in which tasks can be created:
+
+- creating it directly from a function,
 - from a processing algorithm,
 - or by extending `QgsTask`
 
-In this tutorial, we will only cover the latter way. So let's start with a basic plugin idea: we would like to create a small plugin that lets the user download elevation tiles from the [SRTM](https://wiki.openstreetmap.org/wiki/SRTM) global elevation data, that intersect with features from a selected map layer. We create a plugin skeleton using the [QGIS plugin builder](https://plugins.qgis.org/plugins/pluginbuilder/), and create a small custom UI with QtDesigner.
-
-![Our elevation tile downloader plugin](./static/img/task_plugin.png)
-
-We use a `QgsMapLayerComboBox` to let the user select a map layer to intersect with tiles, and a `QgsFileWidget` to let them specify the directory where downloaded tiles will be saved. Then we add a `QCheckBox` to let the user specify whether or not the tiles shall be added to the current project after the download has finished. Finally, we replace the 'OK' button with a 'Download' button.
-
-Moving on to the plugin logic, most of the work will be done in `elevation_tile_downloader.py`. Since we removed the 'OK' button, the `run()` method will no longer be automatically called, so we can instead write a custom function to run when the 'Download' button is clicked. Let's call it `download_tiles()` and connect it to the download button's `clicked` signal in the dialog's `__init__`:
-```python
-self.download.clicked.connect(self.download_tiles)
-```
-Then, we start implementing the logic inside `download_tiles()`. The global SRTM data are split into tiles of 1°x1° and each tile is georeferenced by its file name, which contains the southernmost and the westernmost coordinate. This makes it easy for us to know beforehand which tiles to download: we get the selected features' bounding box, and extend the coordinates to the next integer (by flooring `xMinimum` and `yMininum`, and ceiling `xMaximum` and `yMaximum`), which yields a new bounding box. within this bounding box, we create a 1°x1° grid, and add each grid rectangle that intersects the feature to a list.
-
-Now we're ready to commence the downloads, so this is were `QgsTask` comes in. We create a new file `task.py`, where we subclass `QgsTask`. It's important to note here that we can neither pass any QObjects from QGIS' main thread into the task, nor perform any GUI-based operations from the task. In our case this is no problem, as all we need to pass to the task are the intersecting bounds and output directory path. What we would like to do, however, is communicating the progress to the user. Luckily, we can use signals for this, so we don't have to manipulate the GUI directly from the task. Whenever a tile is downloaded, we want the user to know, so we create a signal called `next_tile`.
-The ``__init__`` is straight forward:
-```python
-self.grid = grid
-self.output_dir = output_dir
-self.exception = None
-self.traceback = None
-self.total = len(self.grid)
-self.add = add
-self.tiles_downloaded: List[Path] = []
-self.nam = QgsNetworkAccessManager()
-```
-The first thing that stand out are the `exception` and `traceback` attributes. When running a `QgsTask`, we cannot raise exceptions (This would crash the entire QGIS instance), therefore one way to avoid this is to try and catch them, and communicate the exception and the traceback to the user.
-
-Next, we need to define two class methods: `run()` and `finished()`. The first is automatically executed when we start the task, and the latter is called as soon as the task finishes. So we implement the actual file downloading in `run()`. There, we iterate over the rectangles, and construct the urls from the southernmost and westernmost bound and emit the `next_tile` signal each time a tile download starts and connect to it in the dialog, so that we can forward the info to the main window's `statusBar`. Now as each tile download progresses, we would like to communicate the progress to the main status bar's built-in progress bar. Luckily, `QgsTask` has a built-in method for this (`updateProgress()`) that the main status bar automatically connects to. So we get the file's content length (i.e., file size) via the http header and then iterate over the file stream, write it in 2 MB chunks and set the new progress each time a chunk is written.
-
-Now, we have implemented the main logic, but we are not done yet. As mentioned earlier, we want to avoid any raised exceptions, so the easiest way to handle this would be to simply wrap this logic in a `try`/`except` block and assign any exception and traceback as a class attribute so we can access it after `run()` finishes (you would likely want more sophisticated error handling, but this works for now). Finally, the `run()` method always needs to return a boolean that indicates whether the task ran successfully. If the user cancels the task, or if we catch an exception, we want the method to return `False`, and `True` otherwise. This result is then automatically passed on to the `finished()` method, where we can then decide how to proceed depending on whether the task ran successfully. In our case, we don't need to do a lot: we check whether the user wants to add the downloaded tiles to the project, and communicate some information about the download process by logging messages to the `QgsMessageLog`. This log is also available from the `run()` method and is in fact the easiest way to communicate from the task while it's running, since `print()` would crash the program.
-
-Finally, we only need to run the task. This can be done by using the application's `QgsTaskManager`. It is a singleton available through `QgsApplication.taskManager()` and it's in charge of delegating all background tasks (so yours might not be the only one running). In `elevation_tile_downloader_dialog.py`, we create an instance of our derived task class and add it to the task queue like this: `QgsApplication.taskManager().addTask(self.task)`. For improved UX, we connect the task's automatically emitted signals (`begun`, `taskCompleted` and `taskTerminated`) and hide, close, or show our plugin window respectively.
-
-And that's it! We have successfully created a small plugin that downloads SRTM tiles in the background by using `QgsTask` and the `QgsTaskManager`, so that the user can continue interacting with QGIS while the download runs.
+Our task is a little bigger and we like things to be encapsulated, so we chose to extend `QgsTask`. There is a bunch of functions you will need to override/implement when subclassing `QgsTask`:
+- `run()`: this is where the real work will happen in a separate thread, similar to a `QgsProcessingAlgorithm::processAlgorithm`. This method must not call any UI related functions or interact with the main QGIS interface at all or crashes will occur
+- `finished()`: will be called after the `run()` method is finished. It's safe to call UI functions here e.g. to inform the user about success or errors.
