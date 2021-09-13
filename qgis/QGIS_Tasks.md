@@ -449,7 +449,7 @@ def download_tiles(self) -> None:
     self.close()
 ```
 
-> Note that it's vital to assign the task not just to a variable, but to a class attribute. Otherwise, the task will be deleted after `download_tiles()` finishes, but before the task itself finishes.
+> **Note** that it's vital to assign the task not just to a variable, but to a class attribute. Otherwise, the task will be deleted after `download_tiles()` finishes, but before the task itself finishes.
 
 Finally, the task needs to be run. For this, we use the `QgsTaskManager`, which is a singleton class that takes care of delegating any background tasks. We add the task and the task manager makes sure that the task starts running.
 
