@@ -321,7 +321,7 @@ class DownloadTask(QgsTask):
         self.tiles: List[Path] = []
 ```
 
-The `__init__` is simple: we initialize the parent and assign the grid and the output directory as instance attributes. Note the exception attribute here: since it's not safe to raise exceptions in a background task (this will crash QGIS), we initialize an empty `exception` instance attribute here, where we will store any exception that we catch in `run()`. 
+The task needs the pre-computed grid of elevation tile bboxes and the directory where the user wants to store all those tiles. Also note the exception attribute here: since it's not safe to raise exceptions in a background task (this will crash QGIS), we initialize an empty `exception` instance attribute here, where we will store any exception that we catch in `run()`. 
 	
 Now we can get to the actual task logic, implemented inside `run()`:
 ```python
