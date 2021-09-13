@@ -283,3 +283,172 @@ Generally, there are three ways in which tasks can be created:
 Our task is a little bigger and we like things to be encapsulated, so we chose to extend `QgsTask`. There is a bunch of functions you will need to override/implement when subclassing `QgsTask`:
 - `run()`: this is where the real work will happen in a separate thread, similar to a `QgsProcessingAlgorithm::processAlgorithm`. This method must not call any UI related functions or interact with the main QGIS interface at all or crashes will occur
 - `finished()`: will be called after the `run()` method is finished. It's safe to call UI functions here e.g. to inform the user about success or errors.
+
+### 3.1 Extending `QgsTask`
+We start by creating a new Python module `task.py` inside a new package called `core`. Here, we subclass `QgsTask`:
+```python
+from typing import List, Optional, Set
+from pathlib import Path
+import gzip
+from io import BytesIO
+
+from qgis.gui import QgisInterface
+from qgis.core import (
+    QgsTask,
+    QgsMessageLog,
+    Qgis,
+    QgsRasterLayer,
+    QgsProject,
+    QgsNetworkAccessManager,
+    QgsNetworkReplyContent,
+    QgsGeometry,
+)
+from qgis.utils import iface
+from qgis.PyQt.QtCore import QUrl
+from qgis.PyQt.QtWidgets import QMessageBox
+from qgis.PyQt.QtNetwork import QNetworkRequest
+
+iface: QgisInterface
+
+
+class DownloadTask(QgsTask):
+    def __init__(self, grid: Set[QgsGeometry], output_dir: Path):
+        super().__init__("Tile download task", QgsTask.CanCancel)
+        self.grid = grid
+        self.output_dir = output_dir
+
+        self.exception: Optional[Exception] = None
+        self.tiles: List[Path] = []
+```
+
+The `__init__` is simple: we initialize the parent and assign the grid and the output directory as instance attributes. Note the exception attribute here: since it's not safe to raise exceptions in a background task (this will crash QGIS), we initialize an empty `exception` instance attribute here, where we will store any exception that we catch in `run()`. 
+	
+Now we can get to the actual task logic, implemented inside `run()`:
+```python
+class DownloadTask(QgsTask):
+    ...
+    def run(self):
+        """Do the work."""
+        nam = QgsNetworkAccessManager()
+
+        # Don't raise any error during processing, relay error reporting to self.finished()
+        try:
+            for i, bbox in enumerate(self.grid):
+                if self.isCanceled():
+                    return False
+
+                # Get the filepath and create the output directory (if necessary)
+                x, y = (
+                    bbox.boundingBox().xMinimum(),
+                    bbox.boundingBox().yMinimum(),
+                )
+                hemisphere = "S" if y < 0 else "N"
+                dir_name = "%s%02d" % (hemisphere, abs(y))
+                directory = self.output_dir.joinpath(dir_name)
+                directory.mkdir(exist_ok=True)
+                tile_name = "%s%02d%s%03d.hgt" % (
+                    hemisphere,
+                    abs(y),
+                    "W" if x < 0 else "E",
+                    abs(x),
+                )
+                filepath = self.output_dir.joinpath(dir_name, tile_name)
+                self.tiles.append(filepath)
+                if filepath.is_file():
+                    QgsMessageLog.logMessage(
+                        message=f"Already downloaded tile {tile_name}",
+                        level=Qgis.Info,
+                    )
+                    continue
+
+                # get the new tile if it didn't exist
+                url = QUrl(
+                    f"http://s3.amazonaws.com/elevation-tiles-prod/skadi/{dir_name}/{tile_name}.gz"
+                )
+                request = QNetworkRequest(url)
+                reply: QgsNetworkReplyContent = nam.blockingGet(request)
+                # turn the reply into a file object and write the decompressed file to disk
+                with gzip.GzipFile(
+                    fileobj=BytesIO(reply.content()), mode="rb"
+                ) as gz:
+                    with open(filepath, "wb") as f:
+                        f.write(gz.read())
+
+                self.setProgress((i / len(self.grid)) * 100)
+
+            return True
+        except Exception as e:
+            self.exception = e
+            return False
+```
+The `run()` method of a `QgsTask` always needs to return a boolean value, which is used in `finished()` to evaluate whether the task ran successfully. After initializing the network access manager, which is used for handling the http requests, we wrap the remainder of the method inside a `try`/`except` block to prevent exceptions from being raised. If an exception is caught, we save it and return `False`. In order to give the user control over cancelling the download, we check for this after each iteration by calling `self.isCanceled()`, and return False if the user has canceled the task.
+
+The logic of the actual heavy lifting inside `run()` works as follows: for every box in the grid, we get the southwesternmost coordinates, from wich the directory and tile names are created, as well as the URL to download the tile from. If the file does not exist yet, we download it, extract the `.gz`file and save the result into the respective directory.
+	
+Next up is the `finished()` method:
+```python
+class DownloadTask(QgsTask):
+    ...
+    def finished(self, result):
+        """Postprocessing after the run() method."""
+        if self.isCanceled():
+            # if it was canceled by the user
+            QgsMessageLog.logMessage(
+                message=f"Canceled download task. {len(self.tiles)} tiles downloaded.",
+                level=Qgis.Warning,
+            )
+            return
+        elif not result:
+            # if there was an error
+            QMessageBox.critical(
+                iface.mainWindow(),
+                "Tile download error",
+                f"The following error occurred:\n{self.exception.__class__.__name__}: {self.exception}",
+            )
+            return
+
+        iface.messageBar().pushMessage(
+            "Success",
+            f"Finished downloading {len(self.tiles)} tiles.",
+            level=Qgis.Success,
+        )
+
+        # add the rasters to the map canvas
+        for tile_path in self.tiles:
+            if not tile_path.exists():
+                QgsMessageLog.logMessage(
+                    message=f"Tile at {tile_path.resolve()} was removed.",
+                    level=Qgis.Warning,
+                )
+                continue
+            QgsProject.instance().addMapLayer(
+                QgsRasterLayer(str(tile_path.resolve()), tile_path.stem)
+            )
+
+```
+Here, we want to handle three different cases:
+	1. The user canceled the task
+	2. An exception occured
+	3. The task completed successfully
+
+In the first two cases, we only want to communicate the task outcome to the user. Remember that inside `finished()`, we can access objects from the main thread again, so we can simply push a message to the main interface's message bar. For the third case, we communicate the successful completion of the task to the user and additionally add the downloaded tiles to the map canvas.
+
+### 3.2 Wrap up: user feedback and running the task
+
+Lastly, we want to update the progress bar while the tiles are downloading. Remember that we can't directly access the widget we created earlier in `gui/tile_elevation_dlg.py`, but luckily, `QgsTask` comes with a set of signals we can use to communicate with the user while the background task is running. `progressChanged` is the most important one here: we can emit it by calling `self.setProgress(int)`, where `int` is an integer between 0 - 100, indicating the tasks progress in percent. We connect to the signal in `gui/tile_elevation_dlg.py` right after initializing the task, and to the `taskCompleted` signal to clear the message bar again after the task has run:
+
+```python
+def download_tiles(self) -> None:
+    ...
+    self.task = DownloadTask(grid, out_dir)
+    self.task.progressChanged.connect(self.progress_bar.setValue)
+    self.task.taskCompleted.connect(self.iface.messageBar().clearWidgets)
+    QgsApplication.taskManager().addTask(self.task)
+    self.close()
+```
+
+> Note that it's vital to assign the task not just to a variable, but to a class attribute. Otherwise, the task will be deleted after `download_tiles()` finishes, but before the task itself finishes.
+
+Finally, the task needs to be run. For this, we use the `QgsTaskManager`, which is a singleton class that takes care of delegating any background tasks. We add the task and the task manager makes sure that the task starts running.
+
+And that's it! We have successfully created a small plugin that downloads SRTM tiles in the background by using `QgsTask`, so that the user can continue interacting with QGIS while the download runs.
