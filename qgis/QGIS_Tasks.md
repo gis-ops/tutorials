@@ -429,9 +429,9 @@ class DownloadTask(QgsTask):
 
 ```
 Here, we want to handle three different cases:
-	1. The user canceled the task
-	2. An exception occured
-	3. The task completed successfully
+1. The user canceled the task
+2. An exception occured
+3. The task completed successfully
 
 In the first two cases, we only want to communicate the task outcome to the user. Remember that inside `finished()`, we can access objects from the main thread again, so we can simply push a message to the main interface's message bar. For the third case, we communicate the successful completion of the task to the user and additionally add the downloaded tiles to the map canvas.
 
