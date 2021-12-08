@@ -31,7 +31,7 @@ It couldn't be easier.
 
 To implement all steps of this tutorial it's required to install PostgreSQL, PostGIS and PostgREST. You can use our installation tutorial which will help you get a docker container up and running which PostgREST will use in the subsequent steps.
 
-### [Installing and setting up PostgreSQL, PostGIS and PostgREST](https://github.com/gis-ops/tutorials/blob/postgrest-elevation-api/postgres/postgres_postgis_postgrest_installation.md)
+### [Installing and setting up PostgreSQL, PostGIS and PostgREST](https://github.com/gis-ops/tutorials/blob/master/postgres/postgres_postgis_postgrest_installation.md)
 
 
 ## Step 1 - Let's return a simple GeoJSON Object
