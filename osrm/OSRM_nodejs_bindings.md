@@ -92,12 +92,12 @@ We are using the OSM extract which we just downloaded and using the default `car
 You obviously have the option to change to a different profile or tailor the lua file for your needs. 
 Some examples can be found [here](https://github.com/Project-OSRM/osrm-backend/tree/master/profiles).
 
-1. `node_modules/osrm/lib/binding/osrm-extract berlin-latest.osm.pbf -p node_modules/osrm/profiles/car.lua`
+a. `node_modules/osrm/lib/binding/osrm-extract berlin-latest.osm.pbf -p node_modules/osrm/profiles/car.lua`
 
-2. `node_modules/osrm/lib/binding/osrm-contract berlin-latest.osrm`
+b. `node_modules/osrm/lib/binding/osrm-contract berlin-latest.osrm`
 
 
-### 3. Compute Matrices
+## 3. Compute Matrices
 
 ### Create a Single OSRM Matrix Request 
 
@@ -149,7 +149,7 @@ If you want to be a little more adventurous, you can break your large matrix req
 We can do this with some handy utility functions which we will add to our script moving forward.
 The `chunkSize` variable determines how large your sub-matrices should be - we call them bins.
 These are created by the `makeBins` function which does nothing other than loops over your many-to-many matrix and sticks ranges into bins. 
-With our settings we are creating exactly 4 bins of many-to-many matrices, i.e. [0-500] to [0-500], [0-500] to [501-1000], [501-1000] to [0-500] and and [501-1000] to [501-1000].
+With our settings we are creating exactly 4 bins of many-to-many matrices, i.e. `[0-500]` to `[0-500]`, `[0-500]` to `[501-1000]`, `[501-1000]` to `[0-500]` and `[501-1000]` to `[501-1000]`.
 
 ```javascript
 
