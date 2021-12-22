@@ -11,6 +11,15 @@ Additionally, we would like to give you a small taste of how you could optimize 
 
 For a comprehensive feature list and a more general overview of FOSS routing engines, read our [article](https://gis-ops.com/open-source-routing-engines-and-algorithms-an-overview/).
 
+While we are interested in the matrix (table) capabilities, you also have the option to use its other services, too.
+
+- [routing](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#route)
+- [matrix](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#table)
+- [nearest points](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#nearest)
+- [map tiles](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#tile)
+- [map matching](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#match)
+- [traveling salesman problem](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#trip)
+
  > **Disclaimer**  
  > Validity only confirmed for **Ubuntu 20.04** / **Mac OSX 10.15.6** and **[OSRM 5.26.0](https://www.npmjs.com/package/osrm)**.
 
@@ -70,15 +79,6 @@ In order to install the required dependencies for this tutorial you will need to
 ```
 
 We are making use of 2 libraries [osrm](https://www.npmjs.com/package/osrm) and [async](https://www.npmjs.com/package/async) which will allow us to use the OSRM nodejs bindings in a multithreaded fashion.
-While we are interested in the matrix (table) capabilities, you also have the option to use its other features, too.
-
-- [routing](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#route)
-- [matrix](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#table)
-- [nearest points](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#nearest)
-- [map tiles](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#tile)
-- [map matching](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#match)
-- [traveling salesman problem](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#trip)
-
 With the following command you instruct npm to install these dependencies which will read the `package.json` file sitting in the same folder.
 
 ```bash
