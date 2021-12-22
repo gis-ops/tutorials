@@ -1,7 +1,9 @@
 # Making OSRM Matrix Computations with its NodeJS Bindings
 
 In this tutorial we would like to demonstrate the power of [Open Source Routing Machine](https://github.com/Project-OSRM/osrm-backend) utilizing its [NodeJS bindings](https://www.npmjs.com/package/osrm) without any overhead of running a service. 
-Additionally, we would like to give you a taste of how you can optimize for performance when requesting large square matrices.
+If it's the first time you have heard of bindings, just imagine them as an application programming interface (API) that provides glue code specifically made to allow a programming language to use a foreign library which is not native to that language.
+In this scenario our foreign library is OSRM written in C++ which is being consumed by JavaScript.
+Additionally, we would like to give you a small taste of how you could optimize for performance when requesting large square matrices.
 
 ## Introduction
 
@@ -54,8 +56,7 @@ First create a working directory:
 mkdir ~/gisops_osrm_nodejs && cd $_
 ```   
 
-In order to install the required dependencies for this tutorial you will need to copy and paste the following information into your [package.json](https://docs.npmjs.com/cli/v8/configuring-npm/package-json) file. 
-We are making use of 2 libraries [osrm](https://www.npmjs.com/package/osrm) and [async](https://www.npmjs.com/package/async) which will allow us to use the OSRM nodejs bindings in a multithreaded fashion.
+In order to install the required dependencies for this tutorial you will need to copy and paste the following snippet into your [package.json](https://docs.npmjs.com/cli/v8/configuring-npm/package-json) file. 
 
 ```bash
 {
@@ -66,8 +67,17 @@ We are making use of 2 libraries [osrm](https://www.npmjs.com/package/osrm) and 
     "osrm": "^5.26.0"
   }
 }
-
 ```
+
+We are making use of 2 libraries [osrm](https://www.npmjs.com/package/osrm) and [async](https://www.npmjs.com/package/async) which will allow us to use the OSRM nodejs bindings in a multithreaded fashion.
+While we are interested in the matrix (table) capabilities, you also have the option to use its other features, too.
+
+- [routing](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#route)
+- [matrix](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#table)
+- [nearest points](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#nearest)
+- [map tiles](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#tile)
+- [map matching](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#match)
+- [traveling salesman problem](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/nodejs/api.md#trip)
 
 With the following command you instruct npm to install these dependencies which will read the `package.json` file sitting in the same folder.
 
