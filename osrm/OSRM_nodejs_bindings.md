@@ -84,6 +84,8 @@ With the following command you instruct npm to install these dependencies which 
 ```bash
 npm install
 ```
+> **Note**  
+ > OSRM bindings binaries are currently only available for the last three LTS releases and the current release of nodejs, so make sure you're using a compatible version (e.g. by using [nvm](https://github.com/nvm-sh/nvm)). Alternatively, you can [build from source](https://github.com/Project-OSRM/osrm-backend#using-the-nodejs-bindings).
 
 If you check the contents of your folder you will notice a new folder named `node_modules`. In there you'll find both of these libraries including their dependencies.
 
