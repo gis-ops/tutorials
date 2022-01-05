@@ -1,6 +1,6 @@
 # Making OSRM Matrix Computations with its NodeJS Bindings
 
-In this tutorial we would like to demonstrate the power of [Open Source Routing Machine](https://github.com/Project-OSRM/osrm-backend) utilizing its [NodeJS bindings](https://www.npmjs.com/package/osrm) without any overhead of running a service. 
+In this tutorial we would like to demonstrate the power of [Open Source Routing Machine](https://github.com/Project-OSRM/osrm-backend) utilizing its [NodeJS bindings](https://www.npmjs.com/package/osrm) without any overhead of running a HTTP service. 
 If it's the first time you have heard of bindings, just imagine them as an application programming interface (API) that provides glue code specifically made to allow a programming language to use a foreign library which is not native to that language.
 In this scenario our foreign library is OSRM written in C++ which is being consumed by JavaScript.
 Additionally, we would like to give you a small taste of how you could optimize for performance when requesting large square matrices.
@@ -32,7 +32,7 @@ This tutorial will guide you through the process of how to configure and run the
 
 So let's go, `open your terminal!`
 
-## 1. Preparations
+## 1. Prerequisites
 
 ### Test your NodeJS & npm installation
 
@@ -96,7 +96,7 @@ For this demo, we are going to use the OpenStreetMap data of [Berlin](https://do
 
 `wget https://download.geofabrik.de/europe/germany/berlin-latest.osm.pbf`
 
-Afterwards we have to extract the OSM data which is required by OSRM to generate the topology and afterwards contract it which boosts the  performance. 
+Afterwards we have to extract the OSM data which is required by OSRM to generate the topology and then contract it which boosts the  performance. 
 More can be read [here](https://github.com/Project-OSRM/osrm-backend/wiki/Running-OSRM).
 We are using the OSM extract which we just downloaded and using the default `car.lua` file residing in the dependency folder. 
 You obviously have the option to change to a different profile or tailor the lua file for your needs. 

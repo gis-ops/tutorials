@@ -1,8 +1,0 @@
-{
-  "name": "osrm node bindings tutorial",
-  "version": "0.1",
-  "dependencies": {
-    "async": "^3.2.2",
-    "osrm": "^5.26.0"
-  }
-}
