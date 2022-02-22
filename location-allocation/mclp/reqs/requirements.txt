@@ -1,0 +1,7 @@
+folium==0.12.1.post1
+numpy==1.22.2
+PuLP==2.6.0
+requests==2.27.1
+routingpy==0.3.3
+Shapely==1.8.0
+spopt==0.2.1
