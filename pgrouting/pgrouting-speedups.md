@@ -1,4 +1,5 @@
 # pgRouting Performance Tuning Made Easy
+<img width="512" alt="pgrouting" src="https://user-images.githubusercontent.com/10322094/158249250-52f0d7fe-3482-402b-80aa-42af10e42688.png">
 
 > **Disclaimer**: This tutorial was developed on Mac OSX 10.15.6 and tested on Ubuntu 18.04 as well as Ubuntu 20.04. Windows compatibility cannot be guaranteed.
 
@@ -109,7 +110,7 @@ JOIN   norcal_2po_4pgr AS pt
 
 On my local machine with 4 cores each clocked at 2.2ghz (Intel® Core™ i5) and 16 GB of memory, this route takes a staggering something between 30 and 40 seconds to compute. This is not surprising though, if we take a closer look at what's happening in the query: we determine the nearest vertice ids by means of spatial queries, run the dijkstra algorithm with these two ids in the preceding CTE query, and join the resulting path sequence back to the edge table to obtain the final geometry. And as if that wasn't plenty of computing to handle, take a closer look at the first argument of `pgr_dijkstra` where we provide the query for our edges table. Not only does this SELECT statement select the whole table with upwards of 3 million edges, it also computes the cost and the reverse cost _on the fly_ by measuring each edge's metric length. All these costly steps give us plenty of opportunity to start speeding things up.
 
-### Speed Up #1: Precompute Costs 
+### Speed Up 1: Precompute Costs 
 
 The first and most obvious speed up is to precompute the cost value. We are lucky here as `osm2po` already did that for us. Instead of computing it on the fly we simply select the already existing `cost` and `reverse_cost` columns. Now our query looks as follows:
 
@@ -150,7 +151,7 @@ JOIN   norcal_2po_4pgr AS pt
 
 This query takes approximately 12 seconds on my machine, a more than double speed up by *simply avoiding to calculate cost on the fly*.
 
-### Speed Up #2: Limit Edges Table with Bounding Box  
+### Speed Up 2: Limit Edges Table with Bounding Box  
 
 There's another change we can make to the edges sql that will make our query run significantly faster: considering that `pgr_dijkstra` looks at every single edge in the edges table, we can simply limit the amount of edges the algorithm looks at *by only selecting those edges that are actually relevant for our route*. We do this by selecting the bounding box of our start and destination points, expanding it by a fixed value (0.1 degrees in this case) and intersecting our edge geometries with the resulting rectangle, only keeping those within it. Our query now looks like this:
 
@@ -195,7 +196,7 @@ JOIN   norcal_2po_4pgr AS pt
 
 This runs in about 5 seconds, another 7 seconds cut from our previous query!
 
-### Speed Ups #3 and #4: Spatial Indices and Clusters
+### Speed Ups 3 & 4: Spatial Indices and Clusters
 
 Now as far as the query goes, we have exhausted our repertoire, but there is still untapped potential in PostGIS indices: PostgreSQL does create indices on the `source`, `target` and `id` columns when importing the dump, but no spatial indices on the geometry column. We can create one ourselves by running the following line:
 
