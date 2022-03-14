@@ -74,7 +74,7 @@ And that's all we need for the most basic setup to get started with pgRouting. N
 In order to compare by how much we can speed up our queries, we first need a reasonably long baseline route and see how long it takes pgRouting to compute it. Let's assume we are in San Francisco and we want to drive all the way to Yosemite National Park which is a ~430km/265mi drive. Let's choose 2 coordinates and hard code them into our query:
 
 ```sql
--- find he nearest vertex to the start longitude/latitude in SF
+-- find the nearest vertex to the start longitude/latitude in San Francisco
 WITH start AS (
   SELECT topo.source -- could also be topo.target
   FROM norcal_2po_4pgr as topo
@@ -115,16 +115,16 @@ On my local machine with 4 cores each clocked at 2.2ghz (Intel® Core™ i5) and
 The first and most obvious speed up is to precompute the cost value. We are lucky here as `osm2po` already did that for us. Instead of computing it on the fly we simply select the already existing `cost` and `reverse_cost` columns. Now our query looks as follows:
 
 ```sql
--- find he nearest vertex to the start longitude/latitude
+-- find the nearest vertex to the start longitude/latitude in San Francisco
 WITH start AS (
-  SELECT topo.source --could also be topo.target
+  SELECT topo.source -- could also be topo.target
   FROM norcal_2po_4pgr as topo
   ORDER BY topo.geom_way <-> ST_SetSRID(
     ST_MakePoint(-122.407546,37.784482),
   4326)
   LIMIT 1
 ),
--- find the nearest vertex to the destination longitude/latitude
+-- find the nearest vertex to the destination longitude/latitude in Yosemite National Park
 destination AS (
   SELECT topo.source --could also be topo.target
   FROM norcal_2po_4pgr as topo
@@ -156,16 +156,16 @@ This query takes approximately 12 seconds on my machine, a more than double spee
 There's another change we can make to the edges sql that will make our query run significantly faster: considering that `pgr_dijkstra` looks at every single edge in the edges table, we can simply limit the amount of edges the algorithm looks at *by only selecting those edges that are actually relevant for our route*. We do this by selecting the bounding box of our start and destination points, expanding it by a fixed value (0.1 degrees in this case) and intersecting our edge geometries with the resulting rectangle, only keeping those within it. Our query now looks like this:
 
 ```sql
--- find he nearest vertex to the start longitude/latitude
+-- find the nearest vertex to the start longitude/latitude in San Francisco
 WITH start AS (
-  SELECT topo.source --could also be topo.target
+  SELECT topo.source -- could also be topo.target
   FROM norcal_2po_4pgr as topo
   ORDER BY topo.geom_way <-> ST_SetSRID(
     ST_MakePoint(-122.407546,37.784482),
   4326)
   LIMIT 1
 ),
--- find the nearest vertex to the destination longitude/latitude
+-- find the nearest vertex to the destination longitude/latitude in Yosemite National Park
 destination AS (
   SELECT topo.source --could also be topo.target
   FROM norcal_2po_4pgr as topo
