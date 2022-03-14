@@ -34,7 +34,7 @@ Additionally, we want to make sure the topology is produced which can be directl
 Afterwards run the following command:
 
 ```sh
-java -Xmx1024m -jar osm2po-core-[5.5.2]-signed.jar cmd=c prefix=syd your/path/to/sydney-coast.pbf
+java -Xmx1024m -jar osm2po-core-[5.5.2]-signed.jar cmd=c prefix=norcql your/path/to/norcal-latest.osm.pbf  # replace [5.5.2] with your osm2po version
 ```
 
 The prefix `norcal` will produce a new folder in the directory you are currently in which will hold the generated files osm2po will output.
@@ -64,7 +64,7 @@ total 2546048
 The file we are interested in is `norcal_2po_4pgr.sql`, which consists of a set of columns including the source `osm_id`, `source` and `target`. Import this data with `psql`.
 
 ```sh
-psql -h [IP] -U [USER_NAME] -d [DB_NAME] -q -f syd_2po_4pgr.sql
+psql -h [IP] -U [USER_NAME] -d [DB_NAME] -q -f norcal_2po_4pgr.sql
 ```
 
 And that's all we need for the most basic setup to get started with pgRouting. Now, we can start writing routing queries!
