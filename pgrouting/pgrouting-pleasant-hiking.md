@@ -50,10 +50,10 @@ As mentioned above, we will use *osm2po* to generate the topology from the OSM d
 
 Change your directory where the osm2po jar file is located. By default osm2po will not include OpenStreetMap highways with pedestrian or cycleway tags which is why we have to make some small changes to the `osm2po.config` file:
 
-1. We want to process OSM data for these profiles, so change line 189 to `.default.wtr.finalMask = car,foot,bike`
-2. Comment in **line 221** `.default.wtr.tag.highway.service` to **line 230** `.default.wtr.tag.railway.rail`
+1. We want to process OSM data for these profiles, so change line 190 to `wtr.finalMask = car,foot,bike`
+2. Uncomment **lines 221** `.default.wtr.tag.highway.service` **to 230** `.default.wtr.tag.railway.rail`
 
-Additionally, we want to make sure the topology is produced which can be directly consumed by pgRouting - you will have to comment in line 351 (`postp.0.class = de.cm.osm2po.plugins.postp.PgRoutingWriter`) if you are running version 5.1 or greater.
+Additionally, we want to make sure the topology is produced which can be directly consumed by pgRouting - you will have to uncomment line 341 (`postp.0.class = de.cm.osm2po.plugins.postp.PgRoutingWriter`) if you are running version 5.1 or greater.
 
 Afterwards run the following command:
 
