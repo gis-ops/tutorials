@@ -1,5 +1,5 @@
 # pgRouting Performance Tuning Made Easy
-<img width="512" alt="pgrouting" src="https://user-images.githubusercontent.com/10322094/158249250-52f0d7fe-3482-402b-80aa-42af10e42688.png">
+<img width="750" alt="pgrouting" src="https://user-images.githubusercontent.com/10322094/158249250-52f0d7fe-3482-402b-80aa-42af10e42688.png">
 
 > **Disclaimer**: This tutorial was developed on Mac OSX 10.15.6 and tested on Ubuntu 18.04 as well as Ubuntu 20.04. Windows compatibility cannot be guaranteed.
 
