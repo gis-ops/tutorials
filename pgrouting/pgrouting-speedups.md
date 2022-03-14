@@ -12,20 +12,68 @@ the opposite is true: with the right tweaks and tricks, pgRouting can provide bl
 ## Prerequisites & Dependencies
 
 - PostgreSQL instance with **PostGIS and pgRouting enabled**, we recommend [Kartoza](kartoza.com)'s [docker image]([Kartoza](https://github.com/kartoza/docker-postgis)) (see [this tutorial](https://gis-ops.com/postgrest-tutorial-installation-and-setup/))
-- osmconvert ([installation instructions](https://wiki.openstreetmap.org/wiki/Osmconvert)): easily clip OSM files
 - [osm2po](http://osm2po.de/): create pgRouting topology from raw OSM data
 
 ## Preprocessing the Data
 
-For our example, we will be working with OpenStreetMap data for Northern California. Simply download the .osm file 
+For our example, we will be working with OpenStreetMap data for Northern California. Simply download the OSM file by running the following command:
 
+```sh
+wget https://download.geofabrik.de/north-america/us/california/norcal-latest.osm.pbf
+```
+
+As mentioned above, we will use *osm2po* to generate the topology from the OSM data we generated in the previous step. It is important to understand that OSM data is not routable in its raw form. The geniality of this software is that it isn't only a light-weight routing engine, it also processes the OSM data and outputs a SQL file which can directly be imported to your PostgreSQL database and be used with **pgRouting**. For this tutorial our task is to make sure we output a topology including all highways in the area of interest as we will want to post-process these in the database.
+
+Change your directory where the osm2po jar file is located. By default osm2po will not include OpenStreetMap highways with pedestrian or cycleway tags which is why we have to make some small changes to the `osm2po.config` file:
+
+1. We want to process OSM data for these profiles, so change line 190 to `wtr.finalMask = car,foot,bike`
+2. Uncomment **lines 221** `.default.wtr.tag.highway.service` **to 230** `.default.wtr.tag.railway.rail`
+
+Additionally, we want to make sure the topology is produced which can be directly consumed by pgRouting - you will have to uncomment line 341 (`postp.0.class = de.cm.osm2po.plugins.postp.PgRoutingWriter`) if you are running version 5.1 or greater.
+
+Afterwards run the following command:
+
+```sh
+java -Xmx1024m -jar osm2po-core-[5.5.2]-signed.jar cmd=c prefix=syd your/path/to/sydney-coast.pbf
+```
+
+The prefix `norcal` will produce a new folder in the directory you are currently in which will hold the generated files osm2po will output.
+```sh
+ls -l
+total 2546048
+-rw-r--r-- 1 chris chris   38798974 14. Mär 09:14 jw_N030W120.2po
+-rw-r--r-- 1 chris chris  214118403 14. Mär 09:14 jw_N030W130.2po
+-rw-r--r-- 1 chris chris      53721 14. Mär 09:14 jw_N040W120.2po
+-rw-r--r-- 1 chris chris   58138934 14. Mär 09:14 jw_N040W130.2po
+-rw-r--r-- 1 chris chris          1 14. Mär 09:14 jw_orphans.2po
+-rw-r--r-- 1 chris chris     995562 14. Mär 09:14 jw_shared.2po
+-rw-r--r-- 1 chris chris 1321783837 14. Mär 09:14 norcal_2po_4pgr.sql
+-rw-r--r-- 1 chris chris      27553 14. Mär 09:14 norcal_2po.log
+-rw-r--r-- 1 chris chris   54070678 14. Mär 09:14 sv_all.2po
+-rw-r--r-- 1 chris chris  377289006 14. Mär 09:14 sw_all.2po
+-rw-r--r-- 1 chris chris        248 14. Mär 09:14 tm_info.2po
+-rw-r--r-- 1 chris chris   65383763 14. Mär 09:14 tn_N030W120.2po
+-rw-r--r-- 1 chris chris  193399352 14. Mär 09:14 tn_N030W130.2po
+-rw-r--r-- 1 chris chris   16483649 14. Mär 09:14 tn_N040W120.2po
+-rw-r--r-- 1 chris chris   83424705 14. Mär 09:14 tn_N040W130.2po
+-rw-r--r-- 1 chris chris     697558 14. Mär 09:13 tr_raw.2po
+-rw-r--r-- 1 chris chris  182430743 14. Mär 09:13 tw_raw.2po
+
+```
+
+The file we are interested in is `norcal_2po_4pgr.sql`, which consists of a set of columns including the source `osm_id`, `source` and `target`. Import this data with `psql`.
+
+```sh
+psql -h [IP] -U [USER_NAME] -d [DB_NAME] -q -f syd_2po_4pgr.sql
+```
+
+And that's all we need for the most basic setup to get started with pgRouting. Now, we can start writing routing queries!
 
 ## Performance Tuning
 
-### Baseline
+### Baseline Route
 In order to compare by how much we can speed up our queries, we first need a baseline route and see how long it takes pgRouting to compute it. For this,
-we need a reasonably long route. Say we're in San Francisco and we want to drive all the way to Yosemite National Park. So we simply pick two coordinates
-and – without any changes to our topology after importing it from the .sql file – calculate a route like this:
+we need a reasonably long route. So say we're in San Francisco and we want to drive all the way to Yosemite National Park. Just for scale, that is a ~430km/265mi drive. So we simply pick two coordinates and – without any changes to our topology after importing it from the .sql file – calculate a route like this:
 
 ```sql
 -- find he nearest vertex to the start longitude/latitude
@@ -62,7 +110,11 @@ JOIN   norcal_2po_4pgr AS pt
   ON   di.edge = pt.id;
 ```
 
-On my local machine, this query takes a staggering 22 seconds to compute. This is not surprising though, if we take a closer look at the dijkstra subquery: as the first argument, we provide the query for our edges table. Not only does this SELECT statement select the whole table with upwards of 3 million edges, it also computes the cost and the reverse cost _on the fly_ by measuring each edge's length. So the first and most obvious speed up is to set the cost to a fixed value, and boy are we lucky, because `osm2po` already did that for us! So we simply select the already existing `cost` and `reverse_cost` columns. Now our query looks as follows:
+On my local machine, this query takes a staggering 22 seconds to compute. This is not surprising though, if we take a closer look at what's happening in the query: we determine the nearest vertice ids by means of spatial queries, run the dijkstra algorithm with these two ids, and join the resulting path sequence back to the edge table to obtain the geometry. And as if that wasn't plenty of computing to handle, take a closer look at the first argument of `pgr_dijkstra` where we provide the query for our edges table. Not only does this SELECT statement select the whole table with upwards of 3 million edges, it also computes the cost and the reverse cost _on the fly_ by measuring each edge's length. All these costly steps give us plenty of opportunity to start speeding things up!
+
+### Speed Up #1: Precompute Costs 
+
+So the first and most obvious speed up is to set the cost to a fixed value, and boy are we lucky, because `osm2po` already did that for us! So we simply select the already existing `cost` and `reverse_cost` columns. Now our query looks as follows:
 
 ```sql
 -- find he nearest vertex to the start longitude/latitude
@@ -99,7 +151,11 @@ JOIN   norcal_2po_4pgr AS pt
   ON   di.edge = pt.id;
 ```
 
-This query takes 13 seconds on my machine, a 9 second speed up by *simply avoiding to calculate cost on the fly*. While this one is obvious, there's another change we can make to the edges sql that will make our query run significantly faster: considering that `pgr_dijkstra` looks at every single edge in the edges table, we can simply limit the amount of edges the algorithm looks at *by only selecting those edges that are actually relevant for our route*. We do this by selecting the bounding box of our start and destination points, expanding it by a fixed value (0.1 degrees in this case) and intersecting our edge geometries with the resulting rectangle, only keeping those within it. Our query now looks like this:
+This query takes 13 seconds on my machine, a 9 second speed up by *simply avoiding to calculate cost on the fly*.
+
+### Speed Up #2: Limit Edges Table with Bounding Box  
+
+While this one is obvious, there's another change we can make to the edges sql that will make our query run significantly faster: considering that `pgr_dijkstra` looks at every single edge in the edges table, we can simply limit the amount of edges the algorithm looks at *by only selecting those edges that are actually relevant for our route*. We do this by selecting the bounding box of our start and destination points, expanding it by a fixed value (0.1 degrees in this case) and intersecting our edge geometries with the resulting rectangle, only keeping those within it. Our query now looks like this:
 
 ```sql
 -- find he nearest vertex to the start longitude/latitude
@@ -140,7 +196,11 @@ JOIN   norcal_2po_4pgr AS pt
   ON   di.edge = pt.id;
 ```
 
-This runs in about 5 seconds, another 8 seconds cut from our previous query. Now as far as the query goes, we have exhausted our repertoire, but there is still untapped potential in PostGIS indices: pgRouting does create indices on the `source`, `target` and `id` columns, but no spatial indices on the geometry column. We can create one ourselves by running the following line:
+This runs in about 5 seconds, another 8 seconds cut from our previous query!
+
+### Speed Ups #3 and #4: Spatial Indices and Clusters
+
+Now as far as the query goes, we have exhausted our repertoire, but there is still untapped potential in PostGIS indices: pgRouting does create indices on the `source`, `target` and `id` columns, but no spatial indices on the geometry column. We can create one ourselves by running the following line:
 
 ```sql
 CREATE INDEX ON norcal_2po_4pgr USING gist(geom_way);
