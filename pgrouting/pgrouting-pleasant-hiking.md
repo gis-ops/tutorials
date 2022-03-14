@@ -58,7 +58,7 @@ Additionally, we want to make sure the topology is produced which can be directl
 Afterwards run the following command:
 
 ```sh
-java -Xmx512m -jar osm2po-core-[5.3.2]-signed.jar cmd=c prefix=syd your/path/to/sydney-coast.pbf
+java -Xmx512m -jar osm2po-core-[5.5.2]-signed.jar cmd=c prefix=syd your/path/to/sydney-coast.pbf
 ```
 
 The prefix `syd` will produce a new folder in the directory you are currently in which will hold the generated files osm2po will output.
