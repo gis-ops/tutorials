@@ -140,7 +140,7 @@ JOIN   norcal_2po_4pgr AS pt
   ON   di.edge = pt.id;
 ```
 
-This runs in about 5 seconds, another 8 seconds cut from our previous query. Now as far as the query goes, we have exhausted our repertoire, but there is still untapped potential in PostGIS indices: pgRouting does create indices on the `source`, `target` and `id` columns, but no spatial indices on the geometry column.
+This runs in about 5 seconds, another 8 seconds cut from our previous query. Now as far as the query goes, we have exhausted our repertoire, but there is still untapped potential in PostGIS indices: pgRouting does create indices on the `source`, `target` and `id` columns, but no spatial indices on the geometry column. We can create one ourselves by running the following line:
 
 ```sql
 CREATE INDEX ON norcal_2po_4pgr USING gist(geom_way);
@@ -152,7 +152,7 @@ If we now run our last query again, we will notice that it has just gotten a lot
 CLUSTER norcal_2po_4pgr USING norcal_2po_4pgr_geom_way_idx;
 ```
 
-If we rerun our query, we'll see yet another speed up: I was able to cut it from 1.5 to 1.2 seconds. 
+If we rerun our query, we'll see yet another speed up: I was able to cut it from 1.5 to 1.2 seconds. Note that the last two speedups will only make our query faster because we use spatial functions to determine the nearest start and end vertices, and to only select the relevant edges. If you only run a pure dijkstra without any additional table expressions, neither a spatial index nor a clustered spatial index will give you any benefit. 
 
 ## Wrap up
 
