@@ -214,7 +214,7 @@ If we rerun our query, we'll see yet another speed up: I was able to cut it from
 
 ## Compare Execution Times
 
-Now the tweaks and tricks we have shown so far have only been tested on one route, but as we were delving into this topic, we wondered how these speedups compare across routes with different lengths. So we computed some hundred routes between random points in Northern California with different lengths and plotted the execution times for each route, and at every stage described above (baseline, fixed cost, etc.). 
+Now the tweaks and tricks we have shown so far have only been tested on one route, but as we were delving into this topic, we wondered how these speedups compare across routes with different lengths. So we computed some hundred routes between random points in Northern California with different lengths and plotted the execution times for each route, and at every stage described above (baseline, fixed cost, etc.). You can find the **jupyter notebook [here](https://github.com/gis-ops/tutorials/blob/master/pgrouting/compare_computation_times.ipynb)**
 
 ![Query execution times](./static/img/pgr_exec_times.jpg "OpenStreetMap data in its pure form is not routable")
 
