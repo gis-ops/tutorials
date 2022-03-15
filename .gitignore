@@ -11,3 +11,4 @@ venv/
 .env
 .venv
 .coverage
+**/.ipynb_checkpoints/
