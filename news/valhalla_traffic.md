@@ -1,5 +1,18 @@
 ## Real-Time and Historical Traffic in Valhalla
 
+<!-- @import "[TOC]" {cmd="toc" autoUpdate=0 depthFrom=1 depthTo=6 orderedList=false} -->
+<!-- code_chunk_output -->
+- [Showcases](#showcases)
+- [Real-Time and Historical Traffic in Valhalla](#real-time-and-historical-traffic-in-valhalla)
+  - [Showcases](#showcases)
+  - [Traffic implementation in Valhalla](#traffic-implementation-in-valhalla)
+    - [Historical traffic data](#historical-traffic-data)
+    - [Live traffic data](#live-traffic-data)
+- [Related projects](#related-projects)
+
+<!-- /code_chunk_output -->
+
+
 Apart from its numerous unique features, [Valhalla](https://github.com/valhalla/valhalla), as the only FOSS routing engine, also has fully integrated support for traffic data:
 
 - **live traffic**:  Integrate a live traffic feed from e.g. TomTom or HERE in your Valhalla routing engine instance, for optimal ETA calculation in shorter routes
@@ -25,7 +38,7 @@ The following video shows a time series of 500 routes which are requested every 
   </video>
 </figure>
 
-A more impressive video show a time series of 5 isochrones, also in 15 mins intervals over the whole week.
+A more impressive video shows a time series of 5 isochrones, also in 15 mins intervals over the whole week:
 
 <figure class="video_container">
   <video controls="true" allowfullscreen="true" poster="aux/valhalla_isochrones.jpg">
