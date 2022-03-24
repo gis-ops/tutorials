@@ -25,7 +25,7 @@ Purchasing appropriate data is less expensive than most people assume. In the ca
 
 ## Showcases
 
-We created two animations to showcase the importance of traffic information.
+We created two animations to showcase the impact traffic information has on routing.
 
 The following video shows a time series of 500 routes which are requested every 15 minutes of the week. Increasing ETAs are obvious from 8:00 am to 7:00 pm:
 
@@ -49,19 +49,19 @@ A more impressive video shows a time series of 5 isochrones, also in 15 mins int
 
 ## Traffic implementation in Valhalla
 
-You might be asking, why not other FOSS routing engines support a traffic implementation. The reason is: it's tough business.
+You might be asking, why other FOSS routing engines don't support a traffic implementation. The reason is: it's tough business.
 
 Consider what happens on a route from e.g. Berlin to Munich: as the routing algorithm tracks its way towards Munich, time passes and that needs to be accounted for in order to properly respect time-dependent speeds or restrictions (such as "no access between 9am - 5pm") with all its complexities, such as timezones.
 
 So for true traffic support, a routing engine must be able to track the time along the routing algorithm's expansion. That requires more flexible algorithms which lack a lot of the performance goodies one typically likes to see in a routing engine, such as conventional Contraction Hierarchies.
 
-Below we describe some of the internals of Valhalla's traffic implementations. If you need help or support, contact us on enquiry@gis-ops.com.
+Below we describe some of the internals of Valhalla's traffic implementations. If you need help or support, contact us at enquiry@gis-ops.com.
 
 ### Historical traffic data
 
 Valhalla supports loading each edge (aka road segment) with a total of 2016 time-dependent speed values, which corresponds to a full week's worth of 5 mins intervals. It's the quasi-standard of commercial traffic data.
 
-This kind of traffic data source needs the same base street network as the traffic data is originating from. In practice: if you consider buying TomTom historical traffic data, you'd need the TomTom MultiNet street network data to build a Valhalla routing graph first. We provide [services & software](https://gis-ops.com/routing-and-optimisation/#data-services) to convert TomTom & HERE data to make it usable with FOSS routing engines such as Valhalla.
+This kind of traffic data source needs the same base street network as the traffic data it's originating from. In practice: if you consider buying TomTom historical traffic data, you'd need the TomTom MultiNet street network data to build a Valhalla routing graph first. We provide [services & software](https://gis-ops.com/routing-and-optimisation/#data-services) to convert TomTom & HERE data to make it usable with FOSS routing engines such as Valhalla.
 
 Once you have a routing graph built, you need to transform the historical traffic data into Valhalla's [expected CSV format](https://github.com/valhalla/valhalla/blob/master/test/data/traffic_tiles/0/003/196.csv) with the following columns:
 
@@ -76,7 +76,7 @@ Once the CSV traffic "tiles" have been generated, you can load the historical da
 
 ### Live traffic data
 
-While historical traffic data is still somewhat easy, since you only have to generate the traffic "tiles" once, real-time traffic integration is lot more involved. Typically data providers offer a feed which **updates minutely** for every supported region of the world. If the graph covers an entire continent such as Europe, that feed will contain speed updates for millions of edges.
+While historical traffic data is still somewhat easy, since you only have to generate the traffic "tiles" once, real-time traffic integration is a lot more involved. Typically data providers offer a feed which **updates minutely** for every supported region of the world. If the graph covers an entire continent such as Europe, that feed will contain speed updates for millions of edges.
 
 Valhalla implements live traffic via a memory mapped `tar` archive. The internal directory tree is the exact same as for the routing tiles. A single traffic tile consists of:
 - [tile header](https://github.com/valhalla/valhalla/blob/6e28861fd8985935a1e647af9a5a399560945b52/valhalla/baldr/traffictile.h#L185-L192) with info about tile ID, edge count, tile version etc
@@ -87,7 +87,7 @@ The [`valhalla_build_extract`](https://github.com/valhalla/valhalla/blob/6e28861
 The challenge is to actually develop that external application (in whatever language) to update the traffic archive, and that is performant and accurate enough to provide meaningful traffic updates on large regions. The gist of it is:
 
 - pull updated traffic information from provider
-- match each traffic segment's OpenLR(/TMC) geometry string to Valhalla's graph using `/trace_attributes` to retrieve all edges' `GraphId`s. Beware that the traffic provider's geometries might not be the same as your routing graph's geometries, e.g. TomTom live traffic feed on a OSM routing graph, so you might have to do a more complex flow of `/locate`, `/route` and `/trace_attributes` to reliable match the provider's geometries to your graph
+- match each traffic segment's OpenLR(/TMC) geometry string to Valhalla's graph using `/trace_attributes` to retrieve all edges' `GraphId`s. Beware that the traffic provider's geometries might not be the same as your routing graph's geometries, e.g. TomTom live traffic feed on a OSM routing graph, so you might have to do a more complex flow of `/locate`, `/route` and `/trace_attributes` to reliably match the provider's geometries to your graph
 - once you have the Valhalla representation of a OpenLR traffic entry, you can start matching the entry's speeds to the graph edges to compose the [`TrafficSpeed`](https://github.com/valhalla/valhalla/blob/6e28861fd8985935a1e647af9a5a399560945b52/valhalla/baldr/traffictile.h#L54-L65) struct for each edge; breakpoints only come into play for start & end edges of OpenLR records
 - after you did this process for all traffic entries, you should have one `TrafficSpeed` 64 bit integer for each Valhalla edge which matched to the current traffic input
 - at this point you still need to match those shortcuts whose edges had their speeds updated: Valhalla uses shortcuts in its more performant bidirectional algorithm on longer routes; here you need to calculate the weighted average of all underlying edge speeds and only set the `overall_encoded_speed` part of the shortcut's `TrafficSpeed` packed 64 bit struct
