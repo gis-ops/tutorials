@@ -2,7 +2,7 @@
 
 The amazing OSM-based open-source routing engine [Valhalla](https://github.com/valhalla/valhalla) has been around for a while, initially being a [Mapzen (RIP)](https://www.mapzen.com/blog/shutdown) project. It's come a long way since its inception in 2015, featuring now a host of unique feature combinations, like
 
-- complete support for historical and real-time traffic (see our [post](#here))
+- complete support for historical and real-time traffic (see our [arcticle](https://gis-ops.com/traffic-in-valhalla/))
 - multi-modal routing support for public transit and bike-sharing stations
 - highly flexible user parameterization to influence route finding based on individual needs (see the documentation on [routing options](https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md))
 - very low memory footprint compared to alternative routing engines, making it ideal for mobile devices
@@ -27,7 +27,7 @@ You'll still need to pre-build a routing graph before you can use the bindings f
 
 After the graph built successfully (check with `docker logs valhalla_gis-ops`), try the following lines to test:
 
-```
+```python
 import valhalla
 
 # The config is a JSON which defaults many Valhalla configuration options
