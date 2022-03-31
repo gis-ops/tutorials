@@ -108,8 +108,9 @@ FROM response;
 > **Note**: we can use PostGIS' `st_linefromencodedpolyline()` function but it's important to call it with `nprecision=6`, which is the precision Valhalla uses.
 
 The result looks pretty impressive! There are a few mistakes here and there, but they are mostly related to the quality of OSM data in Northern Spain, and with the fact that I might have taken some one way streets and ways that are only open to pedestrians (whoops). 
-
-##########################GIF HERE############################
+<p align="center">
+<img width="400" alt="pgrouting" src="https://raw.githubusercontent.com/gis-ops/tutorials/cb_postgis_mapmatching/postgres/img/map_matched_qgis.gif">
+</p>
 
 Now, to take it a bit further, and to show what Valhalla is capable of, let's find out the road use types I rode on during my ride. The great thing about the `trace_attributes` endpoint is that we can retrieve a lot of useful information about the matched edges (and points!) by specifying them in the `"attributes"` key of our request. I simply choose `edge.use` (which gives us the edges' type of road use) and `edge.length` for its length (the default unit is kilometers). For a full list of attributes, check out [the documentation](https://github.com/valhalla/valhalla-docs/blob/master/map-matching/api-reference.md).
 
