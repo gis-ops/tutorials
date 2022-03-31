@@ -1,0 +1,16 @@
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
+WayID1   WayID2    DuplicateEdges
