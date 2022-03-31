@@ -10,7 +10,7 @@
 
 Mapmatching \[_relating a set of recorded serial location points to edges of a graph network_\] is one of those problems in geoinformatics that you would initially think of as being easy to solve: how hard can it be, after all, to snap some points to a road network and create a coherent route along that network from the point series? You start by importing your `.gpx` files into your favorite spatially enabled RDBMS, dabble with `ST_Line_Locate_Point()`, `ST_Snap()`, `ST_Azimuth()` for a while before coming to the sobering conclusion that it's just not that simple. And it really comes down to just one single problem: GPS signals are messy, and they are messy in [so many ways](https://www.aboutcivil.org/sources-of-errors-in-gps.html): issues can arise from the satellites' orbits, the signals being reflected by objects, as well as errors caused by the receiver.
 
-So what's the good news? Many people before you have tackled this problem, both in industry as well as in academia, and so there are readily packaged open source solutions at your fingertips. The not so good news is that there is no integrated solution within PostGIS (at least as of v3.2.1), and this is where this tutorial comes in: we will show you how to use the open source routing engine Valhalla with PostGIS to map match your GPS traces along an OSM road network. Specifically, we will make use of PL/Python, PostgreSQL's procedural language that lets you use the Python language within Postgres, as well as pyvalhalla, high level Valhalla bindings for Python.
+So what's the good news? Many people before you have tackled this problem, both in industry as well as in academia, and so there are readily packaged open source solutions at your fingertips. The not so good news is that there is no integrated solution within PostGIS (at least as of v3.2.1), and this is where this tutorial comes in: we will show you how to use the open source routing engine Valhalla with PostGIS to map match your GPS traces along an OSM road network. Specifically, we will make use of PL/Python, PostgreSQL's procedural language that lets you use the Python language within Postgres, as well as [pyvalhalla](https://pypi.org/project/pyvalhalla/), high level Valhalla bindings for Python.
 
 ## Map Matching in Valhalla: A Primer
 
@@ -160,7 +160,7 @@ This produces the following result:
 --------|---------------------
    3349 | cycleway
    8696 | path
-      8 | pedestrian_crossing
+   8    | pedestrian_crossing
   19996 | road
    1039 | driveway
 
