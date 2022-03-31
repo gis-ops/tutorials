@@ -1,5 +1,9 @@
 # Quick and Easy Mapmatching in PostGIS 
 
+<p align="center">
+    <img width="500" src="https://raw.githubusercontent.com/gis-ops/tutorials/cb_postgis_mapmatching/postgres/img/gps_track_overview.png"/>
+</p>
+
 > **Disclaimer**: This tutorial was developed on Mac OSX 10.15.6 and tested on Ubuntu 18.04 as well as Ubuntu 20.04. Windows compatibility cannot be guaranteed.
 
 ## Motivation
