@@ -59,6 +59,7 @@ SELECT valhalla_version(); -- should return something like '3.0.2'
 Finally, we need a graph that Valhalla can route on. We will map match GPS signals recorded in the Spanish region of Asturias, so one option is to download the respective OSM file from Geofabrik, and use our [Valhalla Docker image](https://hub.docker.com/r/gisops/valhalla) to build a graph from it. We have described how to use it [in another tutorial](https://gis-ops.com/valhalla-how-to-run-with-docker-on-ubuntu/), so we won't go into further detail here. For the sake of ease however, we have already added the graph tiles needed to follow this tutorial [here](https://github.com/gis-ops/tutorials/raw/master/postgres/data/valhalla_tiles.tar.gz), so don't worry if you're not familiar with Docker. Simply download the data and extract them using e.g. gzip:
 
 ```sh
+wget https://github.com/gis-ops/tutorials/blob/master/postgres/data/valhalla_tiles.tar.gz?raw=true
 gzip -d valhalla_tiles.tar.gz
 ```
 
