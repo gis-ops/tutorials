@@ -52,7 +52,7 @@ $$ LANGUAGE plpython3u;
 SELECT valhalla_version(); -- should return something like '3.0.2'
 ```
 
-Finally, we need a graph that Valhalla can route on. For this, you can simply use our [Valhalla Docker image](https://hub.docker.com/r/gisops/valhalla). We have described how to use it [in another tutorial](https://gis-ops.com/valhalla-how-to-run-with-docker-on-ubuntu/), so we won't go into further detail here. For the sake of ease, we have also added the graph tiles needed to follow this tutorial [here](), so don't worry if you're not familiar with Docker.
+Finally, we need a graph that Valhalla can route on. For this, you can simply use our [Valhalla Docker image](https://hub.docker.com/r/gisops/valhalla). We have described how to use it [in another tutorial](https://gis-ops.com/valhalla-how-to-run-with-docker-on-ubuntu/), so we won't go into further detail here. For the sake of ease, we have also added the graph tiles needed to follow this tutorial [here](https://github.com/gis-ops/tutorials/tree/master/postgres/data), so don't worry if you're not familiar with Docker.
 
 
 ## Preprocessing the data
