@@ -52,12 +52,18 @@ $$ LANGUAGE plpython3u;
 SELECT valhalla_version(); -- should return something like '3.0.2'
 ```
 
-Finally, we need a graph that Valhalla can route on. For this, you can simply use our [Valhalla Docker image](https://hub.docker.com/r/gisops/valhalla). We have described how to use it [in another tutorial](https://gis-ops.com/valhalla-how-to-run-with-docker-on-ubuntu/), so we won't go into further detail here. For the sake of ease, we have also added the graph tiles needed to follow this tutorial [here](https://github.com/gis-ops/tutorials/tree/master/postgres/data), so don't worry if you're not familiar with Docker.
+Finally, we need a graph that Valhalla can route on. For this, you can simply use our [Valhalla Docker image](https://hub.docker.com/r/gisops/valhalla). We have described how to use it [in another tutorial](https://gis-ops.com/valhalla-how-to-run-with-docker-on-ubuntu/), so we won't go into further detail here. For the sake of ease, we have also added the graph tiles needed to follow this tutorial [here](https://github.com/gis-ops/tutorials/raw/master/postgres/data/valhalla_tiles.tar.gz), so don't worry if you're not familiar with Docker. Simply download the data and extract them using e.g. gzip:
+
+```sh
+gzip -d valhalla_tiles.tar.gz
+```
+
+If you're using our Docker image, you can simply map the directory the tar file is in to the `/custom_files` directory in the container using the volume flag, and Valhalla will do the rest.
 
 
 ## Preprocessing the data
 
-For this tutorial, we will be using a GPS track that I recorded while riding my bike in the beautiful city of Gijón in the Spanish autonomous region of Asturias. You can find the `.gpx` file [here]().
+For this tutorial, we will be using a GPS track that I recorded while riding my bike in the beautiful city of Gijón in the Spanish autonomous region of Asturias. You can find the `.gpx` file [here](https://raw.githubusercontent.com/gis-ops/tutorials/master/postgres/data/gijon_route.gpx).
 
 We can load the gpx file contents into PostGIS by using `ogr2ogr`, and make use of OGR's SQL dialect to only load the track points:
 
