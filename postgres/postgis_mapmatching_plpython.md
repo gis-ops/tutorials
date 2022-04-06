@@ -58,7 +58,6 @@ Finally, we need a graph that Valhalla can route on. For this, you can simply us
 gzip -d valhalla_tiles.tar.gz
 ```
 
-If you're using our Docker image, you can simply map the directory the tar file is in to the `/custom_files` directory in the container using the volume flag, and Valhalla will do the rest.
 
 
 ## Preprocessing the data
