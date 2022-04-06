@@ -10,7 +10,8 @@
 
 Mapmatching \[_relating a set of recorded serial location points to edges of a graph network_\] is one of those problems in geoinformatics that you would initially think of as being easy to solve: how hard can it be, after all, to snap some points to a road network and create a coherent route along that network from the point series? You start by importing your `.gpx` files into your favorite spatially enabled RDBMS, dabble with `ST_Line_Locate_Point()`, `ST_Snap()`, `ST_Azimuth()` for a while before coming to the sobering conclusion that it's just not that simple. And it really comes down to just one single problem: GPS signals are messy, and they are messy in [so many ways](https://www.aboutcivil.org/sources-of-errors-in-gps.html): issues can arise from the satellites' orbits, the signals being reflected by objects, as well as errors caused by the receiver.
 
-So what's the good news? Many people before you have tackled this problem, both in industry as well as in academia, and so there are readily packaged open source solutions at your fingertips. The not so good news is that there is no integrated solution within PostGIS (at least as of v3.2.1), and this is where this tutorial comes in: we will show you how to use the open source routing engine Valhalla with PostGIS to map match your GPS traces along an OSM road network. Specifically, we will make use of PL/Python, PostgreSQL's procedural language that lets you use the Python language within Postgres, as well as [pyvalhalla](https://pypi.org/project/pyvalhalla/), high level Valhalla bindings for Python.
+So what's the good news? Many people before you have tackled this problem, both in industry as well as in academia, and so there are readily packaged open source solutions at your fingertips. The not so good news is that there is no integrated solution within PostGIS (at least as of v3.2.1), and this is where this tutorial comes in: we will show you how to use the open source routing engine Valhalla with PostGIS to map match your GPS traces along an OSM road network. Specifically, we will make use of PL/Python, PostgreSQL's procedural language that lets you use the Python language within Postgres, as well as [pyvalhalla](https://pypi.org/project/pyvalhalla/), high level Valhalla bindings for Python. And this is just the perfect use case for PL/Python: while PL/PGSQL (Postgres' procedural language for SQL) is a mighty tool, there are very few third-party libraries available for it. On the other hand, the Python Packaging Index lists about 350.000 packages as of early 2022. So using PL/Python lets you tap into this vast collection, saving you possibly hours if not days you would have to spend trying to build something from scratch.
+
 
 ## Map Matching in Valhalla: A Primer
 
@@ -20,6 +21,8 @@ There have been different approaches that aim to efficiently map match large amo
 ## Requirements
 
 - PostgreSQL with **PostGIS enabled**, we can happily recommend [Kartoza](kartoza.com)'s [docker image]([Kartoza](https://github.com/kartoza/docker-postgis)) (see [this tutorial](https://gis-ops.com/postgrest-tutorial-installation-and-setup/))
+- Python >= 3.7
+- ogr2ogr
 
 ## Set up PL/Python and pyvalhalla
 
@@ -34,8 +37,9 @@ CREATE EXTENSION plpython3u;
 Next, we will need to make sure that we can access pyvalhalla, so we need to install it with pip (make sure to run this from within the PostGIS container if you're using one):
 
 ```sh
-pip3 install pyvalhalla
+python -m pip install pyvalhalla
 ```
+
 
 In order to make sure we can use the Valhalla bindings from PL/Python, we quickly check Valhalla's version:
 
@@ -52,7 +56,7 @@ $$ LANGUAGE plpython3u;
 SELECT valhalla_version(); -- should return something like '3.0.2'
 ```
 
-Finally, we need a graph that Valhalla can route on. For this, you can simply use our [Valhalla Docker image](https://hub.docker.com/r/gisops/valhalla). We have described how to use it [in another tutorial](https://gis-ops.com/valhalla-how-to-run-with-docker-on-ubuntu/), so we won't go into further detail here. For the sake of ease, we have also added the graph tiles needed to follow this tutorial [here](https://github.com/gis-ops/tutorials/raw/master/postgres/data/valhalla_tiles.tar.gz), so don't worry if you're not familiar with Docker. Simply download the data and extract them using e.g. gzip:
+Finally, we need a graph that Valhalla can route on. We will map match GPS signals recorded in the Spanish region of Asturias, so one option is to download the respective OSM file from Geofabrik, and use our [Valhalla Docker image](https://hub.docker.com/r/gisops/valhalla) to build a graph from it. We have described how to use it [in another tutorial](https://gis-ops.com/valhalla-how-to-run-with-docker-on-ubuntu/), so we won't go into further detail here. For the sake of ease however, we have already added the graph tiles needed to follow this tutorial [here](https://github.com/gis-ops/tutorials/raw/master/postgres/data/valhalla_tiles.tar.gz), so don't worry if you're not familiar with Docker. Simply download the data and extract them using e.g. gzip:
 
 ```sh
 gzip -d valhalla_tiles.tar.gz
@@ -62,7 +66,7 @@ gzip -d valhalla_tiles.tar.gz
 
 ## Preprocessing the data
 
-For this tutorial, we will be using a GPS track that I recorded while riding my bike in the beautiful city of Gijón in the Spanish autonomous region of Asturias. You can find the `.gpx` file [here](https://raw.githubusercontent.com/gis-ops/tutorials/master/postgres/data/gijon_route.gpx).
+For this tutorial, we will be using a GPS track that I recorded while riding my bike in the beautiful city of Gijón in the Spanish autonomous region of Asturias. You can find the `.gpx` file [here](https://raw.githubusercontent.com/gis-ops/tutorials/master/postgres/data/gijon_route.gpx) and the activity on Strava [here](https://www.strava.com/activities/4223525865).
 
 We can load the gpx file contents into PostGIS by using `ogr2ogr`, and make use of OGR's SQL dialect to only load the track points:
 
@@ -104,13 +108,13 @@ Now we just need our `bicycle_route` locations to be in JSON format, call our fu
 
 ```sql
 WITH locations AS (SELECT json_agg(t)::varchar AS locations
-                   FROM (SELECT st_x(_ogr_geometry_) AS lon,
-                                st_y(_ogr_geometry_) AS lat,
+                   FROM (SELECT ST_X(_ogr_geometry_) AS lon,
+                                ST_Y(_ogr_geometry_) AS lat,
                                 time
                          FROM bicycle_route) t),
      response AS (SELECT valhalla_map_match(locations) AS polyline FROM locations)
 
-SELECT st_linefromencodedpolyline(polyline, 6)
+SELECT ST_LineFromEncodedPolyline(polyline, 6)
 FROM response;
 ```
 
@@ -150,8 +154,8 @@ And we call the function like this:
 
 ```sql
 WITH locations AS (SELECT json_agg(t)::varchar AS locations
-                   FROM (SELECT st_x(_ogr_geometry_) AS lon,
-                                st_y(_ogr_geometry_) AS lat,
+                   FROM (SELECT ST_X(_ogr_geometry_) AS lon,
+                                ST_Y(_ogr_geometry_) AS lat,
                                 time
                          FROM bicycle_route) t),
      response AS (SELECT valhalla_trace_attributes(locations) AS record FROM locations)
