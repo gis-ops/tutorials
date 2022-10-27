@@ -7,28 +7,34 @@ Well, as it turns out, good old XYZ tiles have established the idea of tiles bei
 In this tutorial, we're taking that idea of on-the-fly vector tile serving a little further. The use case: build an application where users have access to geodata on a _need-to-know basis_, for example if your clients need to see only a small subset of your geodata. 
 
 In this tutorial, you will learn
-    - how to create MapBox Vector Tiles from PostGIS,
-    - how to serve these Vector Tiles over the web in a standardized manner,
-    - and, most importantly: how to restrict access to the data being served
+
+- how to create MapBox Vector Tiles from PostGIS,
+- how to serve these Vector Tiles over the web in a standardized manner,
+- and, most importantly: how to restrict access to the data being served
 
 ## Prerequisites
 
-    - Python >= 3.10
-    - PostGIS >= 3.0 (we recommend [Kartoza's](https://gis-ops.com/postgrest-tutorial-installation-and-setup/) docker image, see our tutorial [here](https://gis-ops.com/postgrest-tutorial-installation-and-setup/))
-    - gdal >= 3.5
-    - npm (optional, if you want to follow the web map part as well) 
+- Python >= 3.10
+- PostGIS >= 3.0 (we recommend [Kartoza's](https://gis-ops.com/postgrest-tutorial-installation-and-setup/) docker image, see our tutorial [here](https://gis-ops.com/postgrest-tutorial-installation-and-setup/))
+- gdal >= 3.5
+- npm (optional, if you want to follow the web map part as well) 
     
  > Disclaimer: This tutorial was developed on Manjaro Linux 22.0.0.
-    
-Regarding your background, it's definitely advantageous to know the basics of FastAPI, or a similar framework for building RESTful APIs, and SQLModel (or at least familiarity with SQLAlchemy or some other ORM). Some SQL and PostGIS knowledge is also needed to get the queries working. If you want to follow along building the web app to display the vector tiles in the browser, JavaScript knowledge is highly recommended as well.
 
-## Step 1: get some data
+Good to have is some experience with:
+
+- [FastAPI](fastapi.tiangolo.com)/HTTP API
+- SQL ORM libraries (`SQLAlchemy` or similar)
+- (Postgre)SQL/PostGIS
+    
+If you want to follow along building the web app to display the vector tiles in the browser, JavaScript knowledge is highly recommended as well.
+
+## Step 1: Get some data
 
 For our example, we'll be serving address data from the city of Berlin. Head [here](https://opendata-esri-de.opendata.arcgis.com/maps/273bf4ae7f6a460fbf3000d73f7b2f76) to download the geojson file. We'll then pass it to PostGIS using gdal's `ogr2ogr`: 
 
 ```sh
 ogr2ogr -f "PostgreSQL" PG:"dbname='gis' user='tutorial' password='tutorial' port='5432' host='localhost'" "Adressen_-_Berlin.geojson" -nln addresses
-
 ```
 
 Next, we will create a table called `users`, where we store information about the users that are allowed to access parts of our address data. For this example, we'll keep it simple: each user has access to address data within one postal code zone.
@@ -36,22 +42,19 @@ Next, we will create a table called `users`, where we store information about th
 ```sql
 INSERT INTO users(username, plz, password)
 SELECT concat('user_', plz) as username, plz, crypt('123', gen_salt('bf', 8)) as password FROM (SELECT DISTINCT plz FROM adresses)s;
-
 ```
 
 This is not a tutorial on web security, but we do want to make use of some good security practices here, so we use Postgres' `pgcrypto` extension to hash our users' passwords using the SHA256 algorithm and even use a [salt](https://auth0.com/blog/adding-salt-to-hashing-a-better-way-to-store-passwords/). To use this function, you might need to run
 
 ```sql
 CREATE EXTENSION pgcrypto;
-
 ```
 
-## Step 2: spin up FastAPI
+## Step 2: Spin up FastAPI
 
 Now that we have our database set up, let's create a small REST API to let users interact with it. We need to install some packages for this first, so let's go ahead and create a virtual environment in Python and pip install our dependencies:
 
 ```sh
-
 python -m venv .venv
 
 source .venv/bin/activate
@@ -62,7 +65,6 @@ pip install fastapi pyjwt sqlmodel psycopg2 buildpg asyncpg uvicorn morecantile
 create a file called `main.py` and in it, create a FastAPI app:
 
 ```python
-
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
@@ -70,7 +72,6 @@ origins = [
     "http://localhost",
     "http://localhost:5173",
 ]
-
 
 vectortile_app = FastAPI()
 
@@ -83,7 +84,7 @@ vectortile_app.add_middleware(
 )
 ```
 
-Before we create a `/login` endpoint, we need to create some user authentication logic. In this tutorial, we will be using JSON Web Tokens (read more about it [here](https://jwt.io/introduction)). We already installed a Python library to create and validate these tokens, so we can simply create a small function that neatly wraps the decoding logic. Create `jwtoken.py` and in it, create the function `create_token`:
+Before we create a `/login` endpoint, we need to create some user authentication logic. In this tutorial, we will be using JSON Web Tokens (read more about it [here](https://jwt.io/introduction)). We already installed `pyjwt` to create and validate these tokens, so we can simply create a small function that neatly wraps the decoding logic. Create `jwtoken.py` and in it, create the function `create_token`:
 
 ```python
 from datetime import datetime, timedelta
@@ -106,7 +107,6 @@ def create_token(user: str, expires_delta: timedelta = None, refresh: bool = Fal
     encoded_jwt = jwt.encode(to_encode, "SUPER_SECRET_KEY", algorithm="HS256")
 
     return encoded_jwt
-
 ```
 
 Okay, we'll get to the `/login` endpoint soon, but first, let's define a user model for that endpoint. Go ahead and create `models.py`, and in it, create two classes: one for the login request body, and one for the database (thanks for that convenience `SQLModel`!).
@@ -151,7 +151,7 @@ from starlette import status
 from starlette.middleware.cors import CORSMiddleware
 
 from engine import engine
-from jwtoken import create_token
+from jwt import create_token
 from models import UsersReq, Users
 
 origins = [
@@ -328,13 +328,11 @@ async def get_tile(
         content = await conn.fetchval_b(q, **p)
 
     return Response(bytes(content), media_type="application/x-protobuf")
-
-
 ```
 
 Note that we use a different engine to access PostGIS asynchronously for faster tile serving (we stick with the synchronous way to get the user details for easier caching).
 
-Let's disect a bit what's happening in the endpoint function: we use `morecantile` to calculate the requested tile's bounding box, and then pass it to our sql query. You might wonder how short this query is, given it does so much: it gets the address points from our user's assigned postal code, that lie within the tile's bounds and packages it as a protobuf binary. Thanks to the power of PostGIS, we can simply call two functions that do all the heavy lifting of vector tile conversion: `ST_AsMVTGeom` to convert the geometries, and `ST_AsMVT` to convert a record (i.e. the geometry including all the wanted properties).
+Let's disect a bit what's happening in the endpoint function: we use `morecantile` to calculate the requested tile's bounding box, and then pass it to our SQL query. You might wonder how short this query is, given it does so much: it gets the address points from our user's assigned postal code, that lie within the tile's bounds and packages it as a protobuf binary (MVT). Thanks to the power of PostGIS, we can simply call two functions that do all the heavy lifting of vector tile conversion: `ST_AsMVTGeom` to convert the geometries, and `ST_AsMVT` to convert a record (i.e. the geometry including all the wanted properties).
 
 Finally, let's test our application. Run the API with `uvicorn main:vectortile_app --reload --port 8001
 `. We can use `cURL` to try out the log in logic:
