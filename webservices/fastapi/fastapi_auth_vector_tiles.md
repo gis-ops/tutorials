@@ -18,6 +18,8 @@ In this tutorial, you will learn
     - gdal >= 3.5
     - npm (optional, if you want to follow the web map part as well) 
     
+ > Disclaimer: This tutorial was developed on Manjaro Linux 22.0.0.
+    
 Regarding your background, it's definitely advantageous to know the basics of FastAPI, or a similar framework for building RESTful APIs, and SQLModel (or at least familiarity with SQLAlchemy or some other ORM). Some SQL and PostGIS knowledge is also needed to get the queries working. If you want to follow along building the web app to display the vector tiles in the browser, JavaScript knowledge is highly recommended as well.
 
 ## Step 1: get some data
