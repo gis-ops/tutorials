@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="node_modules/ol/ol.css" />
+    <title>GIS-OPS: Authed Vector Tiles</title>
+    <style>
+      body,
+      html {
+        margin: 0;
+        font-family: Helvetica, Arial, Sans-Serif;
+      }
+      .map {
+        width: 100vw;
+        height: 100vh;
+      }
+
+      #login {
+        position: absolute;
+        display: block;
+        top: 25px;
+        right: 25px;
+        z-index: 9999;
+      }
+
+      .form {
+        background-color: rgba(220, 220, 220, 0.723);
+        padding: 10px;
+      }
+      button {
+        margin: 0 auto;
+        display: block;
+      }
+      input {
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map" class="map"></div>
+    <div id="login"></div>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

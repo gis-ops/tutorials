@@ -1,0 +1,20 @@
+{
+  "name": "webapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ol": "7.1.0"
+  },
+  "devDependencies": {
+    "vite": "^3.0.3",
+    "@babel/core": "latest"
+  }
+}

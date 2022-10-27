@@ -12,3 +12,5 @@ venv/
 .venv
 .coverage
 **/.ipynb_checkpoints/
+**/package-lock.json
+
