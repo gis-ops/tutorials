@@ -611,7 +611,7 @@ From the browser, you're requesting the same endpoint, but with a different auth
 
 ## Wrap-up
 
-In this tutorial, we showed you how to implement restricted access to geodata served as vector tiles using FastAPI and PostGIS. In case you had trouble following along, you can check out the full example applications (both frontend and backend) [here]().
+In this tutorial, we showed you how to implement restricted access to geodata served as vector tiles using FastAPI and PostGIS. In case you had trouble following along, you can check out the full example applications (both frontend and backend) [here](https://github.com/gis-ops/tutorials/tree/authed-mvt/webservices/fastapi/examples/restricted_mvt).
 
 Please feel free to get in touch with us at enquiry[at]gis-ops.com if you have any further questions, need support or have ideas on how to make this tutorial better!
 
