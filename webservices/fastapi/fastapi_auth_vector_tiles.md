@@ -6,10 +6,11 @@ Well, as it turns out, good old XYZ tiles have established the idea of tiles bei
 
 In this tutorial, we're taking that idea of on-the-fly vector tile serving a little further. The use case: build an application where users have access to geodata on a _need-to-know basis_, for example if your clients need to see only a small subset of your geodata. 
 
-In this tutorial, you will learn
-    - how to create MapBox Vector Tiles from PostGIS,
-    - how to serve these Vector Tiles over the web in a standardized manner,
-    - and, most importantly: how to restrict access to the data being served
+In this tutorial, you will learn:
+
+  - how to create MapBox Vector Tiles from PostGIS,
+  - how to serve these Vector Tiles over the web in a standardized manner,
+  - and, most importantly: how to restrict access to the data being served
 
 ## Prerequisites
 
