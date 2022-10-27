@@ -25,7 +25,7 @@ Regarding your background, it's definitely advantageous to know the basics of Fa
 For our example, we'll be serving address data from the city of Berlin. Head [here](https://opendata-esri-de.opendata.arcgis.com/maps/273bf4ae7f6a460fbf3000d73f7b2f76) to download the geojson file. We'll then pass it to PostGIS using gdal's `ogr2ogr`: 
 
 ```sh
-ogr2ogr -f "PostgreSQL" PG:"dbname='gis' user='tutorial' password='tutorial' port='5432' host='localhost'" "Adressen_-_Berlin.geojson" -nln Adresses
+ogr2ogr -f "PostgreSQL" PG:"dbname='gis' user='tutorial' password='tutorial' port='5432' host='localhost'" "Adressen_-_Berlin.geojson" -nln addresses
 
 ```
 
@@ -132,7 +132,7 @@ Finally, just specify how the app will access our database. Create `engine.py` a
 
 from sqlmodel import create_engine
 
-DATABASE_URL = "postgresql://tutorial:tutorial@localhost:5452/gis"
+DATABASE_URL = "postgresql://tutorial:tutorial@localhost:5432/gis"
 
 engine = create_engine(DATABASE_URL, echo=True)
 
@@ -314,7 +314,7 @@ async def get_tile(
     q = """
     SELECT ST_AsMVT(mvtgeom.*) FROM (
         SELECT ST_AsMVTGeom(ST_Transform(t.geom, 3857), bounds.geom) AS geom, t.objectid
-        FROM ( SELECT objectid, wkb_geometry as geom FROM public.adressen WHERE plz = '{plz}') t,
+        FROM ( SELECT objectid, wkb_geometry as geom FROM public.addresses WHERE plz = '{plz}') t,
         (SELECT ST_MakeEnvelope(:xmin, :ymin, :xmax, :ymax, :epsg) as geom) bounds
          WHERE ST_Intersects(t.geom, ST_Transform(bounds.geom, 4326))
          ) mvtgeom;  
