@@ -607,6 +607,11 @@ Finally, we also mimick some logout logic, where we delete the vector tile layer
 
 ![GIF Showing the resulting mapping application](https://github.com/gis-ops/tutorials/blob/authed-mvt/webservices/fastapi/mvt.gif?raw=true)
 
-From the browser, you're requesting the same endpoint, but with a different authorization header each time, and each time you log on as a different user, the same vector tile source recceives a distinct subset of features from the server. _"But what about loading times?"_ you might be asking yourself. Sure, checking the user token at each request comes at a cost, but a negligible one: using my browser's dev tools, I can see that the first request (where our FastAPI app actually needs to get the postal code from the database) clocks in at a bit more than 400ms, but that time drops once that result is cached, with response times easily dropping below 100ms! Now, that server is running on my local machine, but it's a good indication that this logic is performant enough to be used in a production environment.  
+From the browser, you're requesting the same endpoint, but with a different authorization header each time, and each time you log on as a different user, the same vector tile source recceives a distinct subset of features from the server. _"But what about loading times?"_ you might be asking yourself. Sure, checking the user token at each request comes at a cost, but a negligible one: using my browser's dev tools, I can see that the first request (where our FastAPI app actually needs to get the postal code from the database) clocks in at a bit more than 400ms, but that time drops once that result is cached, with response times easily dropping below 100ms! Now, that server is running on my local machine, but it's a good indication that this logic is performant enough to be used in a production environment, especially taking into consideration the alternative: sending huge chunks of GeoJSON. 
 
+## Wrap-up
+
+In this tutorial, we showed you how to implement restricted access to geodata served as vector tiles using FastAPI and PostGIS. In case you had trouble following along, you can check out the full example applications (both frontend and backend) [here]().
+
+Please feel free to get in touch with us at enquiry[at]gis-ops.com if you have any further questions, need support or have ideas on how to make this tutorial better!
 
