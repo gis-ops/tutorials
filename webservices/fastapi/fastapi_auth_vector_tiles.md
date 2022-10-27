@@ -41,6 +41,7 @@ This is not a tutorial on web security, but we do want to make use of some good 
 
 ```sql
 CREATE EXTENSION pgcrypto;
+
 ```
 
 ## Step 2: spin up FastAPI
