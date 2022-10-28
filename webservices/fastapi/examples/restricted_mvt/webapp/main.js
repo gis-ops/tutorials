@@ -28,7 +28,7 @@ const getTileLoader = (token) => {
     tile.setLoader(function (extent, resolution, projection) {
       fetch(url, {
         method: "GET",
-        headers: {
+        headers: { // we're adding auth header here
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
@@ -46,6 +46,10 @@ const getTileLoader = (token) => {
   }
 }
 
+/**
+ * We subclass ol/Control to create
+ * a new UI component on top of our map
+ */
 class Login extends Control {
   constructor(opt_options) {
     const options = opt_options || {}
@@ -81,7 +85,6 @@ class Login extends Control {
     })
 
     element.addEventListener("submit", this.handleSubmit)
-    this.element = element
   }
 
   handleSubmit(e) {
@@ -106,6 +109,7 @@ class Login extends Control {
       .then((res) => res.json())
       .then((data) => {
         if (data.token) {
+          // if the server replies with a token, we can use it to get the vector tiles
           const tileSource = new VectorTile({
             format: new MVT({ featureClass: Feature }),
             url: "http://localhost:8001/adresses/{z}/{x}/{y}",
@@ -123,20 +127,25 @@ class Login extends Control {
 
           map.addLayer(tileLayer)
 
+          // we show the user that they're logged in
           const p = document.createElement("p")
           p.classList = "welcome"
           p.textContent = `Welcome ${this.user}!`
 
+          // ...and create a logout button
           const element = document.querySelector(".form")
           const form = document.querySelector("form")
           const logoutBtn = document.createElement("button")
           logoutBtn.addEventListener(
             "click",
             (e) => {
+              // once the user is logged out, we
+              // restore the original login form
               logoutBtn.style.display = "none"
               p.style.display = "none"
               form.style.display = ""
 
+              // we delete our MVT layer
               map.getLayers().forEach((layer) => {
                 if (layer.get("name") === "authedTile") {
                   map.removeLayer(layer)

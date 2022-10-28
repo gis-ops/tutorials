@@ -38,11 +38,6 @@ async def startup_event():
         DATABASE_URL,
     )
 
-TILE_RESPONSE_PARAMS = {
-    "responses": {200: {"content": {"application/x-protobuf": {}}}},
-    "response_class": Response,
-}
-
 
 def tile_params(
     z: int = Path(..., ge=0, le=25,),
@@ -88,14 +83,14 @@ async def get_tile(
         "epsg": tms.crs.to_epsg(),
     }
 
-    plz = auth_info.get_user_info()
+    plz = auth_info.get_user_info()  # here, we're fetching what the user is allowed to see
 
     q = """
     SELECT ST_AsMVT(mvtgeom.*) FROM (
         SELECT ST_asmvtgeom(ST_Transform(t.geom, 3857), bounds.geom) AS geom, t.objectid
-        FROM ( SELECT objectid, wkb_geometry as geom FROM public.adressen WHERE plz = '{plz}') t,
-        (SELECT ST_MakeEnvelope(:xmin, :ymin, :xmax, :ymax, :epsg) as geom) bounds
-         WHERE ST_Intersects(t.geom, ST_Transform(bounds.geom, 4326))
+            FROM ( SELECT objectid, wkb_geometry as geom FROM public.adresses WHERE plz = '{plz}') t,
+                 (SELECT ST_MakeEnvelope(:xmin, :ymin, :xmax, :ymax, :epsg) as geom) bounds
+            WHERE ST_Intersects(t.geom, ST_Transform(bounds.geom, 4326))
          ) mvtgeom;  
     """.format(plz=plz)
 
