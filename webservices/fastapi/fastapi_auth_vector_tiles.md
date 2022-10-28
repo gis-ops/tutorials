@@ -40,6 +40,7 @@ ogr2ogr -f "PostgreSQL" PG:"dbname='gis' user='tutorial' password='tutorial' por
 Next, we will create a table called `users`, where we store information about the users that are allowed to access parts of our address data. For this example, we'll keep it simple: each user has access to address data within one postal code zone.
 
 ```sql
+CREATE TABLE users(id SERIAL PRIMARY KEY , username varchar, plz varchar, password text);
 INSERT INTO users(username, plz, password)
 SELECT concat('user_', plz) as username, plz, crypt('123', gen_salt('bf', 8)) as password FROM (SELECT DISTINCT plz FROM adresses)s;
 ```
@@ -59,32 +60,10 @@ python -m venv .venv
 
 source .venv/bin/activate
 
-pip install fastapi pyjwt sqlmodel psycopg2 buildpg asyncpg uvicorn morecantile
+pip install fastapi pyjwt sqlmodel psycopg2-binary buildpg asyncpg uvicorn morecantile
 ```
 
-create a file called `main.py` and in it, create a FastAPI app:
-
-```python
-from fastapi import FastAPI
-from starlette.middleware.cors import CORSMiddleware
-
-origins = [
-    "http://localhost",
-    "http://localhost:5173",
-]
-
-vectortile_app = FastAPI()
-
-vectortile_app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-```
-
-Before we create a `/login` endpoint, we need to create some user authentication logic. In this tutorial, we will be using JSON Web Tokens (read more about it [here](https://jwt.io/introduction)). We already installed `pyjwt` to create and validate these tokens, so we can simply create a small function that neatly wraps the decoding logic. Create `jwtoken.py` and in it, create the function `create_token`:
+Before we create our main application, we need to create some user authentication logic. In this tutorial, we will be using JSON Web Tokens (read more about it [here](https://jwt.io/introduction)). We already installed `pyjwt` to create and validate these tokens, so we can simply create a small function that neatly wraps the decoding logic. Create `jwtoken.py` and in it, create the function `create_token`:
 
 ```python
 from datetime import datetime, timedelta
@@ -92,24 +71,22 @@ from datetime import datetime, timedelta
 import jwt
 
 
-def create_token(user: str, expires_delta: timedelta = None, refresh: bool = False) -> str:
-    if expires_delta is not None:
-        expires_delta = datetime.utcnow() + expires_delta
-    else:
-        minutes = (
-            30
-            if not refresh
-            else 60 * 24
-        )
-        expires_delta = datetime.utcnow() + timedelta(minutes=minutes)
+def create_token(user: str, refresh: bool = False) -> str:
+    minutes = (
+        30
+        if not refresh
+        else 60 * 24
+    )
+    expires_delta = datetime.utcnow() + timedelta(minutes=minutes)
 
     to_encode = {"exp": expires_delta, "sub": user}
     encoded_jwt = jwt.encode(to_encode, "SUPER_SECRET_KEY", algorithm="HS256")
 
     return encoded_jwt
+
 ```
 
-Okay, we'll get to the `/login` endpoint soon, but first, let's define a user model for that endpoint. Go ahead and create `models.py`, and in it, create two classes: one for the login request body, and one for the database (thanks for that convenience `SQLModel`!).
+Okay, we'll get to create our actual application soon, but first, let's define a user model for that endpoint. Go ahead and create `models.py`, and in it, create two classes: one for the login request body, and one for the database (thanks for that convenience `SQLModel`!).
 
 ```python
 
@@ -135,7 +112,7 @@ Finally, just specify how the app will access our database. Create `engine.py` a
 
 from sqlmodel import create_engine
 
-DATABASE_URL = "postgresql://tutorial:tutorial@localhost:5432/gis"
+DATABASE_URL = "postgresql://<user>:<password>@localhost:5432/gis"
 
 engine = create_engine(DATABASE_URL, echo=True)
 
@@ -144,21 +121,25 @@ engine = create_engine(DATABASE_URL, echo=True)
 Okay, on to our first endpoint: head back to `main.py` and create a `/login` route:
 
 ```python
-from fastapi import FastAPI, HTTPException
+import morecantile
+from buildpg import asyncpg
+from fastapi import FastAPI, Path, HTTPException, Depends
+from morecantile import Tile
 from sqlalchemy import func
 from sqlmodel import Session, select
 from starlette import status
-from starlette.middleware.cors import CORSMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
+from fastapi.middleware.cors import CORSMiddleware
 
-from engine import engine
-from jwt import create_token
-from models import UsersReq, Users
+from engine import DATABASE_URL, engine
+from models import Users, UsersReq
+from jwtoken import create_token
 
 origins = [
     "http://localhost",
     "http://localhost:5173",
 ]
-
 
 vectortile_app = FastAPI()
 
@@ -187,6 +168,7 @@ def login(data: UsersReq):
         )
 
     return {"token": create_token(result.username)}
+
 
 
 ```
@@ -264,18 +246,12 @@ At each request, we will verify the sent token. Then, we create a method that ge
 Now, we finally get to the juicy part of this tutorial: the **tile serving**. Let's head back to our `main.py`, and create a new endpoint:
 
 ```python
-# import our new Authorizer class at the top, as well as some other new
-# dependencies
-from fastapi import FastAPI, HTTPException, Depends, Path
-from fastapi.openapi.models import Response
-from starlette.requests import Request
+# import our new Authorizer class at the top
+
 from auth import Authorizer
 
-# define the response parameters for our tile serving endpoint
-TILE_RESPONSE_PARAMS = {
-    "responses": {200: {"content": {"application/x-protobuf": {}}}},
-    "response_class": Response,
-}
+# ..other imports
+
 
 # get the tile parameters from the path
 def tile_params(
@@ -312,14 +288,14 @@ async def get_tile(
         "epsg": tms.crs.to_epsg(),
     }
 
-    plz = auth_info.get_user_info()
+    plz = auth_info.get_user_info()  # here, we're fetching what the user is allowed to see
 
     q = """
     SELECT ST_AsMVT(mvtgeom.*) FROM (
-        SELECT ST_AsMVTGeom(ST_Transform(t.geom, 3857), bounds.geom) AS geom, t.objectid
-        FROM ( SELECT objectid, wkb_geometry as geom FROM public.addresses WHERE plz = '{plz}') t,
-        (SELECT ST_MakeEnvelope(:xmin, :ymin, :xmax, :ymax, :epsg) as geom) bounds
-         WHERE ST_Intersects(t.geom, ST_Transform(bounds.geom, 4326))
+        SELECT ST_asmvtgeom(ST_Transform(t.geom, 3857), bounds.geom) AS geom, t.objectid
+            FROM ( SELECT objectid, wkb_geometry as geom FROM public.adresses WHERE plz = '{plz}') t,
+                 (SELECT ST_MakeEnvelope(:xmin, :ymin, :xmax, :ymax, :epsg) as geom) bounds
+            WHERE ST_Intersects(t.geom, ST_Transform(bounds.geom, 4326))
          ) mvtgeom;  
     """.format(plz=plz)
 
@@ -328,6 +304,7 @@ async def get_tile(
         content = await conn.fetchval_b(q, **p)
 
     return Response(bytes(content), media_type="application/x-protobuf")
+
 ```
 
 Note that we use a different engine to access PostGIS asynchronously for faster tile serving (we stick with the synchronous way to get the user details for easier caching).
@@ -464,12 +441,26 @@ const map = new Map({
 We import everything we will need later on, create a simple map with an OSM slippy map. Now to the crucial part: OpenLayers by default does not support authorization headers in vector tile requests, **but** it does let us pass our own tile loading function. So let's go ahead and do that:
 
 ```javascript
+// we'll need these in a bit
+import Map from "ol/Map"
+import OSM from "ol/source/OSM"
+import TileLayer from "ol/layer/Tile"
+import MVT from "ol/format/MVT"
+import View from "ol/View"
+import Control from "ol/control/Control"
+import VectorTile from "ol/source/VectorTile"
+import { pointStyle } from "./style"
+import VectorTileLayer from "ol/layer/VectorTile"
+import { Feature } from "ol"
+import { fromLonLat } from "ol/proj"
+
+
 const getTileLoader = (token) => {
   return function authTileLoad(tile, url) {
     tile.setLoader(function (extent, resolution, projection) {
       fetch(url, {
         method: "GET",
-        headers: {
+        headers: { // we're adding auth header here
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
@@ -490,11 +481,33 @@ const getTileLoader = (token) => {
 ```
 This is simply the example function provided from the OpenLayers documentation, but we added a wrapper function that we can pass our token into, plus modified headers that will hold the token.
 
+Next, we need a style for our vector tiles. Go ahead and create `style.js` and create a neat style for our point layer. Feel free to unleash your inner cartographer, but we're gonna keep it simple for now:
+
+```javascript
+import Stroke from "ol/style/Stroke"
+import Style from "ol/style/Style"
+import Circle from "ol/style/Circle"
+
+export const pointStyle = new Style({
+  image: new Circle({
+    radius: 2,
+    stroke: new Stroke({
+      color: "#1442a3",
+      width: 2,
+    }),
+  }),
+})
+
+```
+
 Finally, we want some login UI and logic. For this we will simply create a new custom `ol/Control` subclass that holds a simple login form. If the user has successfully logged in, we create a new `VectorTileSource` (with our custom function in the options) and add a `VectorTileLayer` to the  map:
 
 
 ```javascript
-
+/**
+ * We subclass ol/Control to create
+ * a new UI component on top of our map
+ */
 class Login extends Control {
   constructor(opt_options) {
     const options = opt_options || {}
@@ -506,6 +519,7 @@ class Login extends Control {
     user.type = "text"
     user.name = "username"
     user.placeholder = "username"
+    user.autocomplete = "off"
     const password = document.createElement("input")
     const passworddiv = document.createElement("div")
     passworddiv.appendChild(password)
@@ -529,7 +543,6 @@ class Login extends Control {
     })
 
     element.addEventListener("submit", this.handleSubmit)
-    this.element = element
   }
 
   handleSubmit(e) {
@@ -554,6 +567,7 @@ class Login extends Control {
       .then((res) => res.json())
       .then((data) => {
         if (data.token) {
+          // if the server replies with a token, we can use it to get the vector tiles
           const tileSource = new VectorTile({
             format: new MVT({ featureClass: Feature }),
             url: "http://localhost:8001/adresses/{z}/{x}/{y}",
@@ -570,25 +584,34 @@ class Login extends Control {
           })
 
           map.addLayer(tileLayer)
-
+          
+          // we show the user that they're logged in
           const p = document.createElement("p")
           p.classList = "welcome"
           p.textContent = `Welcome ${this.user}!`
-
+          
+          // ...and create a logout button
           const element = document.querySelector(".form")
           const form = document.querySelector("form")
           const logoutBtn = document.createElement("button")
-          logoutBtn.addEventListener("click", (e) => {
-            logoutBtn.style.display = "none"
-            p.style.display = "none"
-            form.style.display = ""
+          logoutBtn.addEventListener(
+            "click",
+            (e) => {
+              // once the user is logged out, we
+              // restore the original login form
+              logoutBtn.style.display = "none"
+              p.style.display = "none"
+              form.style.display = ""
 
-            map.getLayers().forEach((layer) => {
-              if (layer.get("name") === "authedTile") {
-                map.removeLayer(layer)
-              }
-            })
-          },  { once: true })
+              // we delete our MVT layer
+              map.getLayers().forEach((layer) => {
+                if (layer.get("name") === "authedTile") {
+                  map.removeLayer(layer)
+                }
+              })
+            },
+            { once: true }
+          )
           logoutBtn.innerHTML = "Log out"
           logoutBtn.className = "logout"
           form.style.display = "none"
@@ -600,7 +623,6 @@ class Login extends Control {
 }
 
 map.addControl(new Login({ target: "login" }))
-
 
 ```
 
