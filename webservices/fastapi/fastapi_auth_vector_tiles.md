@@ -410,7 +410,7 @@ Finally, we create `main.js`, where our core mapping application will live:
 
 
 ```javascript
-
+// we'll need these in a bit
 import Map from "ol/Map"
 import OSM from "ol/source/OSM"
 import TileLayer from "ol/layer/Tile"
@@ -441,19 +441,7 @@ const map = new Map({
 We import everything we will need later on, create a simple map with an OSM slippy map. Now to the crucial part: OpenLayers by default does not support authorization headers in vector tile requests, **but** it does let us pass our own tile loading function. So let's go ahead and do that:
 
 ```javascript
-// we'll need these in a bit
-import Map from "ol/Map"
-import OSM from "ol/source/OSM"
-import TileLayer from "ol/layer/Tile"
-import MVT from "ol/format/MVT"
-import View from "ol/View"
-import Control from "ol/control/Control"
-import VectorTile from "ol/source/VectorTile"
-import { pointStyle } from "./style"
-import VectorTileLayer from "ol/layer/VectorTile"
-import { Feature } from "ol"
-import { fromLonLat } from "ol/proj"
-
+// imports and map initiation...
 
 const getTileLoader = (token) => {
   return function authTileLoad(tile, url) {
