@@ -2,9 +2,11 @@
 
 Open-source routing engines offer amazing capabilities, going far beyond what commercial applications like Google Maps can deliver. We wrote [an overview article](https://gis-ops.com/open-source-routing-engines-and-algorithms-an-overview) of FOSS routing engines if you're interested.
 
-However, one limitation which is hard to get around: every each open-source routing engine solely consumes [**OpenStreetMap**](https://openstreetmap.org) data. We're here to remove that limitation and offer a way to convert **any proprietary** street dataset into the [OSM data model](https://wiki.openstreetmap.org/wiki/Elements):
+However, one limitation which is hard to get around: every open-source routing engine solely consumes [**OpenStreetMap**](https://openstreetmap.org) data. We developed software to remove that limitation and offer a way to convert **any proprietary** street dataset into the [OSM data model](https://wiki.openstreetmap.org/wiki/Elements):
 
 <p style="text-align: center; font-size: 1.4em"><a href="https://github.com/gis-ops/prop2osm">prop2osm</a></p>
+
+Data such as TomTom & HERE have detailed and accurate road attributes such as reliable legal speed limits and HGV/truck restrictions (weight, bridge heights etc). We can also process any traffic source such as historical traffic data and live traffic data for the routing engines [Valhalla](https://github.com/valhalla/valhalla) and [OSRM](https://github.com/Project-OSRM/osrm-backend) (only live traffic support).
 
 If you don't want to read on and just have a quick dive into what we offer exactly, see if any of these links and apps provides some help:
 
@@ -114,6 +116,14 @@ You can even install the whole stack yourself via `docker-compose` by following 
 
 Let us know via [Twitter](https://twitter.com/gis_ops) or [email](mailto:enquiry@gis-ops.com) what you think.
 
+### Traffic integration
+
+Using e.g. the TomTom data, historical traffic data can be purchased which we turn into traffic tiles [Valhalla](https://github.com/valhalla/valhalla) can use. The traffic information has a 5 mins resolution over an average week, i.e. 2016 speed values for every road segment, based on historical traffic patterns. And Valhalla can use that information to predict the traffic along the route and calculate the optimal path according to those traffic patterns.
+
+Additionally, live traffic sources makes sure vehicles (and route finding) can respond to spontaneous events such as traffic jams or road closures because of accidents. According to TomTom's licensing, live traffic can be used with third-party networks such as OSM. However, this service is fairly expensive, while historical traffic data is much cheaper. 
+
+Ideally both traffic sources are used. Read more about it and see some showcases of traffic influenced routing with TomTom [here](https://gis-ops.com/traffic-in-valhalla/).
+
 ## Services
 
 We provide [commercial services](https://gis-ops.com/routing-and-optimisation/#data-services) to make your TomTom/HERE data compatible with any FOSS routing engine.
@@ -134,7 +144,7 @@ The way it works:
 
 **Note**, optionally you can also license TomTom or HERE data through us (in collaboration with [WIGeoGIS](https://www.wigeogis.com/de/home)).
 
-The output file will be converted to the [OSM data model](https://labs.mapbox.com/mapping/osm-data-model/), either in [PBF](https://wiki.openstreetmap.org/wiki/PBF_Format) or XML format. It will have the same properties as you'd find in "real" OSM files with the most relevant objects and attributes for routing applications. No effort has been made so far to adapt the output to other applications, such as map rendering or geocoding.
+The output file will be converted to the [OSM data model](https://labs.mapbox.com/mapping/osm-data-model/), either in [PBF](https://wiki.openstreetmap.org/wiki/PBF_Format) or XML format. It will have the same properties as you'd find in "real" OSM files with the most relevant objects and attributes for routing applications. No effort has been made so far to adapt the output to other applications, such as map rendering or geocoding, but we're certainly open for the idea.
 
 ## Further Information
 
