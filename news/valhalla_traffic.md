@@ -19,7 +19,7 @@ Apart from its numerous unique features, [Valhalla](https://github.com/valhalla/
 
 Ideally, Valhalla is operated with both traffic signatures. Internally, live traffic is mostly used in close proximity to the route's origin point and its influence deteriorates linearly moving away from the origin. Meanwhile other speed data sources such as historical traffic data will be blended into the routing calculations at the same rate the impact of live traffic lessens. If in a pinch, **for most use cases historical traffic data is far more valuable than real-time traffic data**.
 
-**Note**, that not all actions/endpoints support traffic-/time-aware calculations. While `/route` and `/isochrones` support traffic, `/sources_to_targets` (aka `/matrix`) does not.
+**Note** that traffic is accounted for on all endpoints/actions, even matrix calculations (our [most recent contribution](https://github.com/valhalla/valhalla/pull/3795).
 
 Purchasing appropriate data is less expensive than most people assume. In the case of an asset-based TomTom contract (e.g. for fleet management, where each vehicle is an asset), costs are within a few Euro per asset per year. It's a very valuable investment if ETA accuracy is of essence.
 
@@ -87,13 +87,13 @@ The [`valhalla_build_extract`](https://github.com/valhalla/valhalla/blob/6e28861
 The challenge is to actually develop that external application (in whatever language) to update the traffic archive, and that is performant and accurate enough to provide meaningful traffic updates on large regions. The gist of it is:
 
 - pull updated traffic information from provider
-- match each traffic segment's OpenLR(/TMC) geometry string to Valhalla's graph using `/trace_attributes` to retrieve all edges' `GraphId`s. Beware that the traffic provider's geometries might not be the same as your routing graph's geometries, e.g. TomTom live traffic feed on a OSM routing graph, so you might have to do a more complex flow of `/locate`, `/route` and `/trace_attributes` to reliably match the provider's geometries to your graph
-- once you have the Valhalla representation of a OpenLR traffic entry, you can start matching the entry's speeds to the graph edges to compose the [`TrafficSpeed`](https://github.com/valhalla/valhalla/blob/6e28861fd8985935a1e647af9a5a399560945b52/valhalla/baldr/traffictile.h#L54-L65) struct for each edge; breakpoints only come into play for start & end edges of OpenLR records
-- after you did this process for all traffic entries, you should have one `TrafficSpeed` 64 bit integer for each Valhalla edge which matched to the current traffic input
-- at this point you still need to match those shortcuts whose edges had their speeds updated: Valhalla uses shortcuts in its more performant bidirectional algorithm on longer routes; here you need to calculate the weighted average of all underlying edge speeds and only set the `overall_encoded_speed` part of the shortcut's `TrafficSpeed` packed 64 bit struct
+- match each traffic segment's OpenLR(/TMC) geometry string to Valhalla's graph using `/trace_attributes` to retrieve all edges' `GraphId`s. Beware that the traffic provider's geometries might not be the same as your routing graph's geometries.
+- once you have the Valhalla representation of a OpenLR traffic entry, you can start matching the entry's speeds to the graph edges to compose the speed entries; breakpoints only come into play for start & end edges of OpenLR records
+- after you did this process for all traffic entries, you should have one 64 bit integer for each Valhalla edge which matched to the current traffic input
+- at this point you still need to match those shortcuts whose edges had their speeds updated
 - finally you have completed a traffic update and you can now write these entries into the existing traffic archive which is shared with the Valhalla server
 
-This is only a brief summary of the high-level steps which need to be taken. There's a lot more details to be said about the whole process. The most important part is: don't use HTTP when matching OpenLR to Valhalla's graph! That's much too slow. Either develop the application in C++, in Python (and use our [pyvalhalla](https://github.com/gis-ops/pyvalhalla) bindings) or develop bindings in your favorite language (and of course open-source them! ;)).
+This is only a brief summary of the high-level steps which need to be taken. There's a lot more details to be said about the whole process. The most important part is: don't use the HTTP service when matching OpenLR to Valhalla's graph! That's too slow.
 
 ## Related projects
 
