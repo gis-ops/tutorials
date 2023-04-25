@@ -189,4 +189,4 @@ sudo make install
 
 ## Next steps:
 
-Now that Valhalla is successfully running in Ubuntu 20.04, head over to our Tutorial [*How to configure and run Valhalla on Ubuntu 20.04*](https://gis-ops.com/valhalla-how-to-run-on-ubuntu-20-04/).
+Now that Valhalla is successfully running in Ubuntu 20.04, head over to our Tutorial [*How to configure and run Valhalla on Ubuntu 20.04*](https://gis-ops.com/valhalla-part-2-how-to-run-valhalla-on-ubuntu/).
