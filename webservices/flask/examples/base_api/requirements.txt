@@ -1,7 +1,7 @@
 aniso8601==8.0.0
 attrs==19.3.0
 Click==7.0
-Flask==1.1.1
+Flask==2.3.2
 Flask-CLI==0.4.0
 flask-marshmallow==0.10.1
 flask-restplus==0.13.0
