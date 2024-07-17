@@ -77,7 +77,7 @@ In order to run Valhalla you need to create a `docker-compose.yml` file in your 
 version: '3.0'
 services:
   valhalla:
-    image: gisops/valhalla:latest
+    image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
     ports:
       - "8002:8002"
     volumes:
