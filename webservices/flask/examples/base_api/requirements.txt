@@ -25,5 +25,5 @@ pytz==2019.3
 Shapely==1.6.4.post2
 six==1.13.0
 wcwidth==0.1.7
-Werkzeug==0.16.0
+Werkzeug==2.2.3
 zipp==0.6.0
